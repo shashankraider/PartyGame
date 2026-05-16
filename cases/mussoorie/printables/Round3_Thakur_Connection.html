@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murder in Mussoorie - Round 3: The Thakur Connection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --parchment: #f4edd3; --ink: #1a1a1a; --faded-ink: #3d3529; --red-stamp: #8b1a1a;
+    --blue-ink: #1a3a6b; --folder-tab: #c4a265; --evidence-bg: #faf6e8; --border-dark: #8b7d5e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
+  @media print {
+    body { background: white; padding: 0; }
+    .evidence-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; }
+    .round-cover { page-break-after: always; }
+    .no-print { display: none !important; }
+  }
+
+  .round-cover { max-width:800px; margin:0 auto 40px; background:var(--parchment); border:3px solid var(--border-dark); padding:60px 50px; position:relative; text-align:center; }
+  .round-cover::before { content:''; position:absolute; top:15px; left:15px; right:15px; bottom:15px; border:1px solid var(--border-dark); pointer-events:none; }
+  .cbi-header { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--blue-ink); margin-bottom:8px; }
+  .cbi-emblem { font-size:48px; margin:15px 0; color:var(--blue-ink); }
+  .case-title { font-family:'Special Elite',cursive; font-size:32px; color:var(--red-stamp); margin:20px 0 5px; letter-spacing:2px; }
+  .case-subtitle { font-family:'Courier Prime',monospace; font-size:14px; color:var(--faded-ink); margin-bottom:25px; }
+  .round-label { display:inline-block; background:var(--red-stamp); color:#f4edd3; font-family:'Courier Prime',monospace; font-size:18px; padding:8px 30px; letter-spacing:3px; text-transform:uppercase; margin:20px 0; }
+  .round-name { font-family:'Special Elite',cursive; font-size:26px; color:var(--faded-ink); margin:10px 0; }
+  .classification { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:3px; color:var(--red-stamp); border:2px solid var(--red-stamp); display:inline-block; padding:4px 15px; margin-top:25px; }
+  .cover-meta { font-family:'Courier Prime',monospace; font-size:11px; color:var(--faded-ink); margin-top:20px; line-height:2; }
+
+  .evidence-item { max-width:800px; margin:30px auto; background:var(--evidence-bg); border:1px solid var(--border-dark); box-shadow:3px 3px 15px rgba(0,0,0,0.3); position:relative; }
+  .evidence-tab { background:var(--folder-tab); color:white; font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:6px 20px; display:inline-block; }
+  .evidence-header { background:linear-gradient(135deg,#2c2416,#3d3529); color:var(--parchment); padding:15px 25px; display:flex; justify-content:space-between; align-items:center; }
+  .evidence-header h3 { font-family:'Courier Prime',monospace; font-size:14px; letter-spacing:1px; text-transform:uppercase; }
+  .evidence-number { font-family:'Courier Prime',monospace; font-size:12px; opacity:0.7; }
+  .evidence-body { padding:30px; }
+  .handwritten-note { font-family:'Special Elite',cursive; color:var(--blue-ink); font-size:13px; margin-top:15px; padding:10px 15px; border-left:3px solid var(--blue-ink); opacity:0.8; }
+
+  .print-bar { max-width:800px; margin:0 auto 20px; text-align:right; }
+  .print-btn { background:var(--folder-tab); color:white; border:none; padding:10px 25px; font-family:'Courier Prime',monospace; font-size:13px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; }
+  .print-btn:hover { background:#a88942; }
+
+  /* ── Anonymous Letter ── */
+  .anonymous-letter {
+    font-family:'Special Elite',cursive; font-size:15px; line-height:2; padding:20px;
+    background:white; border:1px dashed #999; margin:10px; position:relative;
+  }
+
+  /* ── Newspaper ── */
+  .newspaper {
+    background: #f5f0e0; border: 1px solid #b5a67a; padding: 0; max-width: 550px;
+    margin: 0 auto; font-family: 'Merriweather', Georgia, serif; position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+  }
+  .newspaper-header {
+    text-align: center; padding: 20px 20px 10px; border-bottom: 3px double #333;
+  }
+  .newspaper-name {
+    font-family: 'Special Elite', cursive; font-size: 28px; letter-spacing: 4px;
+    text-transform: uppercase; color: #222;
+  }
+  .newspaper-date { font-size: 10px; color: #666; margin-top: 5px; letter-spacing: 2px; }
+  .newspaper-body { padding: 20px; column-count: 1; font-size: 12px; line-height: 1.8; text-align: justify; }
+  .newspaper-headline {
+    font-family: 'Merriweather', Georgia, serif; font-size: 20px; font-weight: 700;
+    text-align: center; margin-bottom: 12px; line-height: 1.3; color: #111;
+  }
+  .newspaper-byline { font-size: 10px; color: #888; text-align: center; margin-bottom: 12px; font-style: italic; }
+  .newspaper-age {
+    position: absolute; top: 10px; right: 10px; background: var(--red-stamp); color: white;
+    font-family: 'Courier Prime', monospace; font-size: 10px; padding: 3px 8px;
+    transform: rotate(3deg);
+  }
+
+  /* ── FIR Document ── */
+  .fir-doc {
+    background: white; border: 2px solid #333; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 1.8; max-width: 550px; margin: 0 auto;
+  }
+  .fir-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; }
+  .fir-title { font-weight: bold; font-size: 14px; letter-spacing: 2px; }
+  .fir-row { display: flex; margin-bottom: 4px; }
+  .fir-label { font-weight: bold; min-width: 170px; }
+  .fir-value { flex: 1; border-bottom: 1px dotted #999; }
+  .fir-inventory { margin-top: 15px; border: 1px solid #999; padding: 12px; }
+  .fir-inventory-title { font-weight: bold; font-size: 11px; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+  .fir-inv-item { padding: 4px 0; padding-left: 15px; border-bottom: 1px dotted #ddd; }
+  .fir-inv-item:last-child { border-bottom: none; }
+  .fir-highlight { background: #fff3cd; padding: 2px 4px; border: 1px solid #f0d060; }
+
+  /* ── Photo frames ── */
+  .photo-frame {
+    background: white; border: 8px solid white; box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    max-width: 400px; margin: 0 auto; transform: rotate(-1deg);
+  }
+  .photo-inner {
+    background: #2a2a2a; min-height: 220px; display: flex; align-items: center;
+    justify-content: center; color: #ccc; font-family: 'Courier Prime', monospace;
+    font-size: 12px; text-align: center; padding: 20px; line-height: 1.8; position: relative;
+  }
+  .photo-caption {
+    font-family: 'Special Elite', cursive; font-size: 12px; color: #555;
+    padding: 8px; text-align: center;
+  }
+  .photo-date { font-family: 'Courier Prime', monospace; font-size: 10px; color: #f80; text-align: right; padding-right: 8px; }
+
+  /* ── Land Registry ── */
+  .registry-doc {
+    background: #fffff0; border: 2px solid #556b2f; padding: 25px;
+    font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.8;
+    max-width: 550px; margin: 0 auto;
+  }
+  .registry-header {
+    text-align: center; border-bottom: 2px solid #556b2f; padding-bottom: 10px; margin-bottom: 15px;
+  }
+  .registry-emblem { font-size: 30px; color: #556b2f; }
+  .registry-title { font-weight: bold; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #556b2f; }
+  .registry-row { display: flex; margin-bottom: 4px; }
+  .registry-label { font-weight: bold; min-width: 180px; color: #556b2f; }
+  .registry-chain { margin-top: 15px; padding: 12px; background: #f5f5e0; border: 1px dashed #999; }
+  .registry-chain-title { font-weight: bold; font-size: 11px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
+  .chain-step { padding: 5px 0; display: flex; align-items: center; gap: 10px; }
+  .chain-arrow { color: var(--red-stamp); font-weight: bold; font-size: 16px; }
+
+  /* ── Bus Ticket ── */
+  .bus-ticket {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: 2px solid #4caf50; padding: 20px; max-width: 400px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; font-size: 12px; position: relative;
+    border-radius: 4px;
+  }
+  .bus-ticket::before, .bus-ticket::after {
+    content: ''; position: absolute; width: 20px; height: 20px; background: var(--evidence-bg);
+    border-radius: 50%; top: 50%;
+  }
+  .bus-ticket::before { left: -10px; }
+  .bus-ticket::after { right: -10px; }
+  .bus-header { text-align: center; font-weight: bold; font-size: 14px; letter-spacing: 2px; color: #2e7d32; border-bottom: 1px dashed #4caf50; padding-bottom: 8px; margin-bottom: 10px; }
+  .bus-route { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; color: #1b5e20; }
+  .bus-row { display: flex; justify-content: space-between; padding: 3px 10px; }
+  .bus-divider { border-top: 1px dashed #4caf50; margin: 8px 0; }
+
+  /* ── Family History ── */
+  .history-doc {
+    background: #fefefe; border-left: 4px solid var(--red-stamp); padding: 20px 25px;
+    font-family: 'Merriweather', Georgia, serif; font-size: 13px; line-height: 1.9;
+    max-width: 550px; margin: 0 auto;
+  }
+  .history-title {
+    font-family: 'Courier Prime', monospace; font-size: 12px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--red-stamp);
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <button class="print-btn" onclick="window.print()">Print Round 3</button>
+</div>
+
+<!-- ═══════════ ROUND COVER ═══════════ -->
+<div class="round-cover">
+  <div class="cbi-header">Central Bureau of Investigation</div>
+  <div class="cbi-header" style="font-size:9px; margin-bottom:5px;">Government of India &bull; Ministry of Personnel</div>
+  <div class="cbi-emblem">&starf;</div>
+  <div class="case-title">MURDER IN MUSSOORIE</div>
+  <div class="case-subtitle">Case No. CBI/DHN/2026/MC-0471</div>
+  <div class="round-label">Round 3</div>
+  <div class="round-name">The Thakur Connection</div>
+  <div class="cover-meta">
+    STATUS: New evidence received &mdash; scope of investigation expanding<br>
+    NOTE: A second anonymous letter has been received.<br>
+    This case may be connected to an unsolved crime from 15 years ago.
+  </div>
+  <div class="classification">STRICTLY CONFIDENTIAL</div>
+</div>
+
+<!-- ═══════════ EVIDENCE 13: SECOND ANONYMOUS LETTER ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit M</div>
+  <div class="evidence-header">
+    <h3>Second Anonymous Letter to CBI</h3>
+    <span class="evidence-number">CBI/EX/013</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Received: CBI Field Office, Mussoorie (hand-delivered, slipped under door) &bull; No envelope &bull; Handwritten
+    </div>
+    <div class="anonymous-letter" style="font-size:17px; line-height:2.2;">
+      <div style="position:relative; z-index:1;">
+        To the CBI officers investigating the Vikram Singh case,<br><br>
+        You are looking at the wrong suspects. The answer is not in Vikram's love life or his business partnerships.<br><br>
+        Ask who benefits from the Thakur estate.<br><br>
+        Vikram knew. That is why he is dead.<br><br>
+        &mdash; A friend of the truth
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Different handwriting from the first letter &mdash; this is a SECOND anonymous source. This writer seems to know specifically what Vikram had discovered. "The Thakur estate" &mdash; referring to the Thakur family of Landour? Cross-reference with cold case files. Also note: this letter was hand-delivered to our field office. The writer is in Mussoorie RIGHT NOW and knows where we're operating.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 14: NEWSPAPER CLIPPING ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit N</div>
+  <div class="evidence-header">
+    <h3>Newspaper Clipping &mdash; Dainik Jagran (Dehradun Edition)</h3>
+    <span class="evidence-number">CBI/EX/014</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Newspaper archives, District Library, Dehradun &bull; Microfilm scan
+    </div>
+    <div class="newspaper">
+      <div class="newspaper-age">15 YEARS OLD</div>
+      <div class="newspaper-header">
+        <div class="newspaper-name">The Mussoorie Times</div>
+        <div class="newspaper-date">December 2011 &bull; Dehradun &bull; Price: &#8377;3</div>
+      </div>
+      <div class="newspaper-body">
+        <div class="newspaper-headline">Tragedy in Landour: Three Killed in Brutal Home Invasion</div>
+        <div class="newspaper-byline">By Staff Correspondent, Mussoorie</div>
+        <p>
+          Mussoorie is in shock after a horrific robbery at the residence of Brigadier Ranjit Thakur (Retd.) in Landour claimed three lives on the night of December [redacted].
+        </p><br>
+        <p>
+          The Brigadier (68), his wife Mrs. Meera Thakur (62), and his elderly mother Mrs. Kamla Thakur (89) were found dead in their home by the family's housekeeper the following morning. Police say the victims surprised the intruders during the robbery, leading to a violent confrontation.
+        </p><br>
+        <p>
+          Stolen items include the Brigadier's military service medals, Mrs. Thakur's gold jewellery, and a rare British-era Enfield rifle that had been in the family since the colonial period. The total value of stolen items is estimated at several lakhs.
+        </p><br>
+        <p>
+          Sub-Inspector Devraj Khanna, the investigating officer, stated: "We are pursuing multiple leads. The perpetrators appear to be outsiders. We appeal to the public for any information."
+        </p><br>
+        <p>
+          The Thakur family has deep roots in Mussoorie's history. The Brigadier served with distinction in the Indian Army for 35 years. The family leaves no direct heirs. Distant relatives have been informed.
+        </p><br>
+        <p>
+          Neighbours expressed disbelief. "This is a safe area. Nothing like this has ever happened in Landour," said Mr. P.S. Negi, a nearby resident.
+        </p>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Fifteen years ago. Three people dead. The investigating officer? Sub-Inspector Devraj Khanna &mdash; the same man who investigated Vikram Singh's death. The same man our first anonymous letter warned us about. Coincidence? Also note: "no direct heirs" &mdash; the estate has been in legal limbo since. Who benefited from this family's disappearance?
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 15: THEFT FIR INVENTORY ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit O</div>
+  <div class="evidence-header">
+    <h3>Original Theft FIR &mdash; Thakur Cottage Robbery (2011)</h3>
+    <span class="evidence-number">CBI/EX/015</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Mussoorie Police Station cold case archives &bull; File retrieved under CBI authority
+    </div>
+    <div class="fir-doc">
+      <div class="fir-header">
+        <div class="fir-title">UTTARAKHAND POLICE &mdash; FIR EXTRACT</div>
+        <div style="font-size:10px; margin-top:5px;">Mussoorie Police Station, District Dehradun</div>
+      </div>
+      <div class="fir-row"><span class="fir-label">FIR Number:</span><span class="fir-value">MSR/2011/0193</span></div>
+      <div class="fir-row"><span class="fir-label">Date:</span><span class="fir-value">December [redacted], 2011</span></div>
+      <div class="fir-row"><span class="fir-label">Offence:</span><span class="fir-value">Sec. 302/394/34 IPC (Murder during robbery)</span></div>
+      <div class="fir-row"><span class="fir-label">IO:</span><span class="fir-value">S.I. Devraj Khanna, Badge UK-4471</span></div>
+      <div class="fir-row"><span class="fir-label">Status:</span><span class="fir-value">UNSOLVED &mdash; Filed as untraced (2013)</span></div>
+
+      <div class="fir-inventory">
+        <div class="fir-inventory-title">Schedule of Stolen Items</div>
+        <div class="fir-inv-item"><strong>1.</strong> Gold jewellery set (necklace, earrings, bangles) &mdash; approx. value &#8377;4,50,000</div>
+        <div class="fir-inv-item"><strong>2.</strong> Army service medals (4 nos.) incl. Sena Medal &mdash; sentimental/collector value</div>
+        <div class="fir-inv-item" style="background:#fff3cd; padding:8px 15px; border:1px solid #f0d060;">
+          <strong>3.</strong> British-era Enfield rifle, <span class="fir-highlight">carved walnut stock with brass inlay, circa 1890</span>, bore deactivated, collector's item &mdash; approx. value &#8377;3,00,000+
+        </div>
+        <div class="fir-inv-item"><strong>4.</strong> Cash (estimated &#8377;50,000 &mdash; exact amount unknown)</div>
+        <div class="fir-inv-item"><strong>5.</strong> Silver photo frames (3 nos.)</div>
+      </div>
+
+      <div style="margin-top:15px; font-size:11px; color:#888;">
+        NOTE: None of the above items have been recovered or traced as of date of filing. No pawn shop records. No black market sightings. No auction house matches. Items appear to have vanished completely.
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Item 3 &mdash; the Enfield rifle. "Carved walnut stock with brass inlay, circa 1890." Remember this description. Now look at Exhibits P and Q.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 16 & 17: THE TWO PHOTOGRAPHS ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit P</div>
+  <div class="evidence-header">
+    <h3>Vikram's Photograph #1 &mdash; Thakur Cottage, Brigadier's Study</h3>
+    <span class="evidence-number">CBI/EX/016</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Vikram Singh's camera SD card (partially recovered despite wipe attempt) &bull; EXIF date: [6 weeks before death]
+    </div>
+    <div class="photo-frame">
+      <div class="photo-inner">
+        <div>
+          [Photograph of wood-panelled wall in Brigadier's study]<br><br>
+          Two iron mounting hooks visible on wall.<br>
+          Clear outline on wallpaper where a long object<br>
+          (approx. 4 feet) hung for many years.<br>
+          Surrounding wallpaper faded; area behind mount<br>
+          retains original darker colour.<br><br>
+          <span style="color:#f80;">Object is ABSENT from the mount.</span>
+        </div>
+      </div>
+      <div class="photo-caption">Thakur Cottage &mdash; Empty rifle mount in Brigadier's study</div>
+      <div class="photo-date">EXIF: [6 weeks before murder]</div>
+    </div>
+  </div>
+</div>
+
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit Q</div>
+  <div class="evidence-header">
+    <h3>Vikram's Photograph #2 &mdash; Royal Pines Hotel, Private Office</h3>
+    <span class="evidence-number">CBI/EX/017</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Vikram Singh's camera SD card (partially recovered) &bull; EXIF date: [3 weeks before death]
+    </div>
+    <div class="photo-frame" style="transform:rotate(1deg);">
+      <div class="photo-inner">
+        <div>
+          [Photograph of office wall at Royal Pines Hotel]<br><br>
+          British-era Enfield rifle mounted on wall.<br>
+          <span style="color:#f80;">Carved walnut stock with brass inlay clearly visible.</span><br>
+          Mounted above a mahogany desk.<br>
+          Brass plate below reads: "Personal Collection &mdash; R. Bisht"<br><br>
+          <span style="color:#ff4444;">MATCH: Description identical to Thakur FIR Item #3</span>
+        </div>
+      </div>
+      <div class="photo-caption">Royal Pines Hotel &mdash; Mr. Bisht's private office</div>
+      <div class="photo-date">EXIF: [3 weeks before murder]</div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: The rifle stolen from Thakur Cottage in 2011 is hanging on Mr. Bisht's office wall in 2026. "Carved walnut stock with brass inlay, circa 1890" &mdash; the FIR description matches exactly. Either Bisht purchased a stolen item unknowingly, or he has had it for fifteen years. Why does Mussoorie's biggest hotelier have a dead family's stolen heirloom in his office?
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 18: LAND REGISTRY ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit R</div>
+  <div class="evidence-header">
+    <h3>Land Registry Records &mdash; Properties Adjacent to Thakur Estate</h3>
+    <span class="evidence-number">CBI/EX/018</span>
+  </div>
+  <div class="evidence-body">
+    <div class="registry-doc">
+      <div class="registry-header">
+        <div class="registry-emblem">&#9878;</div>
+        <div class="registry-title">Office of the Sub-Registrar, Mussoorie</div>
+        <div style="font-size:10px; color:#888; margin-top:5px;">Revenue Department, Government of Uttarakhand</div>
+      </div>
+      <div style="font-weight:bold; margin-bottom:12px; font-size:13px; color:#556b2f;">PROPERTY TRANSFER SUMMARY &mdash; Landour (Thakur Estate Vicinity)</div>
+
+      <div class="registry-row"><span class="registry-label">Search conducted for:</span><span>All transfers within 500m of Thakur Cottage, 2012&ndash;2026</span></div>
+
+      <div class="registry-chain">
+        <div class="registry-chain-title">Ownership Chain &mdash; Plot No. LDR/2012/447 (2.3 acres, adjacent east)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> 2012: Purchased by <strong>"Highland Properties Pvt. Ltd."</strong> (Delhi)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Highland Properties: Directors &mdash; A. Mehta, S. Rawat (both nominees)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Beneficial owner (ROC filing): <strong>"Parvati Hill Trust"</strong></div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Parvati Hill Trust: Sole trustee &mdash; <strong style="color:var(--red-stamp);">RAJVEER BISHT</strong></div>
+      </div>
+
+      <div class="registry-chain" style="margin-top:10px;">
+        <div class="registry-chain-title">Ownership Chain &mdash; Plot No. LDR/2014/112 (1.8 acres, adjacent north)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> 2014: Purchased by <strong>"Deodar Estates LLP"</strong> (Dehradun)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Deodar Estates: Partners &mdash; K. Joshi, P. Singh (both nominees)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Controlling partner (LLP filing): <strong style="color:var(--red-stamp);">RAJVEER BISHT</strong></div>
+      </div>
+
+      <div class="registry-chain" style="margin-top:10px;">
+        <div class="registry-chain-title">Ownership Chain &mdash; Plot No. LDR/2016/083 (Access road to Thakur Cottage)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> 2016: Purchased by <strong>"Royal Pines Hospitality Group"</strong></div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Managing Director: <strong style="color:var(--red-stamp);">RAJVEER BISHT</strong></div>
+      </div>
+
+      <div style="margin-top:15px; padding:10px; background:#fff3cd; border:1px solid #f0d060; font-size:11px;">
+        <strong>SUMMARY:</strong> Three properties surrounding Thakur Cottage, totalling 4.1+ acres, were acquired between 2012 and 2016 by entities all controlled by the same individual: <strong>Rajveer Bisht</strong>. Total acquisition cost: &#8377;2.7 crore (approx). Current estimated value: &#8377;12+ crore. The Royal Pines Hotel stands on Plot LDR/2012/447.
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Bisht systematically acquired all land surrounding the Thakur estate through shell companies within 5 years of the family's death. Three different entities, three different sets of nominee directors, one beneficial owner: Rajveer Bisht. He built his entire empire on this land. He never bought Thakur Cottage itself &mdash; smart enough not to be too obvious. But he surrounded it completely.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 19: BISHT FAMILY HISTORY ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit S</div>
+  <div class="evidence-header">
+    <h3>Background Research &mdash; The Bisht Family vs. The Thakurs</h3>
+    <span class="evidence-number">CBI/EX/019</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Municipal records, court filings, newspaper archives &bull; Compiled by CBI research wing
+    </div>
+    <div class="history-doc">
+      <div class="history-title">CBI Intelligence Brief &mdash; Bisht-Thakur History</div>
+      <p>
+        <strong>Harish Bisht</strong> (father of Rajveer Bisht) operated the <em>Bisht Lodge</em> near Landour Bazaar for 18 years. A modest but well-regarded establishment. In 2010, a land boundary dispute arose between the Bisht Lodge property and the adjacent Thakur estate.
+      </p><br>
+      <p>
+        Brigadier Ranjit Thakur, leveraging his military connections and relationship with the then-District Magistrate, escalated the dispute aggressively. Municipal records show that <strong>Bisht Lodge's operating licence was revoked</strong> on grounds of "encroachment on government land" &mdash; a claim that multiple contemporaneous assessments described as "technically dubious."
+      </p><br>
+      <p>
+        Harish Bisht filed two appeals. Both were dismissed. The lodge was shuttered. Financial records show Harish Bisht was <strong>bankrupt within three months</strong>.
+      </p><br>
+      <p>
+        <strong>Harish Bisht died on [date], 2011</strong> &mdash; six months after losing the lodge. Cause of death: cardiac arrest. He was 54 years old. No prior history of heart disease.
+      </p><br>
+      <p>
+        His son, <strong>Rajveer Bisht</strong>, was 22 at the time. He did not contest the land dispute further. He left Mussoorie briefly, then returned and began a small property dealing business. Within five years, he had acquired significant land holdings in the Landour area. Today he is the owner of the Royal Pines Hotel and Mussoorie's largest private property portfolio.
+      </p><br>
+      <p style="color:var(--red-stamp); font-weight:bold;">
+        NOTE: The Thakur family was killed approximately 7 months after Harish Bisht's death. Rajveer Bisht began acquiring Thakur-adjacent land approximately 5 months after the family's death.
+      </p>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Timeline is damning. The Brigadier destroys Bisht's father &rarr; father dies &rarr; 7 months later the Brigadier's entire family is killed &rarr; 5 months after that, the son starts buying their land. Revenge AND profit. The oldest motives in the world.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 20: ANYA'S BUS TICKET ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit T</div>
+  <div class="evidence-header">
+    <h3>Bus Ticket &mdash; Anya Devi</h3>
+    <span class="evidence-number">CBI/EX/020</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Anya Devi's purse, voluntarily surrendered during interview
+    </div>
+    <div class="bus-ticket">
+      <div class="bus-header">UTC ROADWAYS</div>
+      <div style="text-align:center; font-size:10px; color:#2e7d32;">Uttarakhand Transport Corporation</div>
+      <div class="bus-route">MUSSOORIE &rarr; JHARIPANI</div>
+      <div class="bus-divider"></div>
+      <div class="bus-row"><span>Date:</span><span>[Night of murder]</span></div>
+      <div class="bus-row"><span>Departure:</span><span style="font-weight:bold; font-size:14px;">21:15 hrs</span></div>
+      <div class="bus-row"><span>Bus No:</span><span>UK-07-PA-8834</span></div>
+      <div class="bus-row"><span>Seat:</span><span>General</span></div>
+      <div class="bus-row"><span>Fare:</span><span>&#8377;25</span></div>
+      <div class="bus-divider"></div>
+      <div class="bus-row"><span>Passenger:</span><span>General ticket (no name)</span></div>
+      <div style="text-align:center; margin-top:10px; font-size:10px; color:#666;">
+        Ticket No: 004782 &bull; Issued at counter
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Anya told us she "left the cottage at the usual time and went home." She says she left at 7:30 PM. The bus stand is a 10-minute walk from Vikram's cottage. But the bus departed at 9:15 PM. That is a gap of ONE HOUR AND THIRTY-FIVE MINUTES. Where was Anya Devi between 7:30 PM and 9:15 PM on the night Vikram Singh was killed?
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

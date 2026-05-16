@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case File Template — Mystery Party Game</title>
+
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        CASE FILE TEMPLATE — USAGE GUIDE                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  HOW TO USE THIS TEMPLATE                                                    ║
+║  ════════════════════════                                                     ║
+║                                                                              ║
+║  1. Duplicate this file and rename it for your round                         ║
+║     (e.g., Round1_The_Scene.html).                                           ║
+║                                                                              ║
+║  2. Update the <title> tag to match your case and round.                     ║
+║                                                                              ║
+║  3. Fill in the Round Cover with your case details (title, subtitle,         ║
+║     round number, round name, case metadata).                                ║
+║                                                                              ║
+║  4. Pick the components you need from the catalogue below. Each is           ║
+║     wrapped in a standard evidence-item container with tab + header.         ║
+║     Delete the ones you do not use.                                          ║
+║                                                                              ║
+║  5. Replace all [PLACEHOLDER] text with your actual content.                 ║
+║                                                                              ║
+║  6. Update evidence tab labels (Exhibit A, B, C...) and evidence             ║
+║     numbers (CBI/EX/001, 002...) sequentially.                              ║
+║                                                                              ║
+║  7. The handwritten-note at the end of each evidence-body is for             ║
+║     investigator margin notes — use it for hints, contradictions,            ║
+║     or questions to guide the players.                                       ║
+║                                                                              ║
+║  COMPONENT CATALOGUE (in order below)                                        ║
+║  ─────────────────────────────────────                                        ║
+║   1.  Round Cover Page                                                       ║
+║   2.  Evidence Item Wrapper (tab + header + body)                            ║
+║   3.  Police Report                                                          ║
+║   4.  Anonymous / Handwritten Letter                                         ║
+║   5.  Phone Frame / Instagram Story                                          ║
+║   6.  YouTube Card                                                           ║
+║   7.  Crime Scene Diagram                                                    ║
+║   8.  Receipt (Chai Shop Style)                                              ║
+║   9.  Phone Call Log Table                                                   ║
+║  10.  Witness Statement                                                      ║
+║  11.  CCTV Frame                                                             ║
+║  12.  Email Draft                                                            ║
+║  13.  Pawn Shop Receipt                                                      ║
+║  14.  Newspaper Clipping                                                     ║
+║  15.  FIR Document                                                           ║
+║  16.  Photo Frame                                                            ║
+║  17.  Land Registry Document                                                 ║
+║  18.  Bus Ticket                                                             ║
+║  19.  Family History Document                                                ║
+║  20.  Call Detail Record (Dark Terminal Style)                                ║
+║  21.  Medical Report                                                         ║
+║  22.  Bank Statement                                                         ║
+║  23.  Notebook / Research Notes                                              ║
+║  24.  Evidence Bag Label                                                     ║
+║  25.  Handwritten CBI Note (standalone)                                      ║
+║                                                                              ║
+║  DESIGN SYSTEM                                                               ║
+║  ─────────────                                                                ║
+║  Fonts: Special Elite (handwriting), Courier Prime (typewriter/mono),        ║
+║         Merriweather (body serif), Noto Sans (modern UI elements).           ║
+║  Palette: See :root variables. Parchment, ink, faded-ink, red-stamp,         ║
+║           blue-ink, folder-tab gold, evidence background.                    ║
+║  Print: Ctrl+P works — evidence items avoid page breaks, cover gets          ║
+║         its own page, dark backgrounds are stripped.                          ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+
+<style>
+  /* ═══════════════════════════════════════════════════════════════════════════
+     FONTS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;600;700&display=swap');
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     DESIGN TOKENS (CSS Variables)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  :root {
+    --parchment: #f4edd3;
+    --ink: #1a1a1a;
+    --faded-ink: #3d3529;
+    --red-stamp: #8b1a1a;
+    --blue-ink: #1a3a6b;
+    --folder-tab: #c4a265;
+    --evidence-bg: #faf6e8;
+    --coffee-stain: rgba(139, 109, 63, 0.08);
+    --border-dark: #8b7d5e;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     GLOBAL RESET & BODY
+     ═══════════════════════════════════════════════════════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #2a2520;
+    font-family: 'Merriweather', Georgia, serif;
+    color: var(--ink);
+    padding: 20px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PRINT STYLES
+     ═══════════════════════════════════════════════════════════════════════════ */
+  @media print {
+    body { background: white; padding: 0; }
+    .evidence-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; }
+    .round-cover { page-break-after: always; }
+    .no-print { display: none !important; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PRINT BUTTON
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .print-bar { max-width: 800px; margin: 0 auto 20px; text-align: right; }
+  .print-btn {
+    background: var(--folder-tab); color: white; border: none; padding: 10px 25px;
+    font-family: 'Courier Prime', monospace; font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+  }
+  .print-btn:hover { background: #a88942; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ROUND COVER PAGE
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .round-cover {
+    max-width: 800px; margin: 0 auto 40px; background: var(--parchment);
+    border: 3px solid var(--border-dark); padding: 60px 50px;
+    position: relative; text-align: center;
+  }
+  .round-cover::before {
+    content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
+    border: 1px solid var(--border-dark); pointer-events: none;
+  }
+  .cbi-header {
+    font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--blue-ink); margin-bottom: 8px;
+  }
+  .cbi-emblem { font-size: 48px; margin: 15px 0; color: var(--blue-ink); }
+  .case-title {
+    font-family: 'Special Elite', cursive; font-size: 32px; color: var(--red-stamp);
+    margin: 20px 0 5px; letter-spacing: 2px;
+  }
+  .case-subtitle {
+    font-family: 'Courier Prime', monospace; font-size: 14px; color: var(--faded-ink);
+    margin-bottom: 25px;
+  }
+  .round-label {
+    display: inline-block; background: var(--red-stamp); color: #f4edd3;
+    font-family: 'Courier Prime', monospace; font-size: 18px; padding: 8px 30px;
+    letter-spacing: 3px; text-transform: uppercase; margin: 20px 0;
+  }
+  .round-name {
+    font-family: 'Special Elite', cursive; font-size: 26px; color: var(--faded-ink);
+    margin: 10px 0;
+  }
+  .classification {
+    font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 3px;
+    color: var(--red-stamp); border: 2px solid var(--red-stamp);
+    display: inline-block; padding: 4px 15px; margin-top: 25px;
+  }
+  .cover-meta {
+    font-family: 'Courier Prime', monospace; font-size: 11px; color: var(--faded-ink);
+    margin-top: 20px; line-height: 2;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     EVIDENCE ITEM WRAPPER (Tab + Header + Body)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .evidence-item {
+    max-width: 800px; margin: 30px auto; background: var(--evidence-bg);
+    border: 1px solid var(--border-dark); box-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .evidence-tab {
+    background: var(--folder-tab); color: white; font-family: 'Courier Prime', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 6px 20px;
+    display: inline-block; position: relative; top: -1px;
+  }
+  .evidence-header {
+    background: linear-gradient(135deg, #2c2416 0%, #3d3529 100%); color: var(--parchment);
+    padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .evidence-header h3 {
+    font-family: 'Courier Prime', monospace; font-size: 14px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .evidence-number { font-family: 'Courier Prime', monospace; font-size: 12px; opacity: 0.7; }
+  .evidence-body { padding: 30px; }
+  .evidence-body.lined {
+    background-image: repeating-linear-gradient(transparent, transparent 27px, #d4c9a8 28px);
+    background-size: 100% 28px; line-height: 28px;
+  }
+
+  /* Source line (used above many evidence bodies) */
+  .evidence-source {
+    font-family: 'Courier Prime', monospace; font-size: 11px; color: #999; margin-bottom: 15px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     HANDWRITTEN NOTE / CBI NOTE (used in most evidence items)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .handwritten-note {
+    font-family: 'Special Elite', cursive; color: var(--blue-ink); font-size: 13px;
+    margin-top: 15px; padding: 10px 15px; border-left: 3px solid var(--blue-ink); opacity: 0.8;
+  }
+
+  /* Stamp overlay (e.g., CASE CLOSED) */
+  .stamp-overlay {
+    position: absolute; bottom: 40px; left: 40px;
+    font-family: 'Special Elite', cursive; font-size: 36px; color: var(--red-stamp);
+    opacity: 0.25; transform: rotate(-15deg); border: 4px solid var(--red-stamp);
+    padding: 5px 20px; letter-spacing: 5px; pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     POLICE REPORT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .police-report { font-family: 'Courier Prime', monospace; font-size: 13px; line-height: 1.8; }
+  .police-report .report-header {
+    text-align: center; border-bottom: 2px solid var(--ink);
+    padding-bottom: 15px; margin-bottom: 20px;
+  }
+  .police-report .dept-name {
+    font-size: 14px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase;
+  }
+  .police-report .dept-sub { font-size: 11px; letter-spacing: 2px; color: var(--faded-ink); }
+  .police-report .field-row { display: flex; margin-bottom: 4px; }
+  .police-report .field-label { font-weight: bold; min-width: 180px; flex-shrink: 0; }
+  .police-report .field-value { border-bottom: 1px dotted var(--faded-ink); flex-grow: 1; padding-left: 5px; }
+  .police-report .narrative { margin-top: 20px; text-align: justify; }
+  .police-report .signature-block { margin-top: 30px; text-align: right; }
+  .police-report .signature-name {
+    font-weight: bold; border-top: 1px solid var(--ink);
+    display: inline-block; padding-top: 5px; margin-top: 30px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ANONYMOUS / HANDWRITTEN LETTER
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .anonymous-letter {
+    font-family: 'Special Elite', cursive; font-size: 15px; line-height: 2; padding: 20px;
+    background: white; border: 1px dashed #999; margin: 10px; position: relative;
+  }
+  .anonymous-letter::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 70% 20%, var(--coffee-stain) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .letter-text { position: relative; z-index: 1; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PHONE FRAME / INSTAGRAM STORY
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .phone-frame {
+    background: #111; border-radius: 30px; padding: 12px; max-width: 320px;
+    margin: 15px auto; box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+  }
+  .phone-screen {
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+    border-radius: 20px; padding: 20px 15px; color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 300px; position: relative; overflow: hidden;
+  }
+  .story-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+  .story-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: bold; color: white;
+  }
+  .story-username { font-size: 13px; font-weight: 600; }
+  .story-time { font-size: 11px; opacity: 0.6; }
+  .story-progress { display: flex; gap: 3px; margin-bottom: 12px; }
+  .story-progress-bar { flex: 1; height: 2px; background: rgba(255,255,255,0.3); border-radius: 1px; }
+  .story-progress-bar.active { background: white; }
+  .story-text {
+    font-size: 18px; font-weight: 500; text-align: center; padding: 30px 10px;
+    line-height: 1.6; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .story-location {
+    font-size: 11px; text-align: center; background: rgba(255,255,255,0.15);
+    padding: 4px 12px; border-radius: 12px; margin: 10px auto; display: block; width: fit-content;
+  }
+  .stories-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     YOUTUBE CARD
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .youtube-card {
+    background: white; border-radius: 12px; overflow: hidden; max-width: 500px; margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .yt-thumbnail {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    height: 200px; display: flex; align-items: center; justify-content: center;
+    position: relative; color: white;
+  }
+  .yt-play-btn {
+    width: 60px; height: 42px; background: rgba(255,0,0,0.85); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; position: absolute;
+  }
+  .yt-play-btn::after {
+    content: ''; border-left: 18px solid white;
+    border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px;
+  }
+  .yt-title-overlay {
+    position: absolute; bottom: 10px; left: 10px; right: 10px;
+    background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 4px;
+    font-size: 13px; font-weight: 600; color: white;
+  }
+  .yt-scheduled {
+    position: absolute; top: 10px; right: 10px; background: #ff4444; color: white;
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .yt-info { padding: 15px; }
+  .yt-channel { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .yt-channel-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #2c5364, #203a43);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold; font-size: 16px;
+  }
+  .yt-channel-name { font-weight: 600; font-size: 14px; color: #0f0f0f; }
+  .yt-subscribers { font-size: 12px; color: #606060; }
+  .yt-meta { font-size: 12px; color: #606060; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CRIME SCENE DIAGRAM
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .scene-diagram {
+    background: white; border: 2px solid #333; padding: 20px; position: relative;
+    font-family: 'Courier Prime', monospace; min-height: 350px;
+  }
+  .scene-diagram .diagram-title {
+    text-align: center; font-weight: bold; font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; border-bottom: 1px solid #999; padding-bottom: 8px; margin-bottom: 20px;
+  }
+  .scene-map {
+    position: relative; height: 280px;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, #e8e4d8 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, #e8e4d8 20px);
+    border: 1px solid #ccc; overflow: hidden;
+  }
+  .map-label {
+    position: absolute; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--faded-ink);
+  }
+  .map-marker {
+    position: absolute; font-size: 11px; font-weight: bold;
+    background: white; padding: 2px 6px; border: 1px solid #333;
+  }
+  .map-marker.crime-spot { background: var(--red-stamp); color: white; border-color: var(--red-stamp); }
+  .map-path { position: absolute; border-top: 2px dashed #666; }
+  .map-ravine {
+    position: absolute;
+    background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px);
+    border-left: 3px solid #555;
+  }
+  .scene-legend { display: flex; gap: 20px; margin-top: 10px; font-size: 10px; justify-content: center; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     RECEIPT (Chai Shop Style)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .receipt {
+    background: #fffef7; border: 1px solid #ddd; padding: 25px 30px;
+    max-width: 350px; margin: 0 auto; font-family: 'Courier Prime', monospace; font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative;
+  }
+  .receipt::before {
+    content: ''; position: absolute; top: -8px; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(90deg, transparent, transparent 4px, var(--evidence-bg) 4px, var(--evidence-bg) 8px);
+  }
+  .receipt-header { text-align: center; border-bottom: 1px dashed #999; padding-bottom: 10px; margin-bottom: 12px; }
+  .receipt-shop { font-weight: bold; font-size: 14px; }
+  .receipt-addr { font-size: 10px; color: #666; margin-top: 3px; }
+  .receipt-line { display: flex; justify-content: space-between; padding: 3px 0; }
+  .receipt-total { border-top: 1px dashed #999; margin-top: 8px; padding-top: 8px; font-weight: bold; }
+  .receipt-footer {
+    text-align: center; margin-top: 12px; font-size: 10px; color: #888;
+    border-top: 1px dashed #999; padding-top: 10px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PHONE CALL LOG TABLE
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .phone-log { font-family: 'Courier Prime', monospace; font-size: 11px; width: 100%; border-collapse: collapse; }
+  .phone-log th {
+    background: #2c2416; color: var(--parchment); padding: 8px 10px; text-align: left;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .phone-log td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  .phone-log tr:nth-child(even) { background: rgba(0,0,0,0.03); }
+  .phone-log .highlight { background: rgba(139, 26, 26, 0.08); }
+  .call-count-badge {
+    display: inline-block; background: var(--red-stamp); color: white;
+    font-family: 'Courier Prime', monospace; font-size: 18px; font-weight: bold;
+    padding: 8px 15px; border-radius: 4px; margin: 10px 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     WITNESS STATEMENT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .witness-stmt {
+    background: white; border: 1px solid #ccc; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 2; position: relative;
+    background-image: repeating-linear-gradient(transparent, transparent 23px, #e8e4d8 24px);
+    background-size: 100% 24px;
+  }
+  .witness-stmt .stmt-header {
+    font-weight: bold; text-align: center; margin-bottom: 15px;
+    letter-spacing: 2px; text-transform: uppercase; font-size: 11px;
+  }
+  .witness-stmt .stmt-field { margin-bottom: 4px; }
+  .witness-stmt .stmt-field strong { display: inline-block; min-width: 120px; }
+  .witness-stmt .stmt-body { margin-top: 15px; text-align: justify; }
+  .witness-stmt .stmt-signature { margin-top: 20px; text-align: right; font-style: italic; }
+  .thumb-impression {
+    width: 50px; height: 65px; border-radius: 50% 50% 45% 45%;
+    background: radial-gradient(ellipse, #555 0%, #888 40%, transparent 70%);
+    opacity: 0.3; display: inline-block; margin-left: 10px; vertical-align: middle;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CCTV FRAME
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .cctv-frame {
+    background: #111; border-radius: 4px; padding: 15px; max-width: 500px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; color: #0f0;
+  }
+  .cctv-overlay { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; }
+  .cctv-image {
+    background: linear-gradient(180deg, #1a1a1a 0%, #222 50%, #1a1a1a 100%);
+    height: 200px; display: flex; align-items: center; justify-content: center; position: relative;
+    border: 1px solid #333; overflow: hidden;
+  }
+  .cctv-image::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, transparent 1px, transparent 2px);
+    pointer-events: none;
+  }
+  .cctv-figure { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.6; }
+  .cctv-timestamp { text-align: center; margin-top: 8px; font-size: 11px; color: #0f0; }
+  .cctv-rec { color: red; animation: blink 1s infinite; font-weight: bold; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     EMAIL DRAFT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .email-frame {
+    background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+    max-width: 550px; margin: 0 auto; font-family: 'Noto Sans', -apple-system, sans-serif; font-size: 13px;
+  }
+  .email-toolbar {
+    background: #f6f6f6; padding: 10px 15px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px;
+  }
+  .email-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .email-head { padding: 18px 20px; border-bottom: 1px solid #eee; }
+  .email-row { display: flex; padding: 3px 0; font-size: 12px; }
+  .email-label { color: #888; min-width: 50px; }
+  .email-val { color: #333; }
+  .email-subject { font-size: 16px; font-weight: 700; color: #111; margin-top: 10px; }
+  .email-draft {
+    display: inline-block; background: #ffcc02; color: #333; font-size: 10px;
+    font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-left: 8px; vertical-align: middle;
+  }
+  .email-body { padding: 20px; line-height: 1.7; color: #333; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PAWN SHOP RECEIPT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .pawn-receipt {
+    background: #fffde7; border: 2px solid #a08040; padding: 20px 25px;
+    max-width: 400px; margin: 0 auto; font-family: 'Courier Prime', monospace; font-size: 12px;
+    position: relative;
+  }
+  .pawn-receipt .shop-header {
+    text-align: center; border-bottom: 2px double #a08040; padding-bottom: 10px; margin-bottom: 15px;
+  }
+  .pawn-receipt .shop-name { font-size: 16px; font-weight: bold; letter-spacing: 2px; }
+  .pawn-receipt .shop-est { font-size: 9px; color: #888; letter-spacing: 1px; }
+  .pawn-receipt .pawn-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .pawn-receipt .pawn-divider { border-top: 1px dashed #a08040; margin: 8px 0; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     NEWSPAPER CLIPPING
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .newspaper {
+    background: #f5f0e0; border: 1px solid #b5a67a; padding: 0; max-width: 550px;
+    margin: 0 auto; font-family: 'Merriweather', Georgia, serif; position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+  }
+  .newspaper-header {
+    text-align: center; padding: 20px 20px 10px; border-bottom: 3px double #333;
+  }
+  .newspaper-name {
+    font-family: 'Special Elite', cursive; font-size: 28px; letter-spacing: 4px;
+    text-transform: uppercase; color: #222;
+  }
+  .newspaper-date { font-size: 10px; color: #666; margin-top: 5px; letter-spacing: 2px; }
+  .newspaper-body {
+    padding: 20px; column-count: 1; font-size: 12px; line-height: 1.8; text-align: justify;
+  }
+  .newspaper-headline {
+    font-family: 'Merriweather', Georgia, serif; font-size: 20px; font-weight: 700;
+    text-align: center; margin-bottom: 12px; line-height: 1.3; color: #111;
+  }
+  .newspaper-byline {
+    font-size: 10px; color: #888; text-align: center; margin-bottom: 12px; font-style: italic;
+  }
+  .newspaper-age {
+    position: absolute; top: 10px; right: 10px; background: var(--red-stamp); color: white;
+    font-family: 'Courier Prime', monospace; font-size: 10px; padding: 3px 8px;
+    transform: rotate(3deg);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     FIR DOCUMENT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .fir-doc {
+    background: white; border: 2px solid #333; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 1.8; max-width: 550px; margin: 0 auto;
+  }
+  .fir-header {
+    text-align: center; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px;
+  }
+  .fir-title { font-weight: bold; font-size: 14px; letter-spacing: 2px; }
+  .fir-row { display: flex; margin-bottom: 4px; }
+  .fir-label { font-weight: bold; min-width: 170px; }
+  .fir-value { flex: 1; border-bottom: 1px dotted #999; }
+  .fir-inventory { margin-top: 15px; border: 1px solid #999; padding: 12px; }
+  .fir-inventory-title {
+    font-weight: bold; font-size: 11px; letter-spacing: 2px;
+    margin-bottom: 8px; text-transform: uppercase;
+  }
+  .fir-inv-item { padding: 4px 0; padding-left: 15px; border-bottom: 1px dotted #ddd; }
+  .fir-inv-item:last-child { border-bottom: none; }
+  .fir-highlight { background: #fff3cd; padding: 2px 4px; border: 1px solid #f0d060; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     PHOTO FRAME
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .photo-frame {
+    background: white; border: 8px solid white; box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    max-width: 400px; margin: 0 auto; transform: rotate(-1deg);
+  }
+  .photo-inner {
+    background: #2a2a2a; min-height: 220px; display: flex; align-items: center;
+    justify-content: center; color: #ccc; font-family: 'Courier Prime', monospace;
+    font-size: 12px; text-align: center; padding: 20px; line-height: 1.8; position: relative;
+  }
+  .photo-caption {
+    font-family: 'Special Elite', cursive; font-size: 12px; color: #555; padding: 8px; text-align: center;
+  }
+  .photo-date {
+    font-family: 'Courier Prime', monospace; font-size: 10px; color: #f80;
+    text-align: right; padding-right: 8px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LAND REGISTRY DOCUMENT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .registry-doc {
+    background: #fffff0; border: 2px solid #556b2f; padding: 25px;
+    font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.8;
+    max-width: 550px; margin: 0 auto;
+  }
+  .registry-header {
+    text-align: center; border-bottom: 2px solid #556b2f; padding-bottom: 10px; margin-bottom: 15px;
+  }
+  .registry-emblem { font-size: 30px; color: #556b2f; }
+  .registry-title {
+    font-weight: bold; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #556b2f;
+  }
+  .registry-row { display: flex; margin-bottom: 4px; }
+  .registry-label { font-weight: bold; min-width: 180px; color: #556b2f; }
+  .registry-chain {
+    margin-top: 15px; padding: 12px; background: #f5f5e0; border: 1px dashed #999;
+  }
+  .registry-chain-title {
+    font-weight: bold; font-size: 11px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;
+  }
+  .chain-step { padding: 5px 0; display: flex; align-items: center; gap: 10px; }
+  .chain-arrow { color: var(--red-stamp); font-weight: bold; font-size: 16px; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BUS TICKET
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .bus-ticket {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: 2px solid #4caf50; padding: 20px; max-width: 400px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; font-size: 12px; position: relative; border-radius: 4px;
+  }
+  .bus-ticket::before, .bus-ticket::after {
+    content: ''; position: absolute; width: 20px; height: 20px; background: var(--evidence-bg);
+    border-radius: 50%; top: 50%;
+  }
+  .bus-ticket::before { left: -10px; }
+  .bus-ticket::after { right: -10px; }
+  .bus-header {
+    text-align: center; font-weight: bold; font-size: 14px; letter-spacing: 2px;
+    color: #2e7d32; border-bottom: 1px dashed #4caf50; padding-bottom: 8px; margin-bottom: 10px;
+  }
+  .bus-route { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; color: #1b5e20; }
+  .bus-row { display: flex; justify-content: space-between; padding: 3px 10px; }
+  .bus-divider { border-top: 1px dashed #4caf50; margin: 8px 0; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     FAMILY HISTORY DOCUMENT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .history-doc {
+    background: #fefefe; border-left: 4px solid var(--red-stamp); padding: 20px 25px;
+    font-family: 'Merriweather', Georgia, serif; font-size: 13px; line-height: 1.9;
+    max-width: 550px; margin: 0 auto;
+  }
+  .history-title {
+    font-family: 'Courier Prime', monospace; font-size: 12px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--red-stamp); margin-bottom: 15px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CALL DETAIL RECORD (Dark Terminal Style)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .call-record {
+    background: #111; padding: 20px; border-radius: 4px;
+    font-family: 'Courier Prime', monospace; color: #0f0;
+    max-width: 500px; margin: 0 auto;
+  }
+  .call-record .cr-header {
+    color: #666; font-size: 10px; letter-spacing: 2px; margin-bottom: 15px; text-transform: uppercase;
+  }
+  .call-record .cr-entry {
+    background: rgba(0,255,0,0.05); border: 1px solid rgba(0,255,0,0.15);
+    padding: 12px 15px; margin-bottom: 10px; border-radius: 2px;
+  }
+  .call-record .cr-label { color: #0a0; font-size: 10px; letter-spacing: 1px; }
+  .call-record .cr-value { font-size: 14px; margin-top: 3px; }
+  .cr-highlight { color: #ff4444 !important; font-weight: bold; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     MEDICAL REPORT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .med-report {
+    background: white; border: 2px solid #1a3a6b; padding: 25px;
+    font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.8;
+    max-width: 550px; margin: 0 auto;
+  }
+  .med-header {
+    text-align: center; border-bottom: 2px solid #1a3a6b; padding-bottom: 12px; margin-bottom: 15px;
+  }
+  .med-title {
+    font-weight: bold; font-size: 13px; letter-spacing: 2px; color: #1a3a6b; text-transform: uppercase;
+  }
+  .med-row { display: flex; margin-bottom: 4px; }
+  .med-label { font-weight: bold; min-width: 170px; color: #1a3a6b; }
+  .med-findings { margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f8f9fa; }
+  .med-finding-item { padding: 6px 0; border-bottom: 1px dotted #ddd; }
+  .med-finding-item:last-child { border-bottom: none; }
+  .med-critical {
+    background: #fff3cd; padding: 10px; border: 1px solid #f0d060; margin-top: 10px; font-weight: bold;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BANK STATEMENT
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .bank-stmt {
+    background: white; border: 1px solid #ddd; padding: 20px;
+    font-family: 'Courier Prime', monospace; font-size: 11px; max-width: 580px; margin: 0 auto;
+  }
+  .bank-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #1a3a6b; padding-bottom: 10px; margin-bottom: 12px;
+  }
+  .bank-name { font-weight: bold; font-size: 14px; color: #1a3a6b; letter-spacing: 2px; }
+  .bank-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .bank-table th {
+    background: #1a3a6b; color: white; padding: 6px 8px; text-align: left;
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .bank-table td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 10px; }
+  .bank-table tr:nth-child(even) { background: #f8f9fa; }
+  .bank-table .amt-cr { color: #2e7d32; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     NOTEBOOK / RESEARCH NOTES
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .notebook {
+    background: #fffff0; border-left: 4px solid #8b1a1a; padding: 20px 25px;
+    font-family: 'Special Elite', cursive; font-size: 14px; line-height: 2.2;
+    max-width: 550px; margin: 0 auto; position: relative;
+    background-image: repeating-linear-gradient(transparent, transparent 29px, #e8e0c8 30px);
+    background-size: 100% 30px;
+  }
+  .notebook-header {
+    font-family: 'Courier Prime', monospace; font-size: 11px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase; color: #8b1a1a;
+    margin-bottom: 10px; background: #fffff0;
+  }
+  .nb-deleted { text-decoration: line-through; color: #999; }
+  .nb-highlight { background: #ffff00; padding: 0 4px; }
+  .nb-arrow { color: #8b1a1a; font-weight: bold; }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     EVIDENCE BAG LABEL
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .evidence-bag {
+    background: linear-gradient(135deg, #f5f5f0, #e8e4d8); border: 2px solid #999;
+    padding: 20px; max-width: 450px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; font-size: 12px; position: relative;
+  }
+  .evidence-bag::before {
+    content: 'EVIDENCE'; position: absolute; top: -12px; left: 20px;
+    background: var(--red-stamp); color: white; padding: 2px 15px;
+    font-size: 10px; letter-spacing: 3px; font-weight: bold;
+  }
+  .bag-row { display: flex; padding: 4px 0; }
+  .bag-label { font-weight: bold; min-width: 130px; color: #555; }
+  .bag-divider { border-top: 1px dashed #999; margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     PRINT BUTTON (hidden on print)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="print-bar no-print">
+  <button class="print-btn" onclick="window.print()">Print This Round</button>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Round Cover Page
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="round-cover">
+  <div class="cbi-header">[Investigating Agency Name]</div>
+  <div class="cbi-header" style="font-size:9px; margin-bottom: 5px;">[Agency Subtitle / Department]</div>
+  <div class="cbi-emblem">&starf;</div>
+  <div class="case-title">[CASE TITLE IN CAPS]</div>
+  <div class="case-subtitle">Case No. [AGENCY/YEAR/ID]</div>
+  <div class="round-label">Round [N]</div>
+  <div class="round-name">[Round Name]</div>
+  <div class="cover-meta">
+    [META LINE 1, e.g., VICTIM: Name, Age, Gender]<br>
+    [META LINE 2, e.g., LOCATION: Place]<br>
+    [META LINE 3, e.g., DATE OF INCIDENT: Date]<br>
+    [META LINE 4, e.g., INVESTIGATING TEAM: Unit]
+  </div>
+  <div class="classification">CONFIDENTIAL</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Evidence Item Wrapper (Tab + Header + Body)
+     Use this wrapper around EVERY piece of evidence. Place the specific
+     document component (receipt, letter, etc.) inside the evidence-body div.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Evidence Title]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Where this evidence came from] &bull; [Additional provenance details]
+    </div>
+
+    <!-- Place your specific document component here -->
+    <p>[Evidence content goes here]</p>
+
+    <div class="handwritten-note">
+      [Investigator's handwritten margin note — observations, contradictions, questions for players]
+    </div>
+  </div>
+  <!-- Optional: <div class="stamp-overlay">[STAMP TEXT]</div> -->
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Police Report
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Police Station] &mdash; Incident Report</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="police-report">
+      <div class="report-header">
+        <div class="dept-name">[State/City] Police</div>
+        <div class="dept-sub">[Station Name] &bull; [District]</div>
+        <div style="margin-top:8px; font-size:12px;">[REPORT TYPE, e.g., FIRST INFORMATION REPORT]</div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">FIR Number:</span>
+        <span class="field-value">[FIR/YEAR/NUMBER]</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Date of Registration:</span>
+        <span class="field-value">[Date], [Time] hrs</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Investigating Officer:</span>
+        <span class="field-value">[Name], Badge No. [Badge]</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Deceased/Complainant:</span>
+        <span class="field-value">[Name, Gender, Age, Address]</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">[Additional Field]:</span>
+        <span class="field-value">[Value]</span>
+      </div>
+      <div class="narrative">
+        <strong>SUMMARY OF FINDINGS:</strong><br><br>
+        [Narrative paragraph 1]<br><br>
+        [Narrative paragraph 2]<br><br>
+        <strong>CONCLUSION:</strong> [Officer's conclusion]
+      </div>
+      <div class="signature-block">
+        <div class="signature-name">
+          [Officer Name]<br>
+          <span style="font-weight:normal; font-size:11px;">[Designation, Station]</span>
+        </div>
+      </div>
+    </div>
+    <div class="stamp-overlay">[CASE CLOSED]</div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Anonymous / Handwritten Letter
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Letter Description]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Received: [Location] &bull; Postmark: [City] &bull; [No return address / Unsigned / Handwritten]
+    </div>
+    <div class="anonymous-letter">
+      <div class="letter-text">
+        To [Recipient],<br>
+        [Address/Title],<br><br>
+
+        [Salutation],<br><br>
+
+        [Letter body paragraph 1]<br><br>
+        [Letter body paragraph 2]<br><br>
+        [Letter body paragraph 3]<br><br>
+
+        &mdash; [Signature line, e.g., A Concerned Citizen]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Phone Frame / Instagram Story
+     Wrap multiple stories in a <div class="stories-row"> for side-by-side layout.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Person] &mdash; Instagram Stories (Archived)</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: Instagram account @[handle] &bull; [Provenance details]
+    </div>
+    <div class="stories-row">
+
+      <!-- Single story — duplicate this block for more stories -->
+      <div class="phone-frame" style="flex-shrink:0;">
+        <div class="phone-screen" style="background: linear-gradient(180deg, #1a1a2e 0%, #2d3436 50%, #0f3460 100%);">
+          <div class="story-progress">
+            <div class="story-progress-bar active"></div>
+            <div class="story-progress-bar"></div>
+            <div class="story-progress-bar"></div>
+          </div>
+          <div class="story-header">
+            <div class="story-avatar">[X]</div>
+            <div>
+              <div class="story-username">[username]</div>
+              <div class="story-time">[time context, e.g., 3 days before death]</div>
+            </div>
+          </div>
+          <div class="story-location">[Location Tag]</div>
+          <div class="story-text">
+            [Story text content]
+          </div>
+        </div>
+      </div>
+      <!-- /end single story -->
+
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: YouTube Card
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Channel Name] &mdash; [Video Status]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: YouTube Creator Studio backend, accessed via court order &bull; Channel: [Channel Name]
+    </div>
+    <div class="youtube-card">
+      <div class="yt-thumbnail">
+        <div style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+          <div style="font-family:'Special Elite',cursive; font-size:24px; text-shadow:0 2px 10px rgba(0,0,0,0.8); text-align:center; line-height:1.4; color:white;">
+            [THUMBNAIL TEXT]
+          </div>
+        </div>
+        <div class="yt-play-btn"></div>
+        <div class="yt-scheduled">[STATUS BADGE, e.g., SCHEDULED]</div>
+        <div class="yt-title-overlay">[Video Title]</div>
+      </div>
+      <div class="yt-info">
+        <div class="yt-channel">
+          <div class="yt-channel-icon">[X]</div>
+          <div>
+            <div class="yt-channel-name">[Channel Name]</div>
+            <div class="yt-subscribers">[Subscriber count]</div>
+          </div>
+        </div>
+        <div class="yt-meta">
+          [Schedule/publish date] &bull; Status: [Status]<br>
+          Duration: [Duration] &bull; Description: "[Description text]"
+        </div>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Crime Scene Diagram
+     Position map-markers and other elements using inline absolute positioning.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Scene Title]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="scene-diagram">
+      <div class="diagram-title">[Diagram Title &mdash; Location Details]</div>
+      <div class="scene-map">
+        <!-- Use absolute positioning for all elements inside the map -->
+        <div class="map-marker crime-spot" style="top:165px; left:200px;">&times; [Key location]</div>
+        <div class="map-marker" style="top:55px; left:280px;">[Evidence marker 1]</div>
+        <div class="map-marker" style="top:55px; left:450px;">[Evidence marker 2]</div>
+        <div class="map-label" style="top:100px; left:50px;">[Area label]</div>
+        <!-- North arrow -->
+        <div style="position:absolute; top:10px; right:20px; font-size:18px; font-weight:bold; color:#555;">&uarr; N</div>
+      </div>
+      <div class="scene-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red-stamp);"></div> [Legend item 1]</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#555;"></div> [Legend item 2]</div>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Receipt (Chai Shop Style)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Receipt &mdash; [Shop Name]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Where the receipt was found] &bull; [Condition notes]
+    </div>
+    <div class="receipt">
+      <div class="receipt-header">
+        <div class="receipt-shop">[SHOP NAME]</div>
+        <div class="receipt-addr">[Est. Year] &bull; [Address]<br>[Phone] &bull; [GSTIN]</div>
+      </div>
+      <div class="receipt-line"><span>Date:</span><span>[Date]</span></div>
+      <div class="receipt-line"><span>Time:</span><span>[Time] hrs</span></div>
+      <div class="receipt-line"><span>Token:</span><span>#[Number]</span></div>
+      <div style="border-top:1px dashed #999; margin:8px 0;"></div>
+      <div class="receipt-line"><span>[Item 1] x[Qty]</span><span>&#8377;[Price]</span></div>
+      <div class="receipt-line"><span>[Item 2] x[Qty]</span><span>&#8377;[Price]</span></div>
+      <div class="receipt-total">
+        <div class="receipt-line"><span>TOTAL</span><span>&#8377;[Total]</span></div>
+      </div>
+      <div class="receipt-line" style="margin-top:5px;"><span>Payment:</span><span>[Method]</span></div>
+      <div class="receipt-footer">
+        [Footer text]<br>
+        &mdash; [Tagline] &mdash;
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Phone Call Log Table
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Call Detail Records &mdash; [Person A] to [Person B]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: Telecom provider records, obtained via court order &bull; [Time window]
+    </div>
+    <div style="text-align:center; margin-bottom:15px;">
+      <span class="call-count-badge">[N] CALLS IN [TIME PERIOD]</span>
+    </div>
+    <table class="phone-log">
+      <thead>
+        <tr><th>Date</th><th>Time</th><th>From</th><th>To</th><th>Duration</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>[Date]</td><td>[Time]</td><td>[From]</td><td>[To]</td><td>[Duration]</td><td>[Status]</td></tr>
+        <tr><td>[Date]</td><td>[Time]</td><td>[From]</td><td>[To]</td><td>[Duration]</td><td>[Status]</td></tr>
+        <tr class="highlight"><td>[Date]</td><td>[Time]</td><td>[From]</td><td>[To]</td><td>[Duration]</td><td>[Status — CRITICAL ROW]</td></tr>
+      </tbody>
+    </table>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Witness Statement
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Witness Statement &mdash; [Witness Name/Role]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="witness-stmt">
+      <div class="stmt-header">[Statement Type, e.g., Statement Under Section 161 CrPC]</div>
+      <div class="stmt-field"><strong>Name:</strong> [Full Name]</div>
+      <div class="stmt-field"><strong>Occupation:</strong> [Occupation, Business Name]</div>
+      <div class="stmt-field"><strong>Date:</strong> [Date of interview]</div>
+      <div class="stmt-field"><strong>Recorded by:</strong> [Agency / Unit]</div>
+      <div class="stmt-body">
+        [Statement paragraph 1]<br><br>
+        [Statement paragraph 2]<br><br>
+        [Statement paragraph 3]
+      </div>
+      <div class="stmt-signature">
+        Sd/- [Name] <div class="thumb-impression"></div>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: CCTV Frame
+     Duplicate the cctv-frame block for multiple timestamps from the same camera.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>CCTV Footage &mdash; [Location]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Camera owner/location] &bull; [Camera details]
+    </div>
+    <div class="cctv-frame">
+      <div class="cctv-overlay">
+        <span>[CAMERA ID / LOCATION]</span>
+        <span class="cctv-rec">&#9679; REC</span>
+      </div>
+      <div class="cctv-image">
+        <div class="cctv-figure">
+          [Description of what the camera captured]<br>
+          [Line 2]<br>
+          [Line 3]
+        </div>
+      </div>
+      <div class="cctv-timestamp">[Date] &bull; [Time] IST</div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Email Draft
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Draft Email &mdash; [Person's Name]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Device forensic image] &bull; [Email client / folder]
+    </div>
+    <div class="email-frame">
+      <div class="email-toolbar">
+        <div class="email-dot" style="background:#ff5f57;"></div>
+        <div class="email-dot" style="background:#febc2e;"></div>
+        <div class="email-dot" style="background:#28c840;"></div>
+      </div>
+      <div class="email-head">
+        <div class="email-row"><span class="email-label">From:</span><span class="email-val">[sender@email.com]</span></div>
+        <div class="email-row"><span class="email-label">To:</span><span class="email-val">[recipient@email.com]</span></div>
+        <div class="email-row"><span class="email-label">Date:</span><span class="email-val">[Date, Time]</span></div>
+        <div class="email-subject">[Email Subject Line] <span class="email-draft">DRAFT</span></div>
+      </div>
+      <div class="email-body">
+        [Email body text]<br><br>
+        [Paragraph 2]<br><br>
+        [Sign-off],<br>
+        [Name]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Pawn Shop Receipt
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Pawn Shop Receipt &mdash; [Person's Name]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Where the receipt was found] &bull; [Condition]
+    </div>
+    <div class="pawn-receipt">
+      <div class="shop-header">
+        <div class="shop-name">[SHOP NAME]</div>
+        <div class="shop-est">[License Type] &bull; [Est. Year]<br>[Address] &bull; Lic. No. [License]</div>
+      </div>
+      <div class="pawn-row"><span>Date:</span><span>[Date]</span></div>
+      <div class="pawn-row"><span>Time:</span><span>[Time] hrs</span></div>
+      <div class="pawn-row"><span>Transaction:</span><span>[PLEDGE / SALE / REDEEM]</span></div>
+      <div class="pawn-divider"></div>
+      <div class="pawn-row"><span>Item:</span><span>[Item description]</span></div>
+      <div class="pawn-row"><span>Make:</span><span>[Brand / Model]</span></div>
+      <div class="pawn-row"><span>Condition:</span><span>[Condition]</span></div>
+      <div class="pawn-row"><span>Serial:</span><span>[Serial number]</span></div>
+      <div class="pawn-divider"></div>
+      <div class="pawn-row" style="font-weight:bold;"><span>Amount Paid:</span><span>&#8377;[Amount]</span></div>
+      <div class="pawn-divider"></div>
+      <div class="pawn-row"><span>Seller ID:</span><span>[ID type ending XXXX]</span></div>
+      <div class="pawn-row"><span>Seller Name:</span><span>[Name]</span></div>
+      <div style="text-align:center; margin-top:15px; font-size:10px; color:#888;">
+        [Redemption terms / footer text]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Newspaper Clipping
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Newspaper Clipping &mdash; [Publication Name]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Archive/library] &bull; [Format, e.g., Microfilm scan]
+    </div>
+    <div class="newspaper">
+      <div class="newspaper-age">[AGE LABEL, e.g., 15 YEARS OLD]</div>
+      <div class="newspaper-header">
+        <div class="newspaper-name">[Newspaper Name]</div>
+        <div class="newspaper-date">[Month Year] &bull; [City] &bull; Price: &#8377;[Price]</div>
+      </div>
+      <div class="newspaper-body">
+        <div class="newspaper-headline">[Headline Text]</div>
+        <div class="newspaper-byline">By [Author/Correspondent], [Location]</div>
+        <p>[Article paragraph 1]</p><br>
+        <p>[Article paragraph 2]</p><br>
+        <p>[Article paragraph 3]</p><br>
+        <p>[Quote from official: "[Quote text]"]</p><br>
+        <p>[Closing paragraph]</p>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: FIR Document
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[FIR Description]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Police station / archive] &bull; [Retrieval authority]
+    </div>
+    <div class="fir-doc">
+      <div class="fir-header">
+        <div class="fir-title">[STATE] POLICE &mdash; FIR EXTRACT</div>
+        <div style="font-size:10px; margin-top:5px;">[Station Name], [District]</div>
+      </div>
+      <div class="fir-row"><span class="fir-label">FIR Number:</span><span class="fir-value">[Number]</span></div>
+      <div class="fir-row"><span class="fir-label">Date:</span><span class="fir-value">[Date]</span></div>
+      <div class="fir-row"><span class="fir-label">Offence:</span><span class="fir-value">[Sections]</span></div>
+      <div class="fir-row"><span class="fir-label">IO:</span><span class="fir-value">[Officer Name, Badge]</span></div>
+      <div class="fir-row"><span class="fir-label">Status:</span><span class="fir-value">[Status]</span></div>
+
+      <!-- Optional: Inventory of items -->
+      <div class="fir-inventory">
+        <div class="fir-inventory-title">[Inventory Section Title]</div>
+        <div class="fir-inv-item"><strong>1.</strong> [Item description] &mdash; approx. value &#8377;[Value]</div>
+        <div class="fir-inv-item"><strong>2.</strong> [Item description]</div>
+        <div class="fir-inv-item" style="background:#fff3cd; padding:8px 15px; border:1px solid #f0d060;">
+          <strong>3.</strong> [HIGHLIGHTED KEY ITEM] &mdash; <span class="fir-highlight">[critical detail]</span>
+        </div>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Photo Frame
+     Use style="transform:rotate(1deg);" on .photo-frame for slight angle variation.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Photo Description]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Camera/device] &bull; EXIF date: [Date]
+    </div>
+    <div class="photo-frame">
+      <div class="photo-inner">
+        <div>
+          [Description of what the photograph shows]<br><br>
+          [Detail line 1]<br>
+          [Detail line 2]<br><br>
+          <span style="color:#f80;">[Key observation highlighted in orange]</span>
+        </div>
+      </div>
+      <div class="photo-caption">[Caption text]</div>
+      <div class="photo-date">EXIF: [Date]</div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Land Registry Document
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Land Registry Records &mdash; [Area/Property]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="registry-doc">
+      <div class="registry-header">
+        <div class="registry-emblem">&#9878;</div>
+        <div class="registry-title">[Registrar Office Name]</div>
+        <div style="font-size:10px; color:#888; margin-top:5px;">[Department, Government]</div>
+      </div>
+      <div style="font-weight:bold; margin-bottom:12px; font-size:13px; color:#556b2f;">
+        [DOCUMENT TITLE, e.g., PROPERTY TRANSFER SUMMARY]
+      </div>
+
+      <div class="registry-row"><span class="registry-label">Search conducted for:</span><span>[Search parameters]</span></div>
+
+      <!-- Ownership chain — duplicate this block for multiple properties -->
+      <div class="registry-chain">
+        <div class="registry-chain-title">[Chain Title — Plot Number, Size, Location]</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> [Year]: Purchased by <strong>"[Entity Name]"</strong> ([Location])</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> [Entity]: Directors &mdash; [Names] (nominees)</div>
+        <div class="chain-step"><span class="chain-arrow">&rarr;</span> Beneficial owner: <strong style="color:var(--red-stamp);">[REAL OWNER NAME]</strong></div>
+      </div>
+
+      <!-- Summary box -->
+      <div style="margin-top:15px; padding:10px; background:#fff3cd; border:1px solid #f0d060; font-size:11px;">
+        <strong>SUMMARY:</strong> [Summary of findings and significance]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Bus Ticket
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Bus Ticket &mdash; [Person's Name]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Where ticket was obtained] &bull; [How it was surrendered]
+    </div>
+    <div class="bus-ticket">
+      <div class="bus-header">[TRANSPORT CORPORATION NAME]</div>
+      <div style="text-align:center; font-size:10px; color:#2e7d32;">[Full corp name]</div>
+      <div class="bus-route">[ORIGIN] &rarr; [DESTINATION]</div>
+      <div class="bus-divider"></div>
+      <div class="bus-row"><span>Date:</span><span>[Date]</span></div>
+      <div class="bus-row"><span>Departure:</span><span style="font-weight:bold; font-size:14px;">[Time] hrs</span></div>
+      <div class="bus-row"><span>Bus No:</span><span>[Registration]</span></div>
+      <div class="bus-row"><span>Seat:</span><span>[Seat/General]</span></div>
+      <div class="bus-row"><span>Fare:</span><span>&#8377;[Amount]</span></div>
+      <div class="bus-divider"></div>
+      <div class="bus-row"><span>Passenger:</span><span>[Name or General ticket]</span></div>
+      <div style="text-align:center; margin-top:10px; font-size:10px; color:#666;">
+        Ticket No: [Number] &bull; [Issued at counter/online]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Family History Document
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Background Research &mdash; [Subject]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Records used] &bull; Compiled by [research unit]
+    </div>
+    <div class="history-doc">
+      <div class="history-title">[Document Title, e.g., Intelligence Brief]</div>
+      <p>
+        <strong>[Person Name]</strong> [biographical paragraph 1].
+      </p><br>
+      <p>
+        [Event/conflict paragraph 2].
+      </p><br>
+      <p>
+        [Consequence paragraph 3].
+      </p><br>
+      <p style="color:var(--red-stamp); font-weight:bold;">
+        NOTE: [Critical timeline observation connecting events]
+      </p>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Call Detail Record (Dark Terminal Style)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Call Detail Records &mdash; [Person A] to [Person B]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: Telecom provider (court order [Order ID]) &bull; [Phone type details]
+    </div>
+    <div class="call-record">
+      <div class="cr-header">[HEADER TEXT, e.g., Telecom CDR Extract — Date]</div>
+
+      <!-- Call entry — duplicate for each call -->
+      <div class="cr-entry">
+        <div class="cr-label">CALL #1</div>
+        <div class="cr-value">
+          From: <strong>[Phone number]</strong> (Registered: [Name])<br>
+          To: <strong>[Phone number]</strong> (Registered: [Name])<br>
+          Time: <span class="cr-highlight">[Time] IST</span><br>
+          Duration: <span class="cr-highlight">[Duration]</span><br>
+          [Caller] tower: <span style="color:#ff0;">[Cell tower location]</span><br>
+          [Receiver] tower: <span style="color:#ff0;">[Cell tower location]</span>
+        </div>
+      </div>
+
+      <!-- Highlighted/critical call entry -->
+      <div class="cr-entry" style="border-color:rgba(255,0,0,0.3); background:rgba(255,0,0,0.05);">
+        <div class="cr-label" style="color:#f44;">CALL #2 [CRITICAL]</div>
+        <div class="cr-value">
+          From: <strong>[Phone number]</strong> (Registered: [Name])<br>
+          To: <strong>[Phone number]</strong> (Registered: [Name])<br>
+          Time: <span class="cr-highlight">[Time] IST</span><br>
+          Duration: <span class="cr-highlight">[Duration]</span><br>
+          [Caller] tower: <span style="color:#ff0;">[Cell tower — revealing location]</span>
+        </div>
+      </div>
+
+      <div style="color:#666; font-size:10px; margin-top:10px;">
+        NOTE: [Additional context about call patterns]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Medical Report
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Report Type, e.g., Independent Post-Mortem Report]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Hospital/Institution] &bull; [Circumstances of examination]
+    </div>
+    <div class="med-report">
+      <div class="med-header">
+        <div class="med-title">[Institution Full Name]</div>
+        <div style="font-size:10px; margin-top:5px;">[Department]</div>
+        <div style="font-size:10px;">[Report subtitle]</div>
+      </div>
+      <div class="med-row"><span class="med-label">Deceased/Patient:</span><span>[Name, Gender, Age]</span></div>
+      <div class="med-row"><span class="med-label">Referred by:</span><span>[Agency]</span></div>
+      <div class="med-row"><span class="med-label">[Additional field]:</span><span>[Value]</span></div>
+
+      <div class="med-findings">
+        <strong style="color:#1a3a6b; letter-spacing:1px;">FINDINGS:</strong>
+        <div class="med-finding-item">
+          <strong>1.</strong> [Standard finding consistent with initial theory]
+        </div>
+        <div class="med-finding-item" style="background:#fff3cd; padding:8px;">
+          <strong>2. CRITICAL FINDING:</strong> [Finding that contradicts initial theory — the reveal]
+        </div>
+        <div class="med-finding-item">
+          <strong>3.</strong> [Supporting detail for critical finding]
+        </div>
+      </div>
+
+      <div class="med-critical">
+        CONCLUSION: [Medical conclusion that changes the case — e.g., classification revised to HOMICIDE]
+      </div>
+
+      <div style="text-align:right; margin-top:15px; font-size:11px;">
+        Sd/- [Doctor Name], [Qualification]<br>
+        [Institution]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Bank Statement
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Bank Records &mdash; [Description]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Bank Name, Branch] &bull; [Court order reference]
+    </div>
+    <div class="bank-stmt">
+      <div class="bank-header">
+        <div>
+          <div class="bank-name">[BANK NAME]</div>
+          <div style="font-size:9px; color:#888;">[Branch] &bull; IFSC: [Code]</div>
+        </div>
+        <div style="text-align:right; font-size:10px; color:#888;">
+          Account Holder: [Name]<br>
+          A/C: XXXXX[Last 4] ([Type])
+        </div>
+      </div>
+      <div style="font-size:10px; color:#888; margin-bottom:10px;">
+        Statement period: [Period description]
+      </div>
+      <table class="bank-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Credit (&#8377;)</th><th>Source Account</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>[Date]</td><td>[Description]</td><td class="amt-cr">[Amount]</td><td>[Source]</td></tr>
+          <tr><td>[Date]</td><td>[Description]</td><td class="amt-cr">[Amount]</td><td>[Source]</td></tr>
+          <tr><td colspan="4" style="text-align:center; color:#999; font-size:9px;">... [summary of omitted rows] ...</td></tr>
+          <tr><td>[Date]</td><td>[Description]</td><td class="amt-cr" style="color:var(--red-stamp); font-weight:bold;">[Large/suspicious amount]</td><td>[Source]</td></tr>
+        </tbody>
+      </table>
+      <!-- Summary box -->
+      <div style="margin-top:15px; padding:10px; background:#fff3cd; border:1px solid #f0d060; font-size:11px;">
+        <strong>TOTAL PAYMENTS:</strong> &#8377;[Total] (approx.)<br>
+        <strong>Source:</strong> [Entity] (controlled by: <strong style="color:var(--red-stamp);">[Person]</strong>)<br>
+        <strong>NOTE:</strong> [Why this pattern is suspicious]
+      </div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Notebook / Research Notes
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>[Person]'s Research Notes &mdash; [Recovery Details]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-source">
+      Source: [Device/location] &bull; [Recovery method, e.g., forensic data recovery]
+    </div>
+    <div class="notebook">
+      <div class="notebook-header">[File path or notebook title]</div>
+      <div class="notebook-header" style="color:#999; font-size:9px;">Last modified: [Date] &bull; [Recovery percentage]</div>
+
+      <span class="nb-deleted">[corrupted/unrecoverable section]</span><br><br>
+
+      ...[Recovered text fragment 1]. <span class="nb-highlight">[Key phrase highlighted]</span><br><br>
+
+      [Recovered text fragment 2]<br><br>
+
+      <span class="nb-deleted">[corrupted section]</span><br><br>
+
+      ...[Critical discovery text]. <span class="nb-highlight">[Highlighted revelation]</span><br><br>
+
+      [Connection/analysis text]:<br>
+      <span class="nb-arrow">&rarr;</span> [Entity 1] <span class="nb-arrow">&rarr;</span> [Entity 2] <span class="nb-arrow">&rarr;</span> <span class="nb-highlight">[PERSON]</span><br><br>
+
+      <span class="nb-deleted">[remaining file corrupted/unrecoverable]</span>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Evidence Bag Label
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Exhibit [X]</div>
+  <div class="evidence-header">
+    <h3>Evidence Bag &mdash; [Item Description]</h3>
+    <span class="evidence-number">[AGENCY/EX/NNN]</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-bag">
+      <div class="bag-row"><span class="bag-label">Item:</span><span>[Physical item description]</span></div>
+      <div class="bag-row"><span class="bag-label">Owner:</span><span>[Owner name]</span></div>
+      <div class="bag-row"><span class="bag-label">Collected from:</span><span>[Location]</span></div>
+      <div class="bag-row"><span class="bag-label">Date collected:</span><span>[Date]</span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row"><span class="bag-label">Condition:</span><span style="font-weight:bold; color:var(--red-stamp);">[CONDITION NOTE]</span></div>
+      <div class="bag-row"><span class="bag-label">[Context field]:</span><span>[Contextual detail that raises suspicion]</span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row"><span class="bag-label">Lab analysis:</span><span>[Lab findings]</span></div>
+      <div class="bag-row"><span class="bag-label">[Match type]:</span><span>[Match result] &mdash; <strong style="color:var(--red-stamp);">[POSITIVE MATCH / RESULT]</strong></span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row" style="font-size:11px; color:#888;"><span class="bag-label">Cross-ref:</span><span>[References to other exhibits]</span></div>
+    </div>
+    <div class="handwritten-note">
+      [Investigator note]
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     COMPONENT: Handwritten CBI Note (standalone, outside an evidence item)
+     Use this for transition notes between evidence groups, or as a
+     standalone investigator commentary that is not tied to a single exhibit.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div style="max-width:800px; margin:30px auto;">
+  <div class="handwritten-note" style="background:var(--evidence-bg); padding:20px 25px; border:1px solid var(--border-dark); opacity:1;">
+    <strong style="font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:2px; display:block; margin-bottom:10px;">[NOTE TITLE, e.g., CBI FIELD NOTE — FOR INVESTIGATING TEAM ONLY]</strong>
+    [Standalone investigator commentary. Use this for bridging narrative between evidence groups,
+    summarizing what has been established so far, or posing the central questions for the next round.]
+  </div>
+</div>
+
+
+</body>
+</html>

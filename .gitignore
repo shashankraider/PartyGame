@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build artifacts
+.next/
+out/
+dist/
+build/
+
+# Mermaid render workdir (regenerable)
+docs/diagrams/.tmp/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*

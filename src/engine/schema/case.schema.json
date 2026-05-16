@@ -1,0 +1,817 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mystery-engine.local/schemas/case.schema.json",
+  "title": "Case",
+  "description": "A complete cooperative murder-mystery case for the Mystery Engine. Every case ships as a single case.json file plus assets and printables folders.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "engineVersion",
+    "meta",
+    "victim",
+    "suspects",
+    "evidence",
+    "chapters",
+    "rounds",
+    "locations",
+    "endgame",
+    "solution"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Relative path to this schema file. Enables IDE autocomplete and inline validation in case authors' editors. Example: '../../src/engine/schema/case.schema.json'."
+    },
+    "id": {
+      "$ref": "#/$defs/SlugId",
+      "description": "Unique case identifier, kebab-case, matches the folder name under cases/. Example: 'mussoorie'."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Case content version (semver). Bump when the case itself changes (story, evidence, solution)."
+    },
+    "engineVersion": {
+      "type": "string",
+      "description": "Engine version range this case targets (npm-style semver range). The engine refuses to load incompatible cases. Example: '^1.0.0'."
+    },
+    "meta": { "$ref": "#/$defs/CaseMeta" },
+    "victim": { "$ref": "#/$defs/Victim" },
+    "suspects": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 12,
+      "items": { "$ref": "#/$defs/Suspect" },
+      "description": "All interrogatable suspects. Most cases use 6."
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Evidence" },
+      "description": "All evidence items in the case. Each item is unlocked by a chapter and can be presented to suspects during interviews."
+    },
+    "chapters": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/Chapter" },
+      "description": "Ordered list of chapters. The engine walks chapters in order, respecting prerequisites."
+    },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Round" },
+      "description": "Round groupings (e.g., 4 rounds for Mussoorie). Chapters and evidence reference these by round number."
+    },
+    "locations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Location" },
+      "description": "Named places in the case. Chapters and evidence may reference a location to set the visual backdrop on the TV."
+    },
+    "backstory": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/BackstoryEvent" },
+      "description": "Optional. Events that happened before the game starts (e.g., a cold case). Players uncover these through evidence."
+    },
+    "atmosphericThreads": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/AtmosphericThread" },
+      "description": "Optional. Slow-burn narrative threads woven across multiple chapters (e.g., the Grey Lady)."
+    },
+    "endgame": { "$ref": "#/$defs/EndgameDefinition" },
+    "solution": { "$ref": "#/$defs/Solution" },
+    "theme": { "$ref": "#/$defs/ThemeOverride" },
+    "llm": { "$ref": "#/$defs/LLMConfig" }
+  },
+
+  "$defs": {
+    "SlugId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Kebab-case identifier: lowercase letters, digits, and single hyphens."
+    },
+
+    "CaseMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "tagline",
+        "setting",
+        "estimatedDurationMinutes",
+        "recommendedPlayers",
+        "ageRating",
+        "language"
+      ],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string" },
+        "tagline": { "type": "string", "description": "A one-line pitch for the case picker." },
+        "setting": { "type": "string", "description": "Free-text setting summary." },
+        "era": { "type": "string", "description": "Time period, e.g., 'present day' or '1970s'." },
+        "estimatedDurationMinutes": { "type": "integer", "minimum": 30, "maximum": 480 },
+        "recommendedPlayers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "integer", "minimum": 1, "maximum": 30 },
+            "max": { "type": "integer", "minimum": 1, "maximum": 30 }
+          }
+        },
+        "ageRating": { "type": "string", "description": "Free-text rating, e.g., '10+', '13+', '18+'." },
+        "contentNotes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Disclosure notes about content (e.g., 'references to historical violence, off-screen')."
+        },
+        "coverImage": { "type": "string", "description": "Relative path to the case-picker cover art." },
+        "language": { "type": "string", "description": "BCP-47 language tag, e.g., 'en-IN'." }
+      }
+    },
+
+    "Victim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "publicBackground"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "name": { "type": "string" },
+        "portraitUrl": { "type": "string" },
+        "publicBackground": { "type": "string", "description": "What players learn about the victim in the briefing." },
+        "causeOfDeath": { "type": "string", "description": "Surface-level cause (e.g., 'fall from ravine'). Revealed in the brief or post-mortem evidence." }
+      }
+    },
+
+    "Suspect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "portraitUrl",
+        "persona",
+        "voice",
+        "publicAlibi",
+        "trueTimeline",
+        "neverReveal",
+        "guiltCategory",
+        "guiltSummary",
+        "introducedAtChapter"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "name": { "type": "string" },
+        "shortDescription": { "type": "string", "description": "One-line role descriptor for the suspect board (e.g., 'The Business Partner')." },
+        "portraitUrl": { "type": "string", "description": "Relative path to portrait." },
+        "ttsVoiceId": { "type": "string", "description": "Optional. Voice ID for TTS playback of the suspect's lines." },
+        "persona": { "type": "string", "minLength": 20, "description": "Free-text character description for the LLM system prompt." },
+        "voice": { "type": "string", "minLength": 10, "description": "Speaking-style guidance for the LLM (sentence length, accent, register)." },
+        "knownFacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Facts the suspect knows and may volunteer."
+        },
+        "publicAlibi": { "type": "string", "description": "The story the suspect tells publicly. Always in the prompt." },
+        "trueTimeline": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/TimelineBeat" },
+          "description": "What the suspect actually did during the relevant timeframe. Each beat is gated by an optional UnlockCondition; ungated beats are private until the suspect breaks."
+        },
+        "lies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Lie" },
+          "description": "Lies the suspect maintains. The model is told both the lie AND the truth, and instructed to keep the lie."
+        },
+        "secrets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Secret" },
+          "description": "Hidden information unlocked by chapter or evidence conditions."
+        },
+        "breakingPoints": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/BreakingPoint" },
+          "description": "Evidence/chapter triggers that make the suspect crack and admit something significant. Every suspect needs at least one."
+        },
+        "neverReveal": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit topics the suspect must never reveal. The killer's identity is always implicitly added."
+        },
+        "guiltCategory": { "$ref": "#/$defs/GuiltCategory" },
+        "guiltSummary": { "type": "string", "description": "One-to-two sentence summary for the reveal screen's guilt map." },
+        "introducedAtChapter": { "$ref": "#/$defs/SlugId", "description": "Chapter id where this suspect first appears." }
+      }
+    },
+
+    "GuiltCategory": {
+      "type": "string",
+      "enum": [
+        "mastermind",
+        "executor",
+        "accomplice",
+        "accessory",
+        "tamperer",
+        "moral-cowardice",
+        "moral-bystander",
+        "innocent"
+      ]
+    },
+
+    "TimelineBeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["time", "action"],
+      "properties": {
+        "time": { "type": "string", "description": "Display time, e.g., '8:00 PM'." },
+        "locationId": { "$ref": "#/$defs/SlugId", "description": "Optional reference to a Location id." },
+        "locationText": { "type": "string", "description": "Free-text location if locationId is not used." },
+        "action": { "type": "string", "description": "What the suspect did during this beat." },
+        "revealCondition": { "$ref": "#/$defs/UnlockCondition", "description": "If absent, the beat is private until the suspect's breaking point is hit." }
+      }
+    },
+
+    "Lie": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "topic", "says", "actually"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "topic": { "type": "string" },
+        "says": { "type": "string" },
+        "actually": { "type": "string" }
+      }
+    },
+
+    "Secret": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "topic", "revealOnlyIf", "revealedText"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "topic": { "type": "string" },
+        "hint": { "type": "string", "description": "Vague tease the suspect may give when pressed before unlock conditions are met." },
+        "revealOnlyIf": { "$ref": "#/$defs/UnlockCondition" },
+        "revealedText": { "type": "string", "description": "What the suspect admits when the unlock condition is met." },
+        "unlockBehavior": { "$ref": "#/$defs/UnlockBehavior", "description": "Optional. How the engine's adjudicator decides whether this secret should unlock during a live interview. If omitted, the secret unlocks only via the legacy revealOnlyIf evidence/chapter conditions." }
+      }
+    },
+
+    "BreakingPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "trigger", "reaction"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "trigger": { "$ref": "#/$defs/UnlockCondition" },
+        "reaction": { "type": "string", "description": "What the suspect says or does when the trigger is met (becomes part of the LLM context)." },
+        "unlockBehavior": { "$ref": "#/$defs/UnlockBehavior", "description": "Optional. How the engine's adjudicator decides whether this breaking point fires during a live interview." }
+      }
+    },
+
+    "UnlockBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier"],
+      "description": "Describes how the Phase 2g adjudicator decides whether a per-suspect secret/breakingPoint or a piece of evidence should unlock during a live interview.",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["cooperation", "evidence", "pressure", "compound"],
+          "description": "Difficulty profile. cooperation: suspect wants to help, fires on the right kind of question (Naina). evidence: suspect deflects until a specific artifact is presented (Rhea). pressure: suspect breaks after pressureThreshold adjacent attempts (Devraj). compound: needs evidenceIds AND pressureThreshold (Bisht)."
+        },
+        "cooperationCue": {
+          "type": "string",
+          "description": "Natural-language description of the conversational state the adjudicator should look for. Required for cooperation and compound tiers; ignored for pure evidence tier. Write so the cue includes 'what counts' AND 'what does not count' (e.g., hostile cross-examination should not fire cooperation)."
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Evidence IDs the interviewer must have presented during this conversation. Required for evidence and compound tiers."
+        },
+        "pressureThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "How many adjacent-but-not-quite attempts the suspect endures before cracking. Used by pressure and compound tiers."
+        },
+        "hostFallbackAfterTurns": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "After this many turns without firing, the host TV view is prompted with a 'Reveal? [Reveal] [Wait]' notification. If omitted, no host fallback for this condition."
+        }
+      }
+    },
+
+    "UnlockCondition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "evidenceId"],
+          "properties": {
+            "type": { "const": "evidence" },
+            "evidenceId": { "$ref": "#/$defs/SlugId" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "chapterId"],
+          "properties": {
+            "type": { "const": "chapter" },
+            "chapterId": { "$ref": "#/$defs/SlugId" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "roundNumber"],
+          "properties": {
+            "type": { "const": "round" },
+            "roundNumber": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "conditions"],
+          "properties": {
+            "type": { "const": "all" },
+            "conditions": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/UnlockCondition" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "conditions"],
+          "properties": {
+            "type": { "const": "any" },
+            "conditions": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/UnlockCondition" }
+            }
+          }
+        }
+      ]
+    },
+
+    "Evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "category", "description", "loreText", "revealedInRound", "unlockedAtChapter"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": ["document", "photo", "object", "digital", "testimony", "letter"]
+        },
+        "thumbnailUrl": { "type": "string" },
+        "fullViewUrl": { "type": "string" },
+        "pdfUrl": { "type": "string" },
+        "description": { "type": "string", "description": "Short label that appears on the evidence card on the TV." },
+        "loreText": { "type": "string", "description": "Longer description fed to the LLM when this evidence is presented in an interview." },
+        "revealedInRound": { "type": "integer", "minimum": 1, "description": "Round in which this evidence becomes available." },
+        "unlockedAtChapter": { "$ref": "#/$defs/SlugId", "description": "Chapter id whose completion unlocks this evidence in the locker." },
+        "locationId": { "$ref": "#/$defs/SlugId", "description": "Optional. The location this evidence is associated with." },
+        "relatesToSuspectIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Suspect IDs implicated or referenced by this evidence; the UI may highlight these on the suspect board."
+        },
+        "triggersChapter": {
+          "$ref": "#/$defs/SlugId",
+          "description": "Optional. If set, unlocking this evidence auto-advances the engine to this chapter (used for anonymous-letter beats)."
+        },
+        "unlockBehavior": {
+          "$ref": "#/$defs/UnlockBehavior",
+          "description": "Optional. How the Phase 2g adjudicator decides whether this evidence should unlock dynamically during a live interview. If omitted, this evidence is unlocked only when its unlockedAtChapter completes (current default behavior)."
+        }
+      }
+    },
+
+    "Chapter": {
+      "oneOf": [
+        { "$ref": "#/$defs/NarrativeChapter" },
+        { "$ref": "#/$defs/EvidenceRevealChapter" },
+        { "$ref": "#/$defs/InterviewChapter" },
+        { "$ref": "#/$defs/PhoneHackChapter" },
+        { "$ref": "#/$defs/AccusationChapter" },
+        { "$ref": "#/$defs/RevealChapter" }
+      ]
+    },
+
+    "BaseChapterProps": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Chapter ids that must be completed before this chapter is available."
+        },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string", "description": "Audio cue id from assets/audio." }
+      }
+    },
+
+    "NarrativeChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber", "beats"],
+      "properties": {
+        "type": { "const": "narrative" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" },
+        "beats": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Beat" }
+        }
+      }
+    },
+
+    "EvidenceRevealChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber", "evidenceIds"],
+      "properties": {
+        "type": { "const": "evidence-reveal" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/SlugId" }
+        },
+        "narration": { "type": "string", "description": "Voiced narration shown on the TV when the evidence is revealed." },
+        "printablePrompt": { "type": "string", "description": "Instruction to host like 'Open Case File 3 now.'" }
+      }
+    },
+
+    "InterviewChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber", "suspectId"],
+      "properties": {
+        "type": { "const": "interview" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" },
+        "suspectId": { "$ref": "#/$defs/SlugId" },
+        "intro": { "type": "string", "description": "Narration shown on the TV before the chat starts." },
+        "outro": { "type": "string", "description": "Narration shown when the interview ends." },
+        "presentableEvidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Evidence ids the interviewer can present during this interview. Defaults to all unlocked evidence if omitted."
+        },
+        "softTimeMinutes": { "type": "integer", "minimum": 1, "description": "Optional soft time limit for the interview." }
+      }
+    },
+
+    "PhoneHackChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber", "phoneOwner"],
+      "properties": {
+        "type": { "const": "phone-hack" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" },
+        "phoneOwner": { "type": "string", "description": "Whose phone is being hacked (free text for the UI)." },
+        "intro": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PhoneMessage" }
+        },
+        "callLog": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PhoneCall" }
+        },
+        "notes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PhoneNote" }
+        },
+        "keyClueIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Evidence ids that are unlocked by the player when this minigame completes."
+        }
+      }
+    },
+
+    "PhoneMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "text", "timestamp"],
+      "properties": {
+        "from": { "type": "string", "description": "Display name of the sender." },
+        "to": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "description": "Display timestamp, e.g., '8:13 PM, Mar 4'." },
+        "highlight": { "type": "boolean", "description": "Marks this as a notable message for the UI." }
+      }
+    },
+
+    "PhoneCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["with", "direction", "timestamp"],
+      "properties": {
+        "with": { "type": "string" },
+        "direction": { "type": "string", "enum": ["incoming", "outgoing", "missed"] },
+        "timestamp": { "type": "string" },
+        "durationSeconds": { "type": "integer", "minimum": 0 },
+        "highlight": { "type": "boolean" }
+      }
+    },
+
+    "PhoneNote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "body"],
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "lastEditedDisplay": { "type": "string" }
+      }
+    },
+
+    "AccusationChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber"],
+      "properties": {
+        "type": { "const": "accusation" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" },
+        "narration": { "type": "string" },
+        "promptText": { "type": "string", "description": "What the TV asks the group, e.g., 'Who is responsible for Vikram Singh's death?'" }
+      }
+    },
+
+    "RevealChapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "roundNumber"],
+      "properties": {
+        "type": { "const": "reveal" },
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "roundNumber": { "type": "integer", "minimum": 1 },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/SlugId" } },
+        "locationId": { "$ref": "#/$defs/SlugId" },
+        "musicCue": { "type": "string" }
+      }
+    },
+
+    "Beat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "speaker": { "type": "string", "description": "Display label for the speaker, e.g., 'Narrator' or 'CBI Officer'." },
+        "text": { "type": "string", "minLength": 1 },
+        "musicCue": { "type": "string" },
+        "imageUrl": { "type": "string", "description": "Optional image shown alongside the beat on the TV." },
+        "pauseAfterMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "Round": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "title"],
+      "properties": {
+        "number": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string" },
+        "tagline": { "type": "string" },
+        "introNarration": { "type": "array", "items": { "$ref": "#/$defs/Beat" } },
+        "outroNarration": { "type": "array", "items": { "$ref": "#/$defs/Beat" } }
+      }
+    },
+
+    "Location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "description"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      }
+    },
+
+    "BackstoryEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "summary"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "whenText": { "type": "string", "description": "Display-only time reference, e.g., 'December 2011' or '15 years ago'." },
+        "summary": { "type": "string", "description": "One-paragraph public account." },
+        "fullDescription": { "type": "string", "description": "Spoilery details. Only revealed via the LLM when guilty suspects break, or in the final reveal." },
+        "revealedByEvidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" }
+        },
+        "characters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/BackstoryCharacter" }
+        }
+      }
+    },
+
+    "BackstoryCharacter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "summary"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "description": "E.g., 'Brigadier (deceased)', 'father of Mr Bisht (deceased)'." },
+        "portraitUrl": { "type": "string" },
+        "summary": { "type": "string" }
+      }
+    },
+
+    "AtmosphericThread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "introducedInRound", "resolutionText"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "title": { "type": "string" },
+        "clueIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "Evidence ids that contribute to the thread."
+        },
+        "introducedInRound": { "type": "integer", "minimum": 1 },
+        "resolvedByEvidence": { "$ref": "#/$defs/SlugId" },
+        "resolvedByChapter": { "$ref": "#/$defs/SlugId" },
+        "resolutionText": { "type": "string", "description": "Text shown when the thread closes (e.g., the Grey Lady revealed as Anya)." }
+      }
+    },
+
+    "EndgameDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branchOn", "paths", "finalRevealNarration"],
+      "properties": {
+        "branchOn": {
+          "type": "string",
+          "enum": ["firstConfronted"]
+        },
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/EndgamePath" }
+        },
+        "finalRevealNarration": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Beat" },
+          "description": "Common reveal narration shown after both endgame paths."
+        }
+      }
+    },
+
+    "EndgamePath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "triggerSuspectId", "scriptedSuspectLine"],
+      "properties": {
+        "id": { "$ref": "#/$defs/SlugId" },
+        "triggerSuspectId": { "$ref": "#/$defs/SlugId", "description": "Which suspect's interview opens this branch." },
+        "scriptedSuspectLine": { "type": "string", "description": "Canonical opening line the LLM should anchor on for this confrontation." },
+        "followUpSuspectId": { "$ref": "#/$defs/SlugId", "description": "Suspect interviewed after the trigger, where the truth comes out." },
+        "followUpScriptedLine": { "type": "string", "description": "Canonical reaction line for the follow-up suspect." }
+      }
+    },
+
+    "Solution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["killerSuspectIds", "motive", "meansAndMethod", "revealNarration", "closingQuestion"],
+      "properties": {
+        "killerSuspectIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/SlugId" },
+          "description": "All suspects responsible for the murder. May include mastermind + executor pairs."
+        },
+        "killerRoles": {
+          "type": "object",
+          "description": "Map of suspect id -> role (e.g., 'mastermind', 'executor'). Drives the reveal screen.",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["mastermind", "executor", "accomplice"]
+          }
+        },
+        "motive": { "type": "string" },
+        "meansAndMethod": { "type": "string" },
+        "timeline": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TimelineEvent" },
+          "description": "Global event timeline shown during the reveal."
+        },
+        "revealNarration": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Beat" }
+        },
+        "redHerrings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["suspectId", "explanation"],
+            "properties": {
+              "suspectId": { "$ref": "#/$defs/SlugId" },
+              "explanation": { "type": "string" }
+            }
+          }
+        },
+        "closingQuestion": { "type": "string", "description": "Moral discussion prompt shown to the group after the reveal." }
+      }
+    },
+
+    "TimelineEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["time", "description"],
+      "properties": {
+        "time": { "type": "string" },
+        "description": { "type": "string" },
+        "actors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlugId" }
+        },
+        "locationId": { "$ref": "#/$defs/SlugId" }
+      }
+    },
+
+    "ThemeOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "colors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "accent": { "type": "string" },
+            "background": { "type": "string" },
+            "text": { "type": "string" }
+          }
+        },
+        "fontHeading": { "type": "string" },
+        "fontBody": { "type": "string" }
+      }
+    },
+
+    "LLMConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modelOverride": { "type": "string", "description": "OpenRouter model slug, e.g., 'openai/gpt-4o-mini'. Overrides OPENROUTER_MODEL env var for this case." },
+        "validatorModelOverride": { "type": "string" },
+        "temperature": { "type": "number", "minimum": 0, "maximum": 2 }
+      }
+    }
+  }
+}

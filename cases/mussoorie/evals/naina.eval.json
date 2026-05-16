@@ -1,0 +1,300 @@
+{
+  "suspectId": "naina",
+  "conditions": {
+    "secret:points-to-rhea": [
+      {
+        "name": "polite professional question about her work",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Ma'am, thank you for coming in. Just to set context — what kind of work do you do, and were you doing any of it for Vikram in the last month or two?"
+          }
+        ]
+      },
+      {
+        "name": "open neutral 'what brings you to Mussoorie'",
+        "expected": "met",
+        "transcript": [
+          { "role": "user", "content": "What brings you to Mussoorie this week?" }
+        ]
+      },
+      {
+        "name": "asks specifically about Rhea",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Did Vikram ever talk to you about his business partner Rhea? Anything that struck you as worth mentioning?"
+          }
+        ]
+      },
+      {
+        "name": "names Metropolis Media without context",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Have you heard the name Metropolis Media before? In any context relating to Vikram?"
+          }
+        ]
+      },
+      {
+        "name": "hostile stalker framing — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Twenty-three calls in 48 hours. Why couldn't you take a hint and stop stalking him?"
+          }
+        ]
+      },
+      {
+        "name": "off-topic weather question — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Was the weather bad in Mussoorie on the night of the incident? Have you ever been here in monsoon?"
+          }
+        ]
+      },
+      {
+        "name": "asks about her hotel only — adjacent, but no work context",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Which hotel were you staying at, and how long had you been booked there?" }
+        ]
+      },
+      {
+        "name": "accuses her of being there to harm Vikram — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You really expect us to believe you were here for work? You were here because you couldn't let him go. You showed up uninvited."
+          }
+        ]
+      }
+    ],
+
+    "secret:obsessive-calls": [
+      {
+        "name": "shows her the phone records by quoting the number",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "We've pulled your phone records, ma'am. Twenty-three calls to Vikram in the 48 hours before his death. Can you tell us what you were trying to reach him about?"
+          }
+        ]
+      },
+      {
+        "name": "gentle why-were-you-calling question",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "We see a lot of attempts to reach him in his last few days. What were you hoping he'd pick up about?"
+          }
+        ]
+      },
+      {
+        "name": "asks vaguely about her relationship — adjacent, no call context",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "How was your relationship with Vikram in the last few months?" }
+        ]
+      },
+      {
+        "name": "calls her obsessive — should NOT fire (shuts down)",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Twenty-three calls. That's obsessive behavior. Why couldn't you take a hint?"
+          }
+        ]
+      },
+      {
+        "name": "off-topic question",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "What is your day job, exactly?" }
+        ]
+      }
+    ],
+
+    "secret:heard-the-sound": [
+      {
+        "name": "both required evidence presented + asks where she was",
+        "expected": "met",
+        "presentedEvidenceIds": ["naina-phone-records", "shopkeeper-statement-naina"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The shopkeeper places you at the Kulri Bazaar end of Camel's Back Road at 8:15 PM. Did you hear anything while you were there?",
+            "presentedEvidenceId": "shopkeeper-statement-naina"
+          }
+        ]
+      },
+      {
+        "name": "evidence presented but only ONE of the required pieces — should NOT fire",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["shopkeeper-statement-naina"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The shopkeeper places you at Kulri Bazaar. Did you hear anything?",
+            "presentedEvidenceId": "shopkeeper-statement-naina"
+          }
+        ]
+      },
+      {
+        "name": "NO evidence presented — should NOT fire even with good question",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Did you hear anything strange while you were on Camel's Back Road that night?"
+          }
+        ]
+      },
+      {
+        "name": "both evidence presented but off-topic question — should NOT fire (the evidence gate is necessary but not sufficient; the cue still needs to apply)",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["naina-phone-records", "shopkeeper-statement-naina"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "What did you have for dinner that evening?",
+            "presentedEvidenceId": "shopkeeper-statement-naina"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:shopkeeper-and-phone": [
+      {
+        "name": "both required evidence presented + direct confrontation",
+        "expected": "met",
+        "presentedEvidenceIds": ["naina-phone-records", "shopkeeper-statement-naina"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Twenty-three calls and a shopkeeper who saw you on the road. You were there, Naina. What happened?",
+            "presentedEvidenceId": "shopkeeper-statement-naina"
+          }
+        ]
+      },
+      {
+        "name": "only phone records, no shopkeeper statement — should NOT fire",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["naina-phone-records"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Twenty-three calls. We know you were trying to reach him. Where were you that night?",
+            "presentedEvidenceId": "naina-phone-records"
+          }
+        ]
+      },
+      {
+        "name": "no evidence presented — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you on Camel's Back Road that night, Naina? Did you see something?"
+          }
+        ]
+      },
+      {
+        "name": "both evidence presented but off-topic question — should NOT fire",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["naina-phone-records", "shopkeeper-statement-naina"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "What did you have for dinner that evening?",
+            "presentedEvidenceId": "shopkeeper-statement-naina"
+          }
+        ]
+      }
+    ],
+
+    "evidence:naina-corporate-memo": [
+      {
+        "name": "polite question about her work fires the cascade",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "What kind of work do you do, and were you doing any of it for Vikram in the last month or two?"
+          }
+        ]
+      },
+      {
+        "name": "asks directly about Rhea",
+        "expected": "met",
+        "transcript": [
+          { "role": "user", "content": "Did Vikram ever ask you to look into Rhea?" }
+        ]
+      },
+      {
+        "name": "hostile stalker framing — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Twenty-three calls. You couldn't take a hint. You were stalking him."
+          }
+        ]
+      },
+      {
+        "name": "off-topic weather question — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "How was the weather in Mussoorie that night?" }
+        ]
+      }
+    ],
+
+    "evidence:vikram-naina-whatsapp": [
+      {
+        "name": "polite question about her work fires the cascade",
+        "expected": "met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you doing any professional work for Vikram in the weeks before his death?"
+          }
+        ]
+      },
+      {
+        "name": "asks why she came to Mussoorie this week",
+        "expected": "met",
+        "transcript": [
+          { "role": "user", "content": "What brings you to Mussoorie this week, ma'am?" }
+        ]
+      },
+      {
+        "name": "hostile framing — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You really expect us to believe you weren't here to confront him?"
+          }
+        ]
+      },
+      {
+        "name": "off-topic — should NOT fire",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did you take a taxi from the bus stand or did someone pick you up?" }
+        ]
+      }
+    ]
+  }
+}

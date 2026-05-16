@@ -1,0 +1,232 @@
+{
+  // ============================================================================
+  // CASE TEMPLATE — copy this folder to start a new case.
+  //
+  // 1. Copy `cases/_template/` to `cases/<your-case-id>/`
+  // 2. Replace every "TODO" marker with your content.
+  // 3. Run `npm run validate-case <your-case-id>` to verify.
+  // 4. See `docs/authoring-guide.md` for the full guide.
+  //
+  // The $schema reference below gives you IDE autocomplete in VS Code / Cursor.
+  // ============================================================================
+
+  "$schema": "../../src/engine/schema/case.schema.json",
+
+  "id": "template",
+  "version": "0.1.0",
+  "engineVersion": "^1.0.0",
+
+  "meta": {
+    "title": "TODO: Case title",
+    "tagline": "TODO: One-line pitch shown on the case picker",
+    "setting": "TODO: Where and when this case takes place",
+    "era": "present day",
+    "estimatedDurationMinutes": 180,
+    "recommendedPlayers": { "min": 4, "max": 8 },
+    "ageRating": "10+",
+    "contentNotes": [
+      "References to a death (off-screen, non-graphic)"
+    ],
+    "coverImage": "assets/ui/cover.png",
+    "language": "en"
+  },
+
+  "victim": {
+    "id": "victim",
+    "name": "TODO: Victim Name",
+    "publicBackground": "TODO: What the public knows about the victim.",
+    "causeOfDeath": "TODO: Initial cause (revealed in the brief or post-mortem)"
+  },
+
+  "rounds": [
+    {
+      "number": 1,
+      "title": "The Scene",
+      "tagline": "Arrive at the scene. Meet the suspects."
+    },
+    {
+      "number": 2,
+      "title": "The Solve",
+      "tagline": "Confront the killer."
+    }
+  ],
+
+  "locations": [
+    {
+      "id": "scene",
+      "name": "The Scene",
+      "description": "TODO: Describe the primary location."
+    }
+  ],
+
+  "suspects": [
+    {
+      "id": "suspect-a",
+      "name": "Suspect A",
+      "shortDescription": "TODO: One-line role",
+      "portraitUrl": "assets/portraits/suspect-a.png",
+      "persona": "TODO: A 2-3 sentence character description used in the LLM system prompt. Include personality, background, attitude.",
+      "voice": "TODO: Speaking style guidance (e.g., 'curt British English, dry sarcasm, never more than two sentences').",
+      "publicAlibi": "TODO: The story they tell publicly.",
+      "trueTimeline": [
+        {
+          "time": "8:00 PM",
+          "locationId": "scene",
+          "action": "TODO: What they actually did at this time."
+        }
+      ],
+      "lies": [],
+      "secrets": [],
+      "breakingPoints": [
+        {
+          "id": "suspect-a-bp-1",
+          "trigger": { "type": "evidence", "evidenceId": "evidence-a" },
+          "reaction": "TODO: What they admit / how they react when this evidence is presented."
+        }
+      ],
+      "neverReveal": [
+        "anything they could not plausibly know"
+      ],
+      "guiltCategory": "innocent",
+      "guiltSummary": "TODO: One-sentence summary for the reveal screen.",
+      "introducedAtChapter": "case-brief"
+    },
+    {
+      "id": "suspect-b",
+      "name": "Suspect B",
+      "shortDescription": "TODO: One-line role",
+      "portraitUrl": "assets/portraits/suspect-b.png",
+      "persona": "TODO: Character description.",
+      "voice": "TODO: Speaking style.",
+      "publicAlibi": "TODO: Public alibi.",
+      "trueTimeline": [
+        {
+          "time": "8:00 PM",
+          "action": "TODO: What they actually did."
+        }
+      ],
+      "breakingPoints": [
+        {
+          "id": "suspect-b-bp-1",
+          "trigger": { "type": "evidence", "evidenceId": "evidence-a" },
+          "reaction": "TODO: Reaction."
+        }
+      ],
+      "neverReveal": ["anything they could not plausibly know"],
+      "guiltCategory": "innocent",
+      "guiltSummary": "TODO",
+      "introducedAtChapter": "case-brief"
+    },
+    {
+      "id": "suspect-c",
+      "name": "Suspect C",
+      "shortDescription": "TODO: One-line role",
+      "portraitUrl": "assets/portraits/suspect-c.png",
+      "persona": "TODO: Character description.",
+      "voice": "TODO: Speaking style.",
+      "publicAlibi": "TODO: Public alibi.",
+      "trueTimeline": [
+        {
+          "time": "8:00 PM",
+          "action": "TODO: What they actually did. This is the killer's true timeline."
+        }
+      ],
+      "breakingPoints": [
+        {
+          "id": "suspect-c-bp-1",
+          "trigger": { "type": "evidence", "evidenceId": "evidence-a" },
+          "reaction": "TODO: Reaction when this evidence is presented."
+        }
+      ],
+      "neverReveal": [
+        "anything they could not plausibly know"
+      ],
+      "guiltCategory": "executor",
+      "guiltSummary": "TODO: One-sentence summary explaining their guilt.",
+      "introducedAtChapter": "case-brief"
+    }
+  ],
+
+  "evidence": [
+    {
+      "id": "evidence-a",
+      "title": "TODO: Evidence title",
+      "category": "document",
+      "description": "TODO: Short description for the evidence card.",
+      "loreText": "TODO: Longer description used when this evidence is presented to a suspect in an interview.",
+      "revealedInRound": 1,
+      "unlockedAtChapter": "case-brief",
+      "relatesToSuspectIds": ["suspect-c"]
+    }
+  ],
+
+  "chapters": [
+    {
+      "type": "narrative",
+      "id": "case-brief",
+      "title": "The Case Brief",
+      "roundNumber": 1,
+      "beats": [
+        {
+          "speaker": "Narrator",
+          "text": "TODO: Opening narration. Set the scene and introduce the case."
+        }
+      ]
+    },
+    {
+      "type": "interview",
+      "id": "interview-suspect-c",
+      "title": "Interrogate Suspect C",
+      "roundNumber": 2,
+      "prerequisites": ["case-brief"],
+      "suspectId": "suspect-c",
+      "intro": "TODO: A sentence shown on the TV before the chat begins."
+    },
+    {
+      "type": "accusation",
+      "id": "accuse",
+      "title": "The Accusation",
+      "roundNumber": 2,
+      "prerequisites": ["interview-suspect-c"],
+      "promptText": "Who is responsible for this murder?"
+    },
+    {
+      "type": "reveal",
+      "id": "reveal",
+      "title": "The Truth",
+      "roundNumber": 2,
+      "prerequisites": ["accuse"]
+    }
+  ],
+
+  "endgame": {
+    "branchOn": "firstConfronted",
+    "paths": [
+      {
+        "id": "default-path",
+        "triggerSuspectId": "suspect-c",
+        "scriptedSuspectLine": "TODO: The canonical line the killer says when confronted."
+      }
+    ],
+    "finalRevealNarration": [
+      {
+        "speaker": "Narrator",
+        "text": "TODO: The closing narration that wraps the case."
+      }
+    ]
+  },
+
+  "solution": {
+    "killerSuspectIds": ["suspect-c"],
+    "killerRoles": { "suspect-c": "executor" },
+    "motive": "TODO: Why the killer did it.",
+    "meansAndMethod": "TODO: How they did it.",
+    "revealNarration": [
+      {
+        "speaker": "Narrator",
+        "text": "TODO: The reveal monologue that explains the full crime, with callbacks to evidence."
+      }
+    ],
+    "closingQuestion": "Who do you think is most responsible?"
+  }
+}
