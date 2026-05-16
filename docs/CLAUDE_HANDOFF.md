@@ -1,6 +1,7 @@
 # Mystery Engine — Handoff
 
 **Last updated**: 2026-05-15
+**Repository**: Git remote `origin` → `git@github.com:shashankraider/PartyGame.git` (private). Deploy production on Vercel (or any Next.js host); see **Deployment** below.
 **Current phase**: Phase 2g.2 complete. All six Mussoorie suspects now have authored adjudicator unlock cues and eval coverage; next recommended phase is Phase 2h (Realtime infrastructure + token streaming).
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` were created for the failed parallel attempt and are no longer needed for mainline work.
 
@@ -36,7 +37,9 @@ If you're a new agent (Cursor included) taking over this project:
    - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work).
    - `OPENROUTER_API_KEY` is the only thing the eval script needs.
 
-5. **`Game_Bible.docx` is stale**; `cases/mussoorie/design.md` is the canonical narrative source.
+5. **Phones on Wi‑Fi testing the dev server** (`http://<LAN-IP>:3000`): `npm run dev` listens on `0.0.0.0`; `next.config.ts` auto-adds this machine’s non-loopback IPv4 addresses to `allowedDevOrigins` so Next 16 does not 403 `/_next/*` when the page is loaded from a LAN host. Optional: `NEXT_ALLOWED_DEV_ORIGINS=host1,host2,tailscale.hostname`.
+
+6. **`Game_Bible.docx` is stale**; `cases/mussoorie/design.md` is the canonical narrative source.
 
 ---
 
@@ -225,6 +228,31 @@ Notes:
 
 ---
 
+## Deployment (production)
+
+Target setup: **Vercel** + GitHub import (private repo works). The production build is standard Next.js (`next build` / Vercel default).
+
+Set these **environment variables** in the Vercel project (Production + Preview as needed); mirror `.env.example`:
+
+| Variable | Notes |
+|----------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project API URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key (public) |
+| `SUPABASE_URL` | Usually same as `NEXT_PUBLIC_SUPABASE_URL` |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secret** — server-only |
+| `OPENROUTER_API_KEY` | **Secret** — required for live interviews |
+| `OPENROUTER_MODEL` | Optional override |
+| `CASE_ID` | Optional; e.g. `mussoorie` to pin the case picker |
+| `NEXT_PUBLIC_APP_URL` | Production site URL, e.g. `https://your-app.vercel.app` (OpenRouter `HTTP-Referer`); set after first deploy and redeploy |
+
+Apply the same **Supabase migrations** to the hosted project as locally. Host/TV join URLs use `x-forwarded-host` / `x-forwarded-proto` (`src/app/session/[sessionId]/host/page.tsx`) so QR codes should resolve to **https** on Vercel.
+
+**Production vs LAN:** `allowedDevOrigins` and `--hostname 0.0.0.0` apply only to `next dev`; they are not required for Vercel HTTPS.
+
+**Auth:** Pushing from a developer machine requires GitHub access (SSH key or HTTPS + PAT). The Cursor agent environment may not have your keys; run `git push` locally.
+
+---
+
 ## Repository Map
 
 Important files and folders:
@@ -252,6 +280,7 @@ scripts/
 src/
   app/
     api/
+      cases/[caseId]/printables/[file]/route.ts   # serves case printables for iframes
       interview/route.ts
       join/route.ts
       sessions/
@@ -265,6 +294,7 @@ src/
     types.ts
     validator.mjs
   lib/
+    printables.ts            # resolve printable path + URL helper
     session-codes.ts
     session-store.ts
     supabase.ts
@@ -294,6 +324,16 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 ---
 
 ## Completed Work
+
+### Post–Phase 2g.2 — LAN dev, join robustness, mobile case board, printables route
+
+Shipped in mainline after 2g.2 content freeze:
+
+- **`next.config.ts`**: `allowedDevOrigins` populated from local non-loopback IPv4 interfaces at config load + optional `NEXT_ALLOWED_DEV_ORIGINS`. Fixes Next 16 dev cross-origin blocking of `/_next/*` when opening the app as `http://192.168.x.x:3000`.
+- **`package.json`**: `dev` script uses `next dev --hostname 0.0.0.0` so other devices on LAN can reach the dev server.
+- **`JoinLobbyForm`**: Uncontrolled name field + `fetch` POST to `/api/join` (no native form navigation). **`suppressHydrationWarning`** and explicit `spellCheck` / `autoCorrect` / `autoCapitalize` to reduce WebKit hydration mismatches on the name input. **`newDeviceId()`** falls back when `crypto.randomUUID()` is missing (HTTP LAN is not a secure context — iOS Safari).
+- **`PlayerLobbyView`**: Case board uses **Brief | Evidence** tabs; evidence opens in a **bottom sheet** on small screens; detail uses **Notes** vs **Prop sheet** tabs so the printable iframe and long lore are not one endless scroll. **Digital case file** is hidden on `case_board` scene to avoid duplicating the same evidence three times; other scenes keep the collapsible file with the same inspector pattern.
+- **Printables**: `src/lib/printables.ts` + **`GET /api/cases/[caseId]/printables/[file]`** for in-app exhibits (engine + Mussoorie assets in repo).
 
 ### Phase 0 — Framework Contract
 
