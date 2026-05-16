@@ -1,0 +1,183 @@
+{
+  "suspectId": "kabir",
+  "conditions": {
+    "secret:plagiarism": [
+      {
+        "name": "pawn receipt and gentle PhD question",
+        "expected": "met",
+        "presentedEvidenceIds": ["pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Professor, this pawn receipt shows you sold your watch right before coming here. Was that money meant to make Vikram drop the PhD plagiarism story?",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "pawn receipt and asks about academic career",
+        "expected": "met",
+        "presentedEvidenceIds": ["pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Was your academic career built on work Vikram helped you write, and were you afraid he would expose it?",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "right question without pawn evidence",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did Vikram help write your PhD thesis?" }
+        ]
+      },
+      {
+        "name": "pawn receipt but travel nostalgia question",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You said you came here for nostalgia. What places did you want to revisit?",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "pawn receipt but threatens university",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Tell us the truth or we call your university tonight and end your career.",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      }
+    ],
+
+    "secret:second-letter": [
+      {
+        "name": "letter presented and asks if he wrote it",
+        "expected": "met",
+        "presentedEvidenceIds": ["anonymous-letter-2"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "This second anonymous letter says to ask who benefits from the Thakur estate. Did you write it after Vikram died?",
+            "presentedEvidenceId": "anonymous-letter-2"
+          }
+        ]
+      },
+      {
+        "name": "letter presented and asks how he knew Thakur clue",
+        "expected": "met",
+        "presentedEvidenceIds": ["anonymous-letter-2"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How did you know enough about the Thakur estate to point CBI there in this letter?",
+            "presentedEvidenceId": "anonymous-letter-2"
+          }
+        ]
+      },
+      {
+        "name": "right question without letter evidence",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did you send the second anonymous letter to CBI?" }
+        ]
+      },
+      {
+        "name": "letter presented but asks travel only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anonymous-letter-2"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Which hotel did you stay at after your chai with Vikram?",
+            "presentedEvidenceId": "anonymous-letter-2"
+          }
+        ]
+      },
+      {
+        "name": "letter presented but generic handwriting question",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anonymous-letter-2"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Do you usually write in block letters or cursive?",
+            "presentedEvidenceId": "anonymous-letter-2"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:chai-and-pawn": [
+      {
+        "name": "both evidence pieces and asks about argument plus bribe money",
+        "expected": "met",
+        "presentedEvidenceIds": ["chai-shop-receipt", "pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The chai-shop receipt places you arguing with Vikram, and the pawn receipt shows you raising cash. Were you trying to bribe him to drop the plagiarism story?",
+            "presentedEvidenceId": "chai-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces and asks real reason for Mussoorie trip",
+        "expected": "met",
+        "presentedEvidenceIds": ["chai-shop-receipt", "pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You did not come for nostalgia. Did you come because Vikram was going to expose your thesis, then sell your watch to buy his silence?",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "missing pawn evidence",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["chai-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "What were you and Vikram arguing about at the chai shop?",
+            "presentedEvidenceId": "chai-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but asks old friendship generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["chai-shop-receipt", "pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How close were you and Vikram back in college?",
+            "presentedEvidenceId": "chai-shop-receipt"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but career threat",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["chai-shop-receipt", "pawn-shop-receipt"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "We will call your university and ruin you unless you confess right now.",
+            "presentedEvidenceId": "pawn-shop-receipt"
+          }
+        ]
+      }
+    ]
+  }
+}

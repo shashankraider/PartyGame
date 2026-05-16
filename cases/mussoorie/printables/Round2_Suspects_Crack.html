@@ -19,6 +19,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
   body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
 
   @media print {
@@ -176,7 +177,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 6: CHAI SHOP RECEIPT ═══════════ -->
-<div class="evidence-item">
+<div id="chai-shop-receipt" class="evidence-item">
   <div class="evidence-tab">Exhibit F</div>
   <div class="evidence-header">
     <h3>Receipt &mdash; Lovely Omelette Centre, Mall Road</h3>
@@ -213,7 +214,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 7: NAINA'S PHONE LOG ═══════════ -->
-<div class="evidence-item">
+<div id="naina-phone-records" class="evidence-item">
   <div class="evidence-tab">Exhibit G</div>
   <div class="evidence-header">
     <h3>Call Detail Records &mdash; Naina Kapoor to Vikram Singh</h3>
@@ -250,13 +251,13 @@
       </tbody>
     </table>
     <div class="handwritten-note">
-      CBI Note: Naina Kapoor told us the breakup was "amicable" and that she was calling Vikram only to follow up on work she'd done for him. The work part is corroborated &mdash; see her corporate memo on Rhea / Metropolis Media in the round 1 dossier &mdash; but twenty-three calls in 48 hours is not a professional follow-up cadence. The 20:35 call on the murder night &mdash; just 15 minutes after estimated time of death &mdash; went unanswered. The 21:10 call shows "unreachable" &mdash; phone was off or out of signal by then. She also claimed she "wasn't anywhere near Camel's Back Road." See Exhibit H.
+      CBI Note: Naina Kapoor told us the breakup was "amicable" and that she was calling Vikram only to follow up on work she'd done for him. The work part is corroborated &mdash; see the Naina interview supplemental exhibits below &mdash; but twenty-three calls in 48 hours is not a professional follow-up cadence. The 20:35 call on the murder night &mdash; just 15 minutes after estimated time of death &mdash; went unanswered. The 21:10 call shows "unreachable" &mdash; phone was off or out of signal by then. She also claimed she "wasn't anywhere near Camel's Back Road." See Exhibit H.
     </div>
   </div>
 </div>
 
 <!-- ═══════════ EVIDENCE 8: SHOPKEEPER STATEMENT ═══════════ -->
-<div class="evidence-item">
+<div id="shopkeeper-statement-naina" class="evidence-item">
   <div class="evidence-tab">Exhibit H</div>
   <div class="evidence-header">
     <h3>Witness Statement &mdash; Kulri Bazaar Shopkeeper</h3>
@@ -287,7 +288,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 9: CCTV - RHEA AT COTTAGE ═══════════ -->
-<div class="evidence-item">
+<div id="building-cctv-rhea" class="evidence-item">
   <div class="evidence-tab">Exhibit I</div>
   <div class="evidence-header">
     <h3>CCTV Footage &mdash; Landour Lane, Near Vikram's Cottage</h3>
@@ -334,7 +335,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 10: RHEA'S DRAFT EMAIL ═══════════ -->
-<div class="evidence-item">
+<div id="rhea-draft-email" class="evidence-item">
   <div class="evidence-tab">Exhibit J</div>
   <div class="evidence-header">
     <h3>Draft Email &mdash; Rhea Bhatia's Laptop</h3>
@@ -375,7 +376,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 11: HOTEL CCTV LOG ═══════════ -->
-<div class="evidence-item">
+<div id="bisht-hotel-cctv-log" class="evidence-item">
   <div class="evidence-tab">Exhibit K</div>
   <div class="evidence-header">
     <h3>CCTV System Log &mdash; Royal Pines Hotel</h3>
@@ -412,7 +413,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 12: PAWN SHOP RECEIPT ═══════════ -->
-<div class="evidence-item">
+<div id="pawn-shop-receipt" class="evidence-item">
   <div class="evidence-tab">Exhibit L</div>
   <div class="evidence-header">
     <h3>Pawn Shop Receipt &mdash; Prof. Kabir Iyer</h3>
@@ -446,6 +447,171 @@
     </div>
     <div class="handwritten-note">
       CBI Note: Prof. Kabir Iyer sold a &#8377;45,000+ watch at a pawn shop the day before travelling to Mussoorie. He claimed to be visiting for "nostalgia" and "catching up with an old friend." Why does a professor pawn his watch the day before a casual visit? The &#8377;28,000 payout suggests he needed cash urgently. Was he trying to pay Vikram off? Was he settling a debt? Or was he funding something else?
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ SUPPLEMENTAL NAINA INTERVIEW UNLOCKS ═══════════ -->
+<div class="evidence-item">
+  <div class="evidence-tab">Interview Unlock</div>
+  <div class="evidence-header">
+    <h3>Naina Kapoor Follow-Up Materials</h3>
+    <span class="evidence-number">CBI/SUPP/NAINA</span>
+  </div>
+  <div class="evidence-body">
+    <div class="handwritten-note">
+      Open these two supplemental exhibits only after Naina opens up about Vikram asking her for professional help on Rhea and Metropolis Media. They are not part of the initial Round 2 evidence drop.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUPPLEMENTAL EVIDENCE M: NAINA'S CORPORATE MEMO ═══════════ -->
+<div id="naina-corporate-memo" class="evidence-item">
+  <div class="evidence-tab">Exhibit M</div>
+  <div class="evidence-header">
+    <h3>Memo &mdash; Rhea Bhatia / Metropolis Media Inquiry</h3>
+    <span class="evidence-number">CBI/EX/013</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:10px;">
+      Source: Vikram Singh's personal email (forwarded attachment) &bull; Sender: Naina Kapoor &bull; Subject: "Re: the thing you asked about &mdash; rough notes only" &bull; Dated: 9 days before death &bull; Two pages
+    </div>
+    <div style="background:white; border:1px solid #ddd; padding:24px; font-family:'Courier Prime',monospace; font-size:12px; line-height:1.55;">
+      <div style="font-size:11px; color:#777; margin-bottom:18px; letter-spacing:0.04em;">
+        FOR VS ONLY. NOT FOR PUBLICATION. SOURCING ON REQUEST.
+      </div>
+
+      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">1. ACQUISITION ACTIVITY</div>
+      <div style="margin-bottom:14px;">
+        Metropolis Media (Delhi, est. 2019) is a creator-economy holding company. Two confirmed acquisitions of mid-sized Indian YouTube channels in the last 18 months. Their M&amp;A lead is <u>Dhruv Sehgal</u> &mdash; spotted at three Delhi industry events in the last six weeks. He is being introduced to creators in a way that says he is shopping, not browsing.
+      </div>
+
+      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">2. RHEA-SPECIFIC</div>
+      <div style="margin-bottom:14px;">
+        Two independent sources confirm Rhea has been in "preliminary conversations" with Sehgal for approximately four months. One source claims a term sheet exists. The second source will not be drawn on it. Separately: Rhea has been telling people at parties that the channel is <em>"in transition."</em> That phrasing is consistent with someone preparing to sell a brand they don't fully own.
+      </div>
+
+      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">3. WHAT I CAN'T TELL YOU</div>
+      <div style="margin-bottom:18px;">
+        I cannot verify the financial picture without internal access. Pull the channel's Stripe statements yourself. Look at any unusual expense routing. Check whether Rhea's signature is on disbursements you did not authorise.<br><br>
+        If she's doing what I think she's doing, the books will show it.<br>
+        I can't see the books.<br><br>
+        &mdash; N.
+      </div>
+
+      <div style="border-top:1px dashed #bbb; padding-top:12px; font-family:'Special Elite',cursive; font-size:13px; color:#444;">
+        <em>[handwritten in Vikram's hand, margin of section 2:]</em> <span style="color:#222;">pull stripe</span>
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Forwarded to Vikram nine days before he died. He read it &mdash; highlights on two paragraphs, the marginal note "pull stripe" in his hand. He did not reply to the sender, did not forward it onward, and as far as can be determined did not pull the Stripe statements before his death. The memo confirms what Vikram suspected about Rhea and the channel sale. It cannot, on its own, prove embezzlement. The author is Naina Kapoor &mdash; the victim's ex-fiancée and, by profession, a corporate-investigations journalist.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUPPLEMENTAL EVIDENCE N: VIKRAM-NAINA WHATSAPP THREAD ═══════════ -->
+<div id="vikram-naina-whatsapp" class="evidence-item">
+  <div class="evidence-tab">Exhibit N</div>
+  <div class="evidence-header">
+    <h3>WhatsApp Thread &mdash; Vikram &amp; Naina, Last 30 Days</h3>
+    <span class="evidence-number">CBI/EX/014</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:10px;">
+      Source: Vikram's iCloud backup &bull; Extracted under court order &bull; Excerpts shown; full thread on file
+    </div>
+
+    <div style="background:#e5ddd5; border:1px solid #ccc; padding:18px; max-width:520px; margin:0 auto;">
+      <!-- VS to NK: request -->
+      <div style="margin-bottom:10px;">
+        <div style="background:#dcf8c6; border-radius:8px; padding:10px 12px; max-width:80%; margin-left:auto; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          naina &mdash; favour. you still doing the corporate stuff or just designing now? quietly &mdash; what do you know about a company called Metropolis Media. and rhea.
+          <div style="font-size:9px; color:#7a8a7a; text-align:right; margin-top:4px;">VS &bull; [Day -23] 14:08 &#10003;&#10003;</div>
+        </div>
+      </div>
+
+      <!-- NK reply -->
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          still doing it. give me a week.
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -23] 15:01</div>
+        </div>
+      </div>
+
+      <!-- NK memo delivery -->
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          memo attached. rough notes only. sourcing on request. read section 3 first.<br>
+          <span style="display:inline-block; margin-top:6px; padding:6px 10px; background:#f4f0e0; border:1px solid #d6cfa9; font-family:'Courier Prime',monospace; font-size:11px;">&#128196; Rhea_Metropolis_memo.pdf &bull; 2 pages</span>
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -9] 11:22</div>
+        </div>
+      </div>
+
+      <!-- VS thanks -->
+      <div style="margin-bottom:10px;">
+        <div style="background:#dcf8c6; border-radius:8px; padding:10px 12px; max-width:80%; margin-left:auto; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          this is &mdash; yeah. thank you. drinks on me next time delhi.
+          <div style="font-size:9px; color:#7a8a7a; text-align:right; margin-top:4px;">VS &bull; [Day -9] 18:47 &#10003;&#10003;</div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="text-align:center; font-family:'Courier Prime',monospace; font-size:10px; color:#888; margin:14px 0;">
+        &mdash; no reply from VS after this point &mdash;
+      </div>
+
+      <!-- NK follow-ups, professional -->
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          hey &mdash; did you pull the stripe stuff? want me to dig further on sehgal?
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -7] 09:14</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          i know a forensic accountant in gurgaon if you need one. say the word.
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -6] 22:50</div>
+        </div>
+      </div>
+
+      <!-- NK follow-ups, drift -->
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          you ok?
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -4] 23:11</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          are you avoiding me or avoiding the work
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -3] 17:02</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
+          pick up na
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -2] 02:47</div>
+        </div>
+      </div>
+
+      <!-- NK call attempts -->
+      <div style="margin-bottom:6px;">
+        <div style="background:#f4f0e0; border:1px dashed #c8b97a; border-radius:8px; padding:8px 12px; max-width:80%; font-family:'Courier Prime',monospace; font-size:11px; color:#555;">
+          &#128222; Voice call &bull; No answer &bull; 0:00<br>
+          &#128222; Voice call &bull; No answer &bull; 0:00<br>
+          &#128222; Voice call &bull; No answer &bull; 0:00<br>
+          &#128222; Voice call &bull; Unreachable &bull; 0:00
+          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; final 48 hours &bull; 23 attempts total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="handwritten-note">
+      CBI Note: The thread tells a story without commentary. He asked her for a serious favour. She delivered it. He thanked her, then went silent. Her messages drift over a week from professional follow-up ("did you pull the stripe stuff") into something quieter and harder to name ("are you avoiding me or avoiding the work"). The 23-call pattern in the final 48 hours matches the carrier records (see Round 2 phone-log dossier). Nothing in the thread suggests she knew he was in physical danger. Everything in it suggests she knew something was wrong.
     </div>
   </div>
 </div>

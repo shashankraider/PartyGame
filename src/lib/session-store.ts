@@ -352,13 +352,22 @@ export async function startSession(sessionId: string) {
     throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
   }
 
+  const firstChapterId = caseData.chapters[0]?.id ?? null;
+  const firstChapter = firstChapterId
+    ? caseData.chapters.find((chapter) => chapter.id === firstChapterId)
+    : undefined;
+  const unlockedEvidence = firstChapter
+    ? getUnlockedEvidenceForChapter(caseData, firstChapter, session.unlocked_evidence)
+    : session.unlocked_evidence;
+
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("sessions")
     .update({
       status: "in_progress",
       current_scene: "brief",
-      current_chapter_id: caseData.chapters[0]?.id ?? null,
+      current_chapter_id: firstChapterId,
+      unlocked_evidence: unlockedEvidence,
       last_activity_at: new Date().toISOString(),
     })
     .eq("id", session.id)

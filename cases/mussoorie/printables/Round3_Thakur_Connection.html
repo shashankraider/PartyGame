@@ -12,6 +12,7 @@
     --blue-ink: #1a3a6b; --folder-tab: #c4a265; --evidence-bg: #faf6e8; --border-dark: #8b7d5e;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
   body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
   @media print {
     body { background: white; padding: 0; }
@@ -180,7 +181,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 13: SECOND ANONYMOUS LETTER ═══════════ -->
-<div class="evidence-item">
+<div id="anonymous-letter-2" class="evidence-item">
   <div class="evidence-tab">Exhibit M</div>
   <div class="evidence-header">
     <h3>Second Anonymous Letter to CBI</h3>
@@ -206,7 +207,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 14: NEWSPAPER CLIPPING ═══════════ -->
-<div class="evidence-item">
+<div id="old-newspaper-clipping" class="evidence-item">
   <div class="evidence-tab">Exhibit N</div>
   <div class="evidence-header">
     <h3>Newspaper Clipping &mdash; Dainik Jagran (Dehradun Edition)</h3>
@@ -252,7 +253,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 15: THEFT FIR INVENTORY ═══════════ -->
-<div class="evidence-item">
+<div id="theft-fir-inventory" class="evidence-item">
   <div class="evidence-tab">Exhibit O</div>
   <div class="evidence-header">
     <h3>Original Theft FIR &mdash; Thakur Cottage Robbery (2011)</h3>
@@ -295,7 +296,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 16 & 17: THE TWO PHOTOGRAPHS ═══════════ -->
-<div class="evidence-item">
+<div id="wall-mount-photo" class="evidence-item">
   <div class="evidence-tab">Exhibit P</div>
   <div class="evidence-header">
     <h3>Vikram's Photograph #1 &mdash; Thakur Cottage, Brigadier's Study</h3>
@@ -323,7 +324,7 @@
   </div>
 </div>
 
-<div class="evidence-item">
+<div id="office-rifle-photo" class="evidence-item">
   <div class="evidence-tab">Exhibit Q</div>
   <div class="evidence-header">
     <h3>Vikram's Photograph #2 &mdash; Royal Pines Hotel, Private Office</h3>
@@ -354,7 +355,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 18: LAND REGISTRY ═══════════ -->
-<div class="evidence-item">
+<div id="land-registry" class="evidence-item">
   <div class="evidence-tab">Exhibit R</div>
   <div class="evidence-header">
     <h3>Land Registry Records &mdash; Properties Adjacent to Thakur Estate</h3>
@@ -403,7 +404,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 19: BISHT FAMILY HISTORY ═══════════ -->
-<div class="evidence-item">
+<div id="bisht-family-history" class="evidence-item">
   <div class="evidence-tab">Exhibit S</div>
   <div class="evidence-header">
     <h3>Background Research &mdash; The Bisht Family vs. The Thakurs</h3>
@@ -441,7 +442,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 20: ANYA'S BUS TICKET ═══════════ -->
-<div class="evidence-item">
+<div id="anya-bus-ticket" class="evidence-item">
   <div class="evidence-tab">Exhibit T</div>
   <div class="evidence-header">
     <h3>Bus Ticket &mdash; Anya Devi</h3>
@@ -469,6 +470,31 @@
     </div>
     <div class="handwritten-note">
       CBI Note: Anya told us she "left the cottage at the usual time and went home." She says she left at 7:30 PM. The bus stand is a 10-minute walk from Vikram's cottage. But the bus departed at 9:15 PM. That is a gap of ONE HOUR AND THIRTY-FIVE MINUTES. Where was Anya Devi between 7:30 PM and 9:15 PM on the night Vikram Singh was killed?
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE 21: VIKRAM'S VOICE MEMO ═══════════ -->
+<div id="vikram-voice-memo" class="evidence-item">
+  <div class="evidence-tab">Exhibit U</div>
+  <div class="evidence-header">
+    <h3>Voice Memo &mdash; Recorded 11:42 PM, Two Nights Before Death</h3>
+    <span class="evidence-number">CBI/EX/021</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Vikram Singh's iCloud backup &bull; Voice Memos app &bull; Duration 1:47 &bull; Transcript excerpt
+    </div>
+    <div style="background:white; border:1px solid #ddd; padding:22px; font-family:'Special Elite',cursive; font-size:13px; line-height:1.75; color:#222;">
+      Okay. Okay. The Thakur thing keeps coming back. I can't make the episode work without it but I can't prove it. Bisht's land &mdash; that's clean on paper, all the registry stuff routes through shell companies but the timeline lines up too well, it's not a coincidence. And the rifle. The rifle is the rifle, I'm sure of it, I just can't say so on camera without &mdash;<br><br>
+      <em>[pause]</em><br><br>
+      &mdash; Anya knows. Anya knows something. She won't sit down with me. Three times now. She's not avoiding me, she's avoiding the question. Hm.<br><br>
+      <em>[pause]</em><br><br>
+      Devraj. Three pages. Three pages on a death investigation. He didn't even &mdash;<br><br>
+      <span style="color:#a33; font-family:'Courier Prime',monospace; font-size:11px;">[AUDIO CUTS OFF &bull; phone battery log: 1% at 11:43:49 PM]</span>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Now that the Thakur file is open, this memo lands differently. Vikram had Bisht, the rifle, Devraj's thin file, and Anya's silence in his head two nights before he died. He had not yet drawn the final Bisht-to-Devraj line.
     </div>
   </div>
 </div>

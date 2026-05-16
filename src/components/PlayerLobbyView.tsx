@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Case, Chapter, Evidence, Suspect } from "@/engine/types";
+import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
+import { getEvidencePrintableUrl } from "@/lib/printables";
 import type { MessageRow, PlayerRow, SessionRow, SessionScene } from "@/lib/supabase";
 
 type PlayerLobbyViewProps = {
@@ -56,6 +57,7 @@ function getPresentableEvidence(caseData: Case, chapter: Chapter | null, unlocke
 export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobbyViewProps) {
   const [lobby, setLobby] = useState(initialLobby);
   const [error, setError] = useState<string | null>(null);
+  const hasStarted = lobby.session.status !== "lobby";
 
   useEffect(() => {
     const interval = window.setInterval(async () => {
@@ -117,7 +119,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
         ) : null}
 
         {lobby.session.current_scene === "case_board" ? (
-          <CaseBoardMode
+          <CaseBoardTabs
             caseData={caseData}
             chapter={chapter}
             unlocked={lobby.session.unlocked_evidence}
@@ -155,6 +157,14 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
           <RevealMode caseData={caseData} player={player} />
         ) : null}
       </div>
+
+      {hasStarted && lobby.session.current_scene !== "case_board" ? (
+        <DigitalCaseFile
+          caseData={caseData}
+          unlocked={lobby.session.unlocked_evidence}
+          currentChapter={chapter}
+        />
+      ) : null}
     </section>
   );
 }
@@ -235,7 +245,223 @@ function BriefMode({ caseData, player }: { caseData: Case; player: PlayerRow }) 
   );
 }
 
-function CaseBoardMode({
+type EvidenceRoundGroup = { round: Round; items: Evidence[] };
+
+function buildEvidenceByRound(caseData: Case, unlockedSet: Set<string>): EvidenceRoundGroup[] {
+  return caseData.rounds
+    .map((round) => ({
+      round,
+      items: caseData.evidence.filter(
+        (e) => e.revealedInRound === round.number && unlockedSet.has(e.id),
+      ),
+    }))
+    .filter(({ items }) => items.length > 0);
+}
+
+function EvidenceInspector({
+  caseData,
+  evidence,
+  onClose,
+  variant,
+}: {
+  caseData: Case;
+  evidence: Evidence;
+  onClose: () => void;
+  variant: "embedded" | "sheet";
+}) {
+  const printableSrc = useMemo(
+    () => getEvidencePrintableUrl(caseData.id, evidence),
+    [caseData.id, evidence],
+  );
+  const [detailTab, setDetailTab] = useState<"notes" | "exhibit">("notes");
+
+  useEffect(() => {
+    if (variant !== "sheet") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [variant]);
+
+  const showExhibit = Boolean(printableSrc && detailTab === "exhibit");
+  const showNotes = !printableSrc || detailTab === "notes";
+
+  const notesBlock = (
+    <div>
+      {printableSrc ? (
+        <p className="text-[10px] uppercase tracking-[0.22em] text-[#c8a46a]">Investigator notes</p>
+      ) : null}
+      <p className={`text-sm leading-7 text-[#f5f2ea] ${printableSrc ? "mt-2" : ""}`}>{evidence.loreText}</p>
+      {evidence.relatesToSuspectIds?.length ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {evidence.relatesToSuspectIds.map((suspectId) => {
+            const suspect = caseData.suspects.find((item) => item.id === suspectId);
+            return (
+              <span
+                key={suspectId}
+                className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]"
+              >
+                {suspect?.name ?? suspectId}
+              </span>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+
+  const exhibitBlock = printableSrc ? (
+    <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-[#2a2520] shadow-inner">
+      <iframe
+        key={evidence.id}
+        title={evidence.title}
+        src={printableSrc}
+        className="h-[min(52dvh,440px)] w-full border-0 sm:h-[min(58vh,520px)]"
+        sandbox="allow-same-origin allow-scripts"
+      />
+    </div>
+  ) : null;
+
+  const header = (
+    <div className="flex items-start justify-between gap-4 border-b border-white/10 px-4 pb-3 pt-4 sm:px-5 sm:pt-5">
+      <div className="min-w-0">
+        <p className="text-[10px] uppercase tracking-[0.22em] text-[#c8a46a]">
+          {printableSrc ? "Evidence" : "Case file"}
+        </p>
+        <h3 className="mt-1 text-lg font-semibold text-[#f5f2ea]">{evidence.title}</h3>
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#e6bd77] transition hover:border-[#c8a46a]"
+      >
+        Close
+      </button>
+    </div>
+  );
+
+  const tabBar = printableSrc ? (
+    <div className="flex gap-2 px-4 pt-3 sm:px-5">
+      <button
+        type="button"
+        onClick={() => setDetailTab("notes")}
+        className={`flex-1 rounded-full py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+          detailTab === "notes"
+            ? "bg-[#c8a46a] text-zinc-950"
+            : "border border-white/10 text-[#cfc8ba] hover:border-[#c8a46a]/50"
+        }`}
+      >
+        Notes
+      </button>
+      <button
+        type="button"
+        onClick={() => setDetailTab("exhibit")}
+        className={`flex-1 rounded-full py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+          detailTab === "exhibit"
+            ? "bg-[#c8a46a] text-zinc-950"
+            : "border border-white/10 text-[#cfc8ba] hover:border-[#c8a46a]/50"
+        }`}
+      >
+        Prop sheet
+      </button>
+    </div>
+  ) : null;
+
+  const scrollBody = (
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5 pt-3 sm:px-5">
+      {showNotes ? notesBlock : null}
+      {showExhibit ? exhibitBlock : null}
+    </div>
+  );
+
+  if (variant === "sheet") {
+    return (
+      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/75 backdrop-blur-[1px]"
+          onClick={onClose}
+          aria-label="Close evidence"
+        />
+        <div className="relative z-10 flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-zinc-950 shadow-2xl sm:max-h-[85vh] sm:rounded-3xl">
+          {header}
+          {tabBar}
+          {scrollBody}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <article className="mt-5 flex max-h-[min(82dvh,720px)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/80">
+      {header}
+      {tabBar}
+      {scrollBody}
+    </article>
+  );
+}
+
+function EvidenceRoundPicker({
+  evidenceByRound,
+  selectedId,
+  onSelect,
+  newIds,
+  justUnlockedIds,
+}: {
+  evidenceByRound: EvidenceRoundGroup[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  newIds: Set<string>;
+  justUnlockedIds: Set<string>;
+}) {
+  return (
+    <div className="space-y-5">
+      {evidenceByRound.map(({ round, items }) => (
+        <section key={round.number}>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
+            Round {round.number} · {round.title}
+          </p>
+          <div className="mt-2 grid gap-2">
+            {items.map((evidence) => {
+              const isSelected = selectedId === evidence.id;
+              const isNew = newIds.has(evidence.id) || justUnlockedIds.has(evidence.id);
+              return (
+                <button
+                  key={evidence.id}
+                  type="button"
+                  onClick={() => onSelect(evidence.id)}
+                  className={`rounded-2xl border px-4 py-3 text-left transition ${
+                    isSelected
+                      ? "border-[#c8a46a] bg-[#c8a46a]/10"
+                      : isNew
+                        ? "border-[#c8a46a]/60 bg-[#c8a46a]/5"
+                        : "border-white/10 hover:border-[#c8a46a]/60"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a6a29a]">
+                      {evidence.category}
+                    </span>
+                    {isNew ? (
+                      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
+                        New
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 text-sm font-semibold text-[#f5f2ea]">{evidence.title}</p>
+                  <p className="mt-1 text-xs leading-5 text-[#cfc8ba]">{evidence.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function CaseBoardTabs({
   caseData,
   chapter,
   unlocked,
@@ -244,33 +470,104 @@ function CaseBoardMode({
   chapter: Chapter | null;
   unlocked: string[];
 }) {
-  const unlockedSet = new Set(unlocked);
-  const items = caseData.evidence.filter((evidence) => unlockedSet.has(evidence.id));
+  const [surfaceTab, setSurfaceTab] = useState<"brief" | "evidence">("brief");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [initialUnlocked] = useState(() => new Set(unlocked));
+
+  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
+  const justUnlockedIds = useMemo(() => {
+    if (chapter?.type !== "evidence-reveal") return new Set<string>();
+    return new Set(chapter.evidenceIds.filter((id) => unlockedSet.has(id)));
+  }, [chapter, unlockedSet]);
+  const newIds = useMemo(
+    () => new Set(unlocked.filter((id) => !initialUnlocked.has(id))),
+    [unlocked, initialUnlocked],
+  );
+  const evidenceByRound = useMemo(
+    () => buildEvidenceByRound(caseData, unlockedSet),
+    [caseData, unlockedSet],
+  );
+
+  const selectedEvidence = selectedId
+    ? (caseData.evidence.find((e) => e.id === selectedId) ?? null)
+    : null;
 
   return (
     <div>
-      {chapter ? (
-        <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
-          Round {chapter.roundNumber} · {chapter.type.replace("-", " ")}
-        </p>
-      ) : null}
-      <h2 className="mt-2 text-2xl font-semibold">{chapter?.title ?? "Case board"}</h2>
-      <p className="mt-3 text-sm text-[#cfc8ba]">
-        Follow the TV. New evidence unlocks for review here when the host advances.
-      </p>
+      <div className="mb-5 flex gap-2 rounded-2xl border border-white/10 bg-black/25 p-1">
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedId(null);
+            setSurfaceTab("brief");
+          }}
+          className={`flex-1 rounded-xl py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition ${
+            surfaceTab === "brief"
+              ? "bg-[#c8a46a] text-zinc-950"
+              : "text-[#a6a29a] hover:text-[#f5f2ea]"
+          }`}
+        >
+          Brief
+        </button>
+        <button
+          type="button"
+          onClick={() => setSurfaceTab("evidence")}
+          className={`flex-1 rounded-xl py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition ${
+            surfaceTab === "evidence"
+              ? "bg-[#c8a46a] text-zinc-950"
+              : "text-[#a6a29a] hover:text-[#f5f2ea]"
+          }`}
+        >
+          <span className="inline-flex items-center justify-center gap-2">
+            Evidence
+            {newIds.size > 0 ? (
+              <span className="rounded-full bg-zinc-950/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c8a46a]">
+                {newIds.size} new
+              </span>
+            ) : null}
+          </span>
+        </button>
+      </div>
 
-      <div className="mt-6">
-        <h3 className="text-sm uppercase tracking-[0.22em] text-[#a6a29a]">Evidence locker</h3>
-        <div className="mt-3 grid gap-2">
-          {items.length === 0 ? (
+      {surfaceTab === "brief" ? (
+        <div>
+          {chapter ? (
+            <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
+              Round {chapter.roundNumber} · {chapter.type.replace("-", " ")}
+            </p>
+          ) : null}
+          <h2 className="mt-2 text-2xl font-semibold">{chapter?.title ?? "Case board"}</h2>
+          <p className="mt-3 text-sm text-[#cfc8ba]">
+            Follow the TV. When something unlocks, open the <span className="text-[#e6bd77]">Evidence</span>{" "}
+            tab — tap an item to read notes and view the prop sheet one step at a time.
+          </p>
+        </div>
+      ) : (
+        <div className="relative">
+          {unlocked.length === 0 ? (
             <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-[#a6a29a]">
-              No evidence unlocked yet.
+              No evidence unlocked yet. Stay on Brief until the host advances.
             </p>
           ) : (
-            items.map((evidence) => <EvidenceCard key={evidence.id} evidence={evidence} />)
+            <EvidenceRoundPicker
+              evidenceByRound={evidenceByRound}
+              selectedId={selectedId}
+              onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
+              newIds={newIds}
+              justUnlockedIds={justUnlockedIds}
+            />
           )}
+          {selectedEvidence ? (
+            <EvidenceInspector
+              key={selectedEvidence.id}
+              variant="sheet"
+              caseData={caseData}
+              evidence={selectedEvidence}
+              onClose={() => setSelectedId(null)}
+            />
+          ) : null}
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -746,13 +1043,89 @@ function RevealMode({ caseData, player }: { caseData: Case; player: PlayerRow })
   );
 }
 
-function EvidenceCard({ evidence }: { evidence: Evidence }) {
+function DigitalCaseFile({
+  caseData,
+  unlocked,
+  currentChapter,
+}: {
+  caseData: Case;
+  unlocked: string[];
+  currentChapter: Chapter | null;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [initialUnlocked] = useState<Set<string>>(() => new Set(unlocked));
+  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
+  const justUnlockedIds = useMemo(() => {
+    if (currentChapter?.type !== "evidence-reveal") return new Set<string>();
+    return new Set(currentChapter.evidenceIds.filter((id) => unlockedSet.has(id)));
+  }, [currentChapter, unlockedSet]);
+  const newIds = useMemo(
+    () => new Set(unlocked.filter((id) => !initialUnlocked.has(id))),
+    [unlocked, initialUnlocked],
+  );
+  const selectedEvidence = selectedId
+    ? (caseData.evidence.find((evidence) => evidence.id === selectedId) ?? null)
+    : null;
+
+  const evidenceByRound = useMemo(
+    () => buildEvidenceByRound(caseData, unlockedSet),
+    [caseData, unlockedSet],
+  );
+
   return (
-    <div className="rounded-2xl border border-white/10 px-4 py-3">
-      <p className="text-xs uppercase tracking-[0.2em] text-[#a6a29a]">{evidence.category}</p>
-      <p className="mt-1 text-base font-semibold">{evidence.title}</p>
-      <p className="mt-1 text-sm leading-6 text-[#cfc8ba]">{evidence.description}</p>
-    </div>
+    <aside className="mt-8 rounded-3xl border border-[#c8a46a]/25 bg-black/25">
+      <button
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+      >
+        <span>
+          <span className="block text-xs uppercase tracking-[0.24em] text-[#c8a46a]">
+            Digital case file
+          </span>
+          <span className="mt-1 block text-sm text-[#cfc8ba]">
+            {unlocked.length} unlocked evidence item{unlocked.length === 1 ? "" : "s"}
+          </span>
+        </span>
+        <span className="flex items-center gap-2">
+          {newIds.size > 0 ? (
+            <span className="rounded-full bg-[#c8a46a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-950">
+              {newIds.size} new
+            </span>
+          ) : null}
+          <span className="text-sm text-[#a6a29a]">{expanded ? "Hide" : "Open"}</span>
+        </span>
+      </button>
+
+      {expanded ? (
+        <div className="border-t border-white/10 p-4">
+          {unlocked.length === 0 ? (
+            <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-[#a6a29a]">
+              Evidence will appear here as soon as the host or an interview unlocks it.
+            </p>
+          ) : (
+            <EvidenceRoundPicker
+              evidenceByRound={evidenceByRound}
+              selectedId={selectedId}
+              onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
+              newIds={newIds}
+              justUnlockedIds={justUnlockedIds}
+            />
+          )}
+
+          {selectedEvidence ? (
+            <EvidenceInspector
+              key={selectedEvidence.id}
+              variant="embedded"
+              caseData={caseData}
+              evidence={selectedEvidence}
+              onClose={() => setSelectedId(null)}
+            />
+          ) : null}
+        </div>
+      ) : null}
+    </aside>
   );
 }
 

@@ -1,0 +1,188 @@
+{
+  "suspectId": "anya",
+  "conditions": {
+    "secret:thakur-witness": [
+      {
+        "name": "payments evidence and gentle question about Rohan",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-payments"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Anya-ji, I know this is about your son's future, not just money. These records show Bisht paid for Rohan's education for fifteen years. Can you tell us why he did that?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      },
+      {
+        "name": "payments evidence and asks about old Thakur statement",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-payments"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You worked for the Thakurs. Did you tell young Devraj anything before or after the robbery that later disappeared from the file?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      },
+      {
+        "name": "right question but no payments evidence",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did Bisht pay for Rohan's education to keep you quiet?" }
+        ]
+      },
+      {
+        "name": "payments evidence but hostile bought accusation",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-payments"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You sold the Thakurs for school fees. How much did your silence cost?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      },
+      {
+        "name": "payments evidence but asks current cleaning job only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-payments"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How many days a week did you clean Vikram's cottage?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      }
+    ],
+
+    "secret:grey-lady-self": [
+      {
+        "name": "shawl and bus ticket presented and asks if she was Grey Lady",
+        "expected": "met",
+        "presentedEvidenceIds": ["grey-shawl-fresh", "anya-bus-ticket"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The freshly washed grey shawl and your late bus ticket put you on the road. Were you the Grey Lady watching Vikram?",
+            "presentedEvidenceId": "grey-shawl-fresh"
+          }
+        ]
+      },
+      {
+        "name": "shawl and bus ticket presented and asks about warning Vikram",
+        "expected": "met",
+        "presentedEvidenceIds": ["grey-shawl-fresh", "anya-bus-ticket"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you walking Camel's Back Road in that shawl because you were trying to warn Vikram?",
+            "presentedEvidenceId": "anya-bus-ticket"
+          }
+        ]
+      },
+      {
+        "name": "only shawl evidence",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["grey-shawl-fresh"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you the Grey Lady on Camel's Back Road?",
+            "presentedEvidenceId": "grey-shawl-fresh"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but asks ghost story generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["grey-shawl-fresh", "anya-bus-ticket"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Have people in Mussoorie always told ghost stories about Camel's Back Road?",
+            "presentedEvidenceId": "grey-shawl-fresh"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but hostile stalker framing",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["grey-shawl-fresh", "anya-bus-ticket"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You were stalking Vikram in that shawl every night, weren't you?",
+            "presentedEvidenceId": "grey-shawl-fresh"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:timeline-gap": [
+      {
+        "name": "all three evidence pieces and asks where she went",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-bus-ticket", "anya-payments", "vikram-research-notes"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Your bus was at 9:15, but Vikram's notes name you as a witness and the payments connect you to Bisht. Where did you go after leaving the cottage?",
+            "presentedEvidenceId": "vikram-research-notes"
+          }
+        ]
+      },
+      {
+        "name": "all three evidence pieces and asks if she warned Bisht",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-bus-ticket", "anya-payments", "vikram-research-notes"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Did you go to the Royal Pines and tell Bisht that Vikram had found the Thakur research?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      },
+      {
+        "name": "missing research notes",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-bus-ticket", "anya-payments"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Where were you between 7:30 and the 9:15 bus? Did you go to Bisht?",
+            "presentedEvidenceId": "anya-bus-ticket"
+          }
+        ]
+      },
+      {
+        "name": "all evidence but asks Grey Lady only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-bus-ticket", "anya-payments", "vikram-research-notes"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you the Grey Lady people saw on Camel's Back Road?",
+            "presentedEvidenceId": "anya-bus-ticket"
+          }
+        ]
+      },
+      {
+        "name": "all evidence but hostile killer framing",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-bus-ticket", "anya-payments", "vikram-research-notes"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You killed Vikram too. Stop pretending you are a victim.",
+            "presentedEvidenceId": "vikram-research-notes"
+          }
+        ]
+      }
+    ]
+  }
+}

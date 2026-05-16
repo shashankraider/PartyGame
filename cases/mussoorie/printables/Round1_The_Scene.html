@@ -21,6 +21,8 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
+
   body {
     background: #2a2520;
     font-family: 'Merriweather', Georgia, serif;
@@ -568,7 +570,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 1: CRIME SCENE SUMMARY ═══════════ -->
-<div class="evidence-item">
+<div id="crime-scene-summary" class="evidence-item">
   <div class="evidence-tab">Exhibit A</div>
   <div class="evidence-header">
     <h3>Crime Scene Overview &mdash; Camel's Back Road</h3>
@@ -614,7 +616,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 2: POLICE REPORT ═══════════ -->
-<div class="evidence-item">
+<div id="police-report" class="evidence-item">
   <div class="evidence-tab">Exhibit B</div>
   <div class="evidence-header">
     <h3>Mussoorie Police Station &mdash; Incident Report</h3>
@@ -680,7 +682,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 3: ANONYMOUS LETTER ═══════════ -->
-<div class="evidence-item">
+<div id="anonymous-letter-1" class="evidence-item">
   <div class="evidence-tab">Exhibit C</div>
   <div class="evidence-header">
     <h3>Anonymous Letter to CBI Dehradun</h3>
@@ -716,7 +718,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 4: INSTAGRAM STORIES ═══════════ -->
-<div class="evidence-item">
+<div id="instagram-grey-lady" class="evidence-item">
   <div class="evidence-tab">Exhibit D</div>
   <div class="evidence-header">
     <h3>Vikram Singh &mdash; Instagram Stories (Archived)</h3>
@@ -801,7 +803,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 5: YOUTUBE CHANNEL ═══════════ -->
-<div class="evidence-item">
+<div id="youtube-channel-page" class="evidence-item">
   <div class="evidence-tab">Exhibit E</div>
   <div class="evidence-header">
     <h3>Hidden Mussoorie YouTube Channel &mdash; Scheduled Upload</h3>
@@ -851,256 +853,12 @@
   </div>
 </div>
 
-<!-- ═══════════ EVIDENCE 6: NAINA'S CORPORATE MEMO ═══════════ -->
-<div class="evidence-item">
+<!-- ═══════════ EVIDENCE 6: WORKING WALL ═══════════ -->
+<div id="vikram-working-wall" class="evidence-item">
   <div class="evidence-tab">Exhibit F</div>
   <div class="evidence-header">
-    <h3>Memo &mdash; Rhea Bhatia / Metropolis Media Inquiry</h3>
-    <span class="evidence-number">CBI/EX/006</span>
-  </div>
-  <div class="evidence-body">
-    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:10px;">
-      Source: Vikram Singh's personal email (forwarded attachment) &bull; Sender: Naina Kapoor &bull; Subject: "Re: the thing you asked about &mdash; rough notes only" &bull; Dated: 9 days before death &bull; Two pages
-    </div>
-    <div style="background:white; border:1px solid #ddd; padding:24px; font-family:'Courier Prime',monospace; font-size:12px; line-height:1.55;">
-      <div style="font-size:11px; color:#777; margin-bottom:18px; letter-spacing:0.04em;">
-        FOR VS ONLY. NOT FOR PUBLICATION. SOURCING ON REQUEST.
-      </div>
-
-      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">1. ACQUISITION ACTIVITY</div>
-      <div style="margin-bottom:14px;">
-        Metropolis Media (Delhi, est. 2019) is a creator-economy holding company. Two confirmed acquisitions of mid-sized Indian YouTube channels in the last 18 months. Their M&amp;A lead is <u>Dhruv Sehgal</u> &mdash; spotted at three Delhi industry events in the last six weeks. He is being introduced to creators in a way that says he is shopping, not browsing.
-      </div>
-
-      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">2. RHEA-SPECIFIC</div>
-      <div style="margin-bottom:14px;">
-        Two independent sources confirm Rhea has been in "preliminary conversations" with Sehgal for approximately four months. One source claims a term sheet exists. The second source will not be drawn on it. Separately: Rhea has been telling people at parties that the channel is <em>"in transition."</em> That phrasing is consistent with someone preparing to sell a brand they don't fully own.
-      </div>
-
-      <div style="font-weight:bold; font-size:13px; margin-bottom:8px;">3. WHAT I CAN'T TELL YOU</div>
-      <div style="margin-bottom:18px;">
-        I cannot verify the financial picture without internal access. Pull the channel's Stripe statements yourself. Look at any unusual expense routing. Check whether Rhea's signature is on disbursements you did not authorise.<br><br>
-        If she's doing what I think she's doing, the books will show it.<br>
-        I can't see the books.<br><br>
-        &mdash; N.
-      </div>
-
-      <div style="border-top:1px dashed #bbb; padding-top:12px; font-family:'Special Elite',cursive; font-size:13px; color:#444;">
-        <em>[handwritten in Vikram's hand, margin of section 2:]</em> <span style="color:#222;">pull stripe</span>
-      </div>
-    </div>
-    <div class="handwritten-note">
-      CBI Note: Forwarded to Vikram nine days before he died. He read it &mdash; highlights on two paragraphs, the marginal note "pull stripe" in his hand. He did not reply to the sender, did not forward it onward, and as far as can be determined did not pull the Stripe statements before his death. The memo confirms what Vikram suspected about Rhea and the channel sale. It cannot, on its own, prove embezzlement. The author is Naina Kapoor &mdash; the victim's ex-fiancée and, by profession, a corporate-investigations journalist.
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ EVIDENCE 7: VIKRAM-NAINA WHATSAPP THREAD ═══════════ -->
-<div class="evidence-item">
-  <div class="evidence-tab">Exhibit G</div>
-  <div class="evidence-header">
-    <h3>WhatsApp Thread &mdash; Vikram &amp; Naina, Last 30 Days</h3>
-    <span class="evidence-number">CBI/EX/007</span>
-  </div>
-  <div class="evidence-body">
-    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:10px;">
-      Source: Vikram's iCloud backup &bull; Extracted under court order &bull; Excerpts shown; full thread on file
-    </div>
-
-    <div style="background:#e5ddd5; border:1px solid #ccc; padding:18px; max-width:520px; margin:0 auto;">
-      <!-- VS to NK: request -->
-      <div style="margin-bottom:10px;">
-        <div style="background:#dcf8c6; border-radius:8px; padding:10px 12px; max-width:80%; margin-left:auto; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          naina &mdash; favour. you still doing the corporate stuff or just designing now? quietly &mdash; what do you know about a company called Metropolis Media. and rhea.
-          <div style="font-size:9px; color:#7a8a7a; text-align:right; margin-top:4px;">VS &bull; [Day -23] 14:08 &#10003;&#10003;</div>
-        </div>
-      </div>
-
-      <!-- NK reply -->
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          still doing it. give me a week.
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -23] 15:01</div>
-        </div>
-      </div>
-
-      <!-- NK memo delivery -->
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          memo attached. rough notes only. sourcing on request. read section 3 first.<br>
-          <span style="display:inline-block; margin-top:6px; padding:6px 10px; background:#f4f0e0; border:1px solid #d6cfa9; font-family:'Courier Prime',monospace; font-size:11px;">&#128196; Rhea_Metropolis_memo.pdf &bull; 2 pages</span>
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -9] 11:22</div>
-        </div>
-      </div>
-
-      <!-- VS thanks -->
-      <div style="margin-bottom:10px;">
-        <div style="background:#dcf8c6; border-radius:8px; padding:10px 12px; max-width:80%; margin-left:auto; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          this is &mdash; yeah. thank you. drinks on me next time delhi.
-          <div style="font-size:9px; color:#7a8a7a; text-align:right; margin-top:4px;">VS &bull; [Day -9] 18:47 &#10003;&#10003;</div>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div style="text-align:center; font-family:'Courier Prime',monospace; font-size:10px; color:#888; margin:14px 0;">
-        &mdash; no reply from VS after this point &mdash;
-      </div>
-
-      <!-- NK follow-ups, professional -->
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          hey &mdash; did you pull the stripe stuff? want me to dig further on sehgal?
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -7] 09:14</div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          i know a forensic accountant in gurgaon if you need one. say the word.
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -6] 22:50</div>
-        </div>
-      </div>
-
-      <!-- NK follow-ups, drift -->
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          you ok?
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -4] 23:11</div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          are you avoiding me or avoiding the work
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -3] 17:02</div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:10px;">
-        <div style="background:white; border-radius:8px; padding:10px 12px; max-width:80%; font-family:'Helvetica Neue',sans-serif; font-size:12px; line-height:1.45;">
-          pick up na
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; [Day -2] 02:47</div>
-        </div>
-      </div>
-
-      <!-- NK call attempts -->
-      <div style="margin-bottom:6px;">
-        <div style="background:#f4f0e0; border:1px dashed #c8b97a; border-radius:8px; padding:8px 12px; max-width:80%; font-family:'Courier Prime',monospace; font-size:11px; color:#555;">
-          &#128222; Voice call &bull; No answer &bull; 0:00<br>
-          &#128222; Voice call &bull; No answer &bull; 0:00<br>
-          &#128222; Voice call &bull; No answer &bull; 0:00<br>
-          &#128222; Voice call &bull; Unreachable &bull; 0:00
-          <div style="font-size:9px; color:#999; margin-top:4px;">NK &bull; final 48 hours &bull; 23 attempts total</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="handwritten-note">
-      CBI Note: The thread tells a story without commentary. He asked her for a serious favour. She delivered it. He thanked her, then went silent. Her messages drift over a week from professional follow-up ("did you pull the stripe stuff") into something quieter and harder to name ("are you avoiding me or avoiding the work"). The 23-call pattern in the final 48 hours matches the carrier records (see Round 2 phone-log dossier). Nothing in the thread suggests she knew he was in physical danger. Everything in it suggests she knew something was wrong.
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ EVIDENCE 8: VOICE MEMO TRANSCRIPT ═══════════ -->
-<div class="evidence-item">
-  <div class="evidence-tab">Exhibit H</div>
-  <div class="evidence-header">
-    <h3>Voice Memo &mdash; Recorded 11:42 PM, [Day &minus;2]</h3>
-    <span class="evidence-number">CBI/EX/008</span>
-  </div>
-  <div class="evidence-body">
-    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:10px;">
-      Source: Vikram's iCloud backup &bull; Voice Memos app &bull; Duration 1:47 &bull; Filed without a name, between two other untitled recordings &bull; Transcript follows
-    </div>
-
-    <!-- Phone recording-app chrome -->
-    <div style="background:#1c1c1e; color:#f2f2f7; padding:18px 22px; max-width:480px; margin:0 auto; border-radius:18px; font-family:'Helvetica Neue',sans-serif;">
-      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
-        <div style="font-size:13px; color:#8e8e93; letter-spacing:0.04em;">VOICE MEMOS</div>
-        <div style="font-size:11px; color:#8e8e93;">[Day &minus;2] &bull; 11:42 PM</div>
-      </div>
-      <div style="font-size:17px; font-weight:600; margin-bottom:14px;">New Recording 184</div>
-
-      <!-- Waveform mock -->
-      <div style="display:flex; align-items:center; gap:2px; height:38px; margin-bottom:6px;">
-        <div style="width:2px; height:8px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:18px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:28px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:14px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:32px; background:#bababd;"></div>
-        <div style="width:2px; height:10px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:22px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:30px; background:#bababd;"></div>
-        <div style="width:2px; height:6px; background:#3a3a3d;"></div>
-        <div style="width:2px; height:24px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:18px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:32px; background:#bababd;"></div>
-        <div style="width:2px; height:16px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:8px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:28px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:20px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:34px; background:#dadadd;"></div>
-        <div style="width:2px; height:12px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:22px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:30px; background:#bababd;"></div>
-        <div style="width:2px; height:14px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:8px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:24px; background:#9a9a9d;"></div>
-        <div style="width:2px; height:18px; background:#7a7a7d;"></div>
-        <div style="width:2px; height:32px; background:#bababd;"></div>
-        <div style="width:2px; height:10px; background:#5a5a5d;"></div>
-        <div style="width:2px; height:6px; background:#3a3a3d;"></div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#8e8e93; font-family:'Courier Prime',monospace;">
-        <div>00:00</div>
-        <div>1:47</div>
-      </div>
-    </div>
-
-    <!-- Transcript -->
-    <div style="background:white; border:1px solid #ddd; padding:22px; margin-top:18px; font-family:'Special Elite',cursive; font-size:13px; line-height:1.75; color:#222;">
-      <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#777; margin-bottom:14px; letter-spacing:0.04em;">
-        TRANSCRIPT &mdash; verbatim &bull; [pause] markers indicate &gt;1s silence
-      </div>
-
-      Okay. Okay. The Thakur thing keeps coming back. I can't make the episode work without it but I can't prove it. Bisht's land &mdash; that's clean on paper, all the registry stuff routes through shell companies but the timeline lines up too well, it's not a coincidence. And the rifle. The rifle is the rifle, I'm sure of it, I just can't say so on camera without &mdash;<br><br>
-
-      <em>[pause]</em><br><br>
-
-      &mdash; Anya knows. Anya knows something. She won't sit down with me. Three times now. She's not avoiding me, she's avoiding the question. Hm.<br><br>
-
-      <em>[pause]</em><br><br>
-
-      Rhea is going to be a problem when this drops. She'll see the numbers in the edit suite before anyone else does and she'll know I know. Channel sale, she thinks I haven't noticed, I've noticed. Whatever.<br><br>
-
-      <em>[pause]</em><br><br>
-
-      Naina &mdash; I owe Naina a call. I owe her the call. She did the thing and I haven't even &mdash; god.<br><br>
-
-      <em>[pause]</em><br><br>
-
-      Kabir, god, Kabir. The thesis thing is a sideshow but if I name him it'll come up and his career is &mdash; I haven't decided. I haven't decided.<br><br>
-
-      <em>[pause]</em><br><br>
-
-      Devraj. Three pages. Three pages on a death investigation. He didn't even &mdash;<br><br>
-
-      <span style="color:#a33; font-family:'Courier Prime',monospace; font-size:11px;">[AUDIO CUTS OFF &bull; phone battery log: 1% at 11:43:49 PM]</span>
-    </div>
-
-    <div class="handwritten-note">
-      CBI Note: Filed with no name in his Voice Memos app, between two other untitled recordings. He kept dozens of late-night recordings like this. This is how he worked. The memo names every suspect on his mind that week with a mix of certainty, suspicion, and unfinished thought. Note the partial sentences ("I haven't decided," "I owe Naina a call. I owe her the call") and the missing connection &mdash; he is certain Bisht ordered the original Thakur killings and certain Devraj buried that file, but at no point in this recording does he say the words "Bisht to Devraj." He had not yet drawn the line that mattered.
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ EVIDENCE 9: WORKING WALL ═══════════ -->
-<div class="evidence-item">
-  <div class="evidence-tab">Exhibit I</div>
-  <div class="evidence-header">
     <h3>Working Wall &mdash; Vikram's Cottage Study</h3>
-    <span class="evidence-number">CBI/EX/009</span>
+    <span class="evidence-number">CBI/EX/006</span>
   </div>
   <div class="evidence-body">
     <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:14px;">

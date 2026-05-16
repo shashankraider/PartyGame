@@ -56,9 +56,9 @@ describe("Mussoorie case", () => {
 
     const perRound = { 1: 0, 2: 0, 3: 0, 4: 0 };
     for (const e of c.evidence) perRound[e.revealedInRound]++;
-    assert.equal(perRound[1], 7, "Round 1 should have 7 evidence items");
+    assert.equal(perRound[1], 6, "Round 1 should have 6 evidence items");
     assert.equal(perRound[2], 9, "Round 2 should have 9 evidence items");
-    assert.equal(perRound[3], 8, "Round 3 should have 8 evidence items");
+    assert.equal(perRound[3], 9, "Round 3 should have 9 evidence items");
     assert.equal(perRound[4], 6, "Round 4 should have 6 evidence items");
   });
 

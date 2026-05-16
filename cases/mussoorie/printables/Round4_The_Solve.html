@@ -12,6 +12,7 @@
     --blue-ink: #1a3a6b; --folder-tab: #c4a265; --evidence-bg: #faf6e8; --border-dark: #8b7d5e;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
   body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
   @media print {
     body { background: white; padding: 0; }
@@ -161,7 +162,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 21: PHONE RECORDS BISHT-DEVRAJ ═══════════ -->
-<div class="evidence-item">
+<div id="bisht-devraj-call" class="evidence-item">
   <div class="evidence-tab">Exhibit U</div>
   <div class="evidence-header">
     <h3>Call Detail Records &mdash; Bisht to Devraj, Night of Murder</h3>
@@ -207,7 +208,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 22: CCTV DEVRAJ'S JEEP ═══════════ -->
-<div class="evidence-item">
+<div id="devraj-jeep-cctv" class="evidence-item">
   <div class="evidence-tab">Exhibit V</div>
   <div class="evidence-header">
     <h3>CCTV Footage &mdash; Devraj's Police Jeep Near Crime Scene</h3>
@@ -257,7 +258,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 23: POST-MORTEM ═══════════ -->
-<div class="evidence-item">
+<div id="lathi-postmortem" class="evidence-item">
   <div class="evidence-tab">Exhibit W</div>
   <div class="evidence-header">
     <h3>Independent Post-Mortem Report (CBI-Ordered)</h3>
@@ -311,7 +312,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 24: ANYA'S GREY SHAWL ═══════════ -->
-<div class="evidence-item">
+<div id="grey-shawl-fresh" class="evidence-item">
   <div class="evidence-tab">Exhibit X</div>
   <div class="evidence-header">
     <h3>Evidence Bag &mdash; Anya Devi's Grey Shawl</h3>
@@ -339,7 +340,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 25: BISHT'S PAYMENTS TO ANYA ═══════════ -->
-<div class="evidence-item">
+<div id="anya-payments" class="evidence-item">
   <div class="evidence-tab">Exhibit Y</div>
   <div class="evidence-header">
     <h3>Bank Records &mdash; Payments to Anya Devi's Son</h3>
@@ -392,7 +393,7 @@
 </div>
 
 <!-- ═══════════ EVIDENCE 26: VIKRAM'S RECOVERED NOTES ═══════════ -->
-<div class="evidence-item">
+<div id="vikram-research-notes" class="evidence-item">
   <div class="evidence-tab">Exhibit Z</div>
   <div class="evidence-header">
     <h3>Vikram's Research Notes &mdash; Partially Recovered from Laptop</h3>

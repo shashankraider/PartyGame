@@ -1,0 +1,261 @@
+{
+  "suspectId": "bisht",
+  "conditions": {
+    "secret:father-and-thakurs": [
+      {
+        "name": "family-history evidence and asks about father motive",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "This record says Brigadier Thakur had your father's hotel licence revoked. Did that give you a motive against the Thakur family?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      },
+      {
+        "name": "family-history evidence and asks about Harish directly",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Tell us about Harish Bisht. What did the Brigadier's licence dispute do to your father?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      },
+      {
+        "name": "right question but evidence not presented",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did Brigadier Thakur destroy your father?" }
+        ]
+      },
+      {
+        "name": "evidence presented but asks about business success generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How did you build the Royal Pines into such a successful hotel?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      },
+      {
+        "name": "murder accusation without father history",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You ordered the Thakur killings, didn't you?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      }
+    ],
+
+    "secret:the-rifle": [
+      {
+        "name": "both rifle images and asks why it is in his office",
+        "expected": "met",
+        "presentedEvidenceIds": ["wall-mount-photo", "office-rifle-photo"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The empty wall mount at Thakur Cottage matches the British-era rifle photographed in your office. Why is their stolen rifle on your wall?",
+            "presentedEvidenceId": "office-rifle-photo"
+          }
+        ]
+      },
+      {
+        "name": "both rifle images and challenges collector explanation",
+        "expected": "met",
+        "presentedEvidenceIds": ["wall-mount-photo", "office-rifle-photo"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Two photographs prove a very specific match. Is your collector's piece actually the Thakur rifle?",
+            "presentedEvidenceId": "wall-mount-photo"
+          }
+        ]
+      },
+      {
+        "name": "only one rifle image",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["office-rifle-photo"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Why is there an old British rifle mounted in your office?",
+            "presentedEvidenceId": "office-rifle-photo"
+          }
+        ]
+      },
+      {
+        "name": "both images but asks antiques generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["wall-mount-photo", "office-rifle-photo"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Do you collect many antiques from the British period?",
+            "presentedEvidenceId": "office-rifle-photo"
+          }
+        ]
+      }
+    ],
+
+    "secret:land-shells": [
+      {
+        "name": "registry presented and asks about Highland Properties",
+        "expected": "met",
+        "presentedEvidenceIds": ["land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The land registry traces Highland Properties through shell companies back to your trust. Why hide the Thakur-adjacent purchases?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "registry presented and asks about shell ownership",
+        "expected": "met",
+        "presentedEvidenceIds": ["land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were the trusts buying plots around Thakur Cottage controlled by you?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "right question without registry",
+        "expected": "not-met",
+        "transcript": [
+          { "role": "user", "content": "Did you use shell companies to buy the Thakur land?" }
+        ]
+      },
+      {
+        "name": "registry presented but asks land prices generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Are land prices in Mussoorie difficult for hotel developers?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:the-call": [
+      {
+        "name": "call and cctv gap presented and asks about private call",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-devraj-call", "bisht-hotel-cctv-log"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Your call to Devraj begins exactly as the Royal Pines CCTV goes into its 8:00 PM maintenance gap. Did you use that gap to call him privately?",
+            "presentedEvidenceId": "bisht-devraj-call"
+          }
+        ]
+      },
+      {
+        "name": "call and cctv gap presented and asks about timing",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-devraj-call", "bisht-hotel-cctv-log"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Why did your 47-second call to Devraj happen during the only 15 minutes the Royal Pines cameras were down?",
+            "presentedEvidenceId": "bisht-hotel-cctv-log"
+          }
+        ]
+      },
+      {
+        "name": "call only without cctv gap",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-devraj-call"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Why did you call Devraj at 8 PM?",
+            "presentedEvidenceId": "bisht-devraj-call"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but friendship question only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-devraj-call", "bisht-hotel-cctv-log"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How long have you and Inspector Khanna been friends?",
+            "presentedEvidenceId": "bisht-devraj-call"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:framed-defence": [
+      {
+        "name": "all evidence and ties Anya payments, land, Devraj together",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-payments", "land-registry", "bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The payments to Anya, the Thakur land trail, and your father's motive all point to you using Devraj as your weapon. Is that the structure?",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      },
+      {
+        "name": "all evidence and asks if Devraj is scapegoat",
+        "expected": "met",
+        "presentedEvidenceIds": ["anya-payments", "land-registry", "bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You paid Anya, you acquired the Thakur land, and Devraj buried the file. Are you now trying to push all of this onto Devraj?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "missing Anya payments",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["land-registry", "bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "The land trail and your father's motive point to you using Devraj as a weapon.",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "all evidence but casual accusation",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["anya-payments", "land-registry", "bisht-family-history"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You are clearly guilty. Just admit it.",
+            "presentedEvidenceId": "anya-payments"
+          }
+        ]
+      }
+    ]
+  }
+}

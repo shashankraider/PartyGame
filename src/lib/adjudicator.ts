@@ -84,19 +84,45 @@ function buildSystemPrompt(): string {
     "- The `reason` field is a one-sentence justification (max 25 words).",
     "- You are NOT generating roleplay or dialogue. You are judging a transcript.",
     "- If the condition has not been met, return false — do not be overly generous.",
+    "- When the user message includes a section titled COMPOUND EVIDENCE GATE (already satisfied), those exhibit IDs are confirmed on the table for this interview. A single transcript line may only show one [evidence presented: ...] tag; still treat every listed ID as established context when judging the cooperation cue.",
     "- The condition's cue is the entire criterion. Do not add criteria of your own.",
     "",
     "Reply with strict JSON only, no prose, no Markdown fences.",
   ].join("\n");
 }
 
+function formatCompoundEvidenceLines(caseData: Case, evidenceIds: string[]): string {
+  return evidenceIds
+    .map((id) => {
+      const ev = caseData.evidence.find((item) => item.id === id);
+      return ev ? `- ${id}: ${ev.title}` : `- ${id}`;
+    })
+    .join("\n");
+}
+
 function buildUserPrompt(input: AdjudicatorInput): string {
-  const { suspect, condition, transcript } = input;
+  const { caseData, suspect, condition, transcript } = input;
   const cue = condition.unlockBehavior.cooperationCue ?? "(no cue provided)";
+  const behavior = condition.unlockBehavior;
+
+  let compoundEvidenceBlock = "";
+  if (
+    behavior.tier === "compound" &&
+    behavior.evidenceIds?.length &&
+    evidencePresentedSatisfied(behavior.evidenceIds, condition.presentedEvidenceIdsInThisConversation)
+  ) {
+    compoundEvidenceBlock = [
+      "",
+      "COMPOUND EVIDENCE GATE (already satisfied for this judgment call):",
+      "These exhibits are already on the table in this conversation. The transcript may show only one [evidence presented: ...] tag on the latest turn; the session has still established the full set below:",
+      formatCompoundEvidenceLines(caseData, behavior.evidenceIds),
+      "",
+    ].join("\n");
+  }
 
   return [
     `SUSPECT: ${suspect.name}${suspect.shortDescription ? ` — ${suspect.shortDescription}` : ""}`,
-    "",
+    compoundEvidenceBlock,
     "CONDITION CUE:",
     cue,
     "",

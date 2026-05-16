@@ -1,0 +1,172 @@
+{
+  "suspectId": "rhea",
+  "conditions": {
+    "secret:embezzlement": [
+      {
+        "name": "draft email presented and asks about Metropolis sale",
+        "expected": "met",
+        "presentedEvidenceIds": ["rhea-draft-email"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Rhea, we have your draft email to Metropolis Media. Why were you negotiating to sell Hidden Mussoorie without Vikram copied?",
+            "presentedEvidenceId": "rhea-draft-email"
+          }
+        ]
+      },
+      {
+        "name": "draft email presented and asks about missing channel money",
+        "expected": "met",
+        "presentedEvidenceIds": ["rhea-draft-email"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "This draft sale email talks about valuation and transition payments. Was there channel revenue Vikram did not know you were taking?",
+            "presentedEvidenceId": "rhea-draft-email"
+          }
+        ]
+      },
+      {
+        "name": "right question but no evidence presented",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you negotiating to sell the channel behind Vikram's back?"
+          }
+        ]
+      },
+      {
+        "name": "evidence presented but vague channel question",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["rhea-draft-email"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How did you and Vikram usually split the creative work on the channel?",
+            "presentedEvidenceId": "rhea-draft-email"
+          }
+        ]
+      },
+      {
+        "name": "hostile murder accusation without sale or money",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["rhea-draft-email"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You inherited everything, so you killed him, didn't you?",
+            "presentedEvidenceId": "rhea-draft-email"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:morning-cctv": [
+      {
+        "name": "cctv presented and asks about 5 AM cottage entry",
+        "expected": "met",
+        "presentedEvidenceIds": ["building-cctv-rhea"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "This CCTV still shows you entering Vikram's cottage at 5:02 AM, before the body was found. Why were you there with a key?",
+            "presentedEvidenceId": "building-cctv-rhea"
+          }
+        ]
+      },
+      {
+        "name": "cctv presented and asks about wiping files",
+        "expected": "met",
+        "presentedEvidenceIds": ["building-cctv-rhea"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You were inside the cottage before anyone knew he was dead. Did you wipe the camera card or delete files from his laptop?",
+            "presentedEvidenceId": "building-cctv-rhea"
+          }
+        ]
+      },
+      {
+        "name": "right question but cctv not presented",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Were you inside Vikram's cottage at 5 AM using your spare key?"
+          }
+        ]
+      },
+      {
+        "name": "cctv presented but asks about Delhi alibi generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["building-cctv-rhea"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Can you walk us through your evening in Delhi again?",
+            "presentedEvidenceId": "building-cctv-rhea"
+          }
+        ]
+      },
+      {
+        "name": "hostile accusation without naming morning entry",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["building-cctv-rhea"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Stop lying. You wanted the channel and you killed Vikram for it.",
+            "presentedEvidenceId": "building-cctv-rhea"
+          }
+        ]
+      }
+    ],
+
+    "evidence:naina-corporate-memo": [
+      {
+        "name": "Rhea interview should not fire Naina-authored memo cue",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Rhea, did Vikram ever ask Naina to investigate Metropolis Media or your channel sale?"
+          }
+        ]
+      },
+      {
+        "name": "off-topic Rhea question does not fire Naina memo cue",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How did you and Vikram decide which videos to release on the channel?"
+          }
+        ]
+      }
+    ],
+
+    "evidence:vikram-naina-whatsapp": [
+      {
+        "name": "Rhea interview should not fire Naina WhatsApp cue",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Rhea, did Vikram mention receiving WhatsApp messages from Naina?"
+          }
+        ]
+      },
+      {
+        "name": "off-topic Rhea alibi question does not fire Naina WhatsApp cue",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Where were you on the evening Vikram died?"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,9 +1,48 @@
-# Claude Handoff — Mystery Engine
+# Mystery Engine — Handoff
 
-**Last updated**: 2026-05-15  
-**Current phase**: Phase 2g.1 shipped for Naina. Phase 2g.2 next — author unlock cues for the remaining five suspects (or Phase 2h — Realtime infrastructure)
+**Last updated**: 2026-05-15
+**Current phase**: Phase 2g.2 complete. All six Mussoorie suspects now have authored adjudicator unlock cues and eval coverage; next recommended phase is Phase 2h (Realtime infrastructure + token streaming).
+**Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` were created for the failed parallel attempt and are no longer needed for mainline work.
 
-This document is a running handoff for continuing development with Claude or another coding agent. It summarizes the product, repo state, completed work, verification commands, and the next useful development prompt.
+This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
+
+---
+
+## ⚡ Pickup TL;DR (read first)
+
+If you're a new agent (Cursor included) taking over this project:
+
+1. **Run the verification suite first**, before touching anything:
+   ```bash
+   cd /Users/shashankmendiratta/shire/PartyGame
+   npm install                 # if node_modules isn't current
+   npm run validate-cases      # expect: 0 errors, 15 expected asset warnings
+   npm test                    # expect: 72/72 passing
+   npm run eval:adjudicator -- all  # expect: 104/104 passing
+   npm run lint                # expect: clean
+   npm run build               # expect: clean build, all routes registered
+   ```
+   If anything fails here, **stop and investigate before continuing** — the state is not what this doc describes.
+
+2. **Read `docs/CLAUDE_HANDOFF.md` end-to-end** (this file). The most important sections after this TL;DR:
+   - "Completed Work" — every shipped phase with its concrete artifacts.
+   - "Next Recommended Phase" — full brief on Phase 2h.
+   - "Phase 2g.2 — Author Unlock Cues for the Other Five Suspects" — now shipped; useful as historical context for cue design.
+
+3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
+
+4. **Local environment** required for Phase 2g.2:
+   - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
+   - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work).
+   - `OPENROUTER_API_KEY` is the only thing the eval script needs.
+
+5. **`Game_Bible.docx` is stale**; `cases/mussoorie/design.md` is the canonical narrative source.
+
+---
+
+## Why this doc exists
+
+This is a running handoff for continuing development across sessions and agents. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt.
 
 ---
 
@@ -32,11 +71,13 @@ Current status:
 - Phase 2e complete: chapter prerequisites enforced in advanceSessionChapter, TV evidence locker grouped by round with "new" markers, TV current-interviewer indicator, per-player accusation votes via accusation_votes table with live tally on TV and phone.
 - Phase 2f-stub complete: session-aware interview route POST/GET, OpenRouter non-streaming chat with phase-gated minimal prompt (publicAlibi + voice + neverReveal), full message persistence to messages table, "Ask suspect" button wired on phone, transcript polled and rendered on TV + non-interviewer phones at ~1.5s cadence. No token streaming and no adjudicator (deferred to Phase 2g for the adjudicator, Phase 2h for Realtime + true token streaming).
 - Phase 2g.1 complete (Naina-only proof-of-concept): unlockBehavior schema extension on Secret/BreakingPoint/Evidence with tier (cooperation/evidence/pressure/compound), 0003/0004 migrations adding 'system' role and interview_unlock_state table, adjudicator helper (`src/lib/adjudicator.ts`) doing per-condition JSON-output LLM calls with evidence-gate short-circuit and structured verdicts, unlock-evaluation pipeline (`src/lib/interview-unlocks.ts`) firing system messages and updating session.unlocked_evidence on met turns, two-pass roleplay in askSuspect that re-prompts with revealed text when an unlock fires so the suspect speaks the revelation in a single visible turn, host-fallback (`GET`/`POST /api/sessions/[id]/interview/host-unlock`) with TV banner when players are stuck (attempts > threshold AND max_adjacency < 0.4), in-interview evidence panels on phone + TV with NEW badges for items unlocked since the panel mounted, system messages styled distinctly in both transcripts, and the engine fix preventing the legacy chapter-mechanism from racing with dynamic unlocks (`getUnlockedEvidenceForChapter` skips evidence with unlockBehavior). Naina's four conditions authored with cooperation/compound tiers. Eval harness (`scripts/eval-adjudicator.ts` + `cases/mussoorie/evals/naina.eval.json`) gives a regression test for cue text.
+- Phase 2g.2 complete: authored unlockBehavior blocks for Rhea, Devraj, Bisht, Anya, and Kabir across their secrets and breaking points; added `cases/mussoorie/evals/{rhea,devraj,bisht,anya,kabir}.eval.json`; moved `vikram-voice-memo` from Round 1 to `r3-recap`; added a Round 3 printable voice-memo exhibit; updated the Mussoorie round-distribution pin test. `npm run eval:adjudicator -- all` passes 104/104 cases.
 
 Run and verify:
 - npm run dev
 - npm run validate-cases
 - npm test
+- npm run eval:adjudicator -- all
 - npm run lint
 - npm run build
 
@@ -52,7 +93,13 @@ Use .env.example as the template. For Phase 2b+ lobby flows, Supabase must be co
 - SUPABASE_SERVICE_ROLE_KEY
 
 Next task:
-Implement Phase 2g.2 — author unlock cues + eval cases for the remaining five suspects (Rhea, Devraj, Bisht, Anya, Kabir). All of the engine work is already shipped in 2g.1 (adjudicator, unlock-tier system, host fallback, two-pass roleplay, in-interview evidence panels, eval harness). 2g.2 is pure authoring on case.json + sibling eval files. Roughly 1-2 hours of writing using Naina's pattern as the template. Suspect tier guidance (locked in conversation):
+Implement Phase 2h — Realtime infrastructure + token streaming.
+
+⚠️ **Previous attempt blocked by org usage cap.** Five parallel sub-agents were spawned via the Anthropic Agent tool to author one suspect each in isolated workdirs. All five failed within seconds with "You've hit your org's monthly usage limit." No case-data work was produced. The isolated workdirs are still in place at `/Users/shashankmendiratta/shire/PartyGame-2g2-{rhea,devraj,bisht,anya,kabir}/` and can be reused by Cursor or any other client that picks this up. Each is a copy of `cases/` plus symlinks for everything else; `.env.local` is already in each.
+
+If you're picking up from Cursor: see the **"Phase 2g.2 — Parallel-Authoring Setup (Cursor pickup)"** section further down in this doc. It has the locked per-suspect tier design + key evidence + cue-narrowness guidance for each of the five.
+
+All of the engine work is already shipped in 2g.1 (adjudicator, unlock-tier system, host fallback, two-pass roleplay, in-interview evidence panels, eval harness). 2g.2 is pure authoring on case.json + sibling eval files. Roughly 1-2 hours of writing per suspect using Naina's pattern as the template. Suspect tier guidance (locked in conversation):
 
 - **Rhea** — evidence-tier or compound. Her secrets unlock when specific artifacts are presented (`building-cctv-rhea`, `rhea-draft-email`). Narrow cooperationCue: must directly name the channel sale, Metropolis Media, or the 5 AM cottage visit. Hostile/vague questions stay deflected.
 - **Devraj** — pressure-tier with low tolerance (pressureThreshold: 2-3, hostFallbackAfterTurns: 5-6). Breaks fast once the jeep CCTV + lathi post-mortem land. He's been waiting 15 years to be caught.
@@ -223,10 +270,26 @@ src/
     supabase.ts
 
 supabase/
-  migrations/0001_initial.sql
+  migrations/
+    0001_initial.sql
+    0002_accusation_votes.sql
+    0003_message_role_system.sql       # adds 'system' to message_role enum
+    0004_interview_unlock_state.sql    # Phase 2g per-condition state
 
 tests/
 ```
+
+### Sibling workdirs (Phase 2g.2 in-progress)
+
+In addition to the repo at `/Users/shashankmendiratta/shire/PartyGame/`, there are five sibling directories at `/Users/shashankmendiratta/shire/PartyGame-2g2-{rhea,devraj,bisht,anya,kabir}/` that were set up for parallel sub-agent authoring. Each contains:
+
+- A writable copy of `cases/` (the agent edits `cases/mussoorie/case.json` and creates `cases/mussoorie/evals/<suspect>.eval.json`).
+- A copied `.env.local` (so eval can find `OPENROUTER_API_KEY` without external setup).
+- Symlinks for `src/`, `scripts/`, `node_modules/`, `package.json`, `package-lock.json`, `tsconfig.json`, `eslint.config.mjs`, `next.config.ts`, `postcss.config.mjs` — all pointing back at the main repo so the agent reads the latest engine code.
+
+Inside any of these dirs, `npm run eval:adjudicator -- naina` should still report "All 29 case(s) matched expectations" because the symlinked `src/` and `scripts/` point at the same engine. Use that as a sanity check before authoring.
+
+If a new client (Cursor) ignores these workdirs and authors directly in the main repo, that's fine too — they were only needed for parallel agents to avoid clobbering one another's edits. Sequential or human-driven authoring in the main repo is simpler.
 
 ---
 
@@ -373,7 +436,129 @@ The old `/api/interview` route has been removed; all interview traffic flows thr
 
 ## Next Recommended Phase
 
-### Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback
+### Phase 2h — Realtime Infrastructure + Token Streaming
+
+Goal: replace the current polling loops with authenticated Supabase Realtime, then upgrade the session-scoped interview route from non-streaming OpenRouter calls to token-by-token streaming. See the Phase 2h section under "Later Phases" for the detailed implementation sketch.
+
+Likely first slice:
+- Add a server-side helper that mints short-lived session-scoped Realtime auth tokens.
+- Replace host/player polling for sessions, players, accusation votes, messages, and interview unlock state with Realtime subscriptions.
+- Convert `POST /api/sessions/[sessionId]/interview` to stream model tokens while updating the persisted message row incrementally.
+- Verify two simultaneous sessions cannot see each other's rows.
+
+### Recently Completed Reference — Phase 2g.2
+
+Phase 2g.2 is complete. Phase 2g.1 shipped a complete adjudicator + unlock-tier engine, end-to-end UI, and authored cues for Naina only; Phase 2g.2 added authored cues and eval coverage for Rhea, Devraj, Bisht, Anya, and Kabir.
+
+**Status of the previous attempt.** I tried to spawn five parallel sub-agents (one per suspect) via the Anthropic Agent tool. All five failed within seconds with "You've hit your org's monthly usage limit." The infrastructure they were supposed to use is still in place — five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-{rhea,devraj,bisht,anya,kabir}/`. Each is a copy of `cases/` plus symlinks for `src/`, `scripts/`, `node_modules/`, `package.json`, `tsconfig.json`, and `.env.local`. Each is ready to receive an agent's edits. Cursor (or any new client) can re-spawn the five tasks, or fold them into a single sequential authoring pass.
+
+**Where the per-suspect briefs already live.** The agent prompts I drafted contain the locked design decisions for each suspect's `unlockBehavior` tiering. They're in the agent-launch records but I'm reproducing the gist below so a new client can read them inline.
+
+Across all five suspects, the engine pattern is identical (one code path); difficulty comes entirely from the data. Each condition's `unlockBehavior` carries:
+
+- `tier`: `"cooperation"` | `"evidence"` | `"pressure"` | `"compound"`
+- `cooperationCue?`: natural-language description of the *player's question* that fires the unlock. **Critical:** this is read by the LLM as the literal criterion. Never write engine notes ("cascade", "same cue as Y") — those leak into runtime semantics.
+- `evidenceIds?`: artifacts that must be presented in conversation (required for `evidence` and `compound` tiers).
+- `pressureThreshold?`: how many `met: true` turns the engine waits for before firing the unlock. Defaults to 1.
+- `hostFallbackAfterTurns?`: when the host gets a "reveal manually?" prompt on the TV.
+
+#### Rhea Bhatia — business partner, tamperer (red herring)
+
+- **Tier**: evidence-tier or compound-tier.
+- **Key evidence**: `building-cctv-rhea` (5 AM cottage visit), `rhea-draft-email` (channel-sale negotiation).
+- **CooperationCue (narrow)**: must name the channel sale, name Metropolis Media, OR name the 5 AM cottage visit specifically. Vague business questions don't count. Hostile framing doesn't count — she becomes brittle, not honest.
+- **`pressureThreshold`**: 1-2.
+- **`hostFallbackAfterTurns`**: 8-10 (players supposed to work for this).
+- **Workdir**: `/Users/shashankmendiratta/shire/PartyGame-2g2-rhea/`
+
+#### Inspector Devraj Khanna — corrupt cop, executor
+
+- **Tier**: pressure-tier with low tolerance.
+- **Key evidence**: `devraj-jeep-cctv` (jeep at 8:10 PM contradicts station-all-night), `lathi-postmortem`, `bisht-devraj-call` (8 PM call from Bisht).
+- **CooperationCue**: questions that contradict his alibi (where he was, why the report is so thin) OR ask about his relationship with Bisht. Vague background questions don't fire. Calling him incompetent without evidence doesn't fire.
+- **Two emotional states the case supports**: defensive denial (low pressure, can deflect) and collapse (high pressure with evidence). Map separate secrets to those with different `pressureThreshold` values.
+- **`pressureThreshold`**: 2-3 for the collapse condition.
+- **`hostFallbackAfterTurns`**: 5-6 (he's been waiting 15 years to be caught; relatively low patience).
+- **Workdir**: `/Users/shashankmendiratta/shire/PartyGame-2g2-devraj/`
+
+#### Mr. Rajveer Bisht — hotelier, mastermind
+
+- **Tier**: compound-tier, effectively-infinite tolerance.
+- **Key evidence**: `land-registry`, `office-rifle-photo`, `wall-mount-photo`, `bisht-family-history`, `bisht-hotel-cctv-log`.
+- **CooperationCue (maximal)**: must have placed multiple specific artifacts in front of him AND directly accused him of ordering the Thakur murders. Even then, the cue should fire so narrowly it almost never triggers in casual play.
+- **Selective authoring**: secrets representing direct confession of ordering the murders should be **left without `unlockBehavior`** — those are owned by the `firstConfronted` endgame branching. Author `unlockBehavior` only for partial-admission secrets (acknowledging he knew the Thakurs, that Anya works for him, that he was aware of Vikram's research). Document which secrets you skipped and why.
+- **`pressureThreshold`**: 4+.
+- **`hostFallbackAfterTurns`**: 999 (host never gets prompted; players are supposed to fail to crack him mid-game).
+- **Workdir**: `/Users/shashankmendiratta/shire/PartyGame-2g2-bisht/`
+
+#### Anya Devi — housekeeper, accessory, the Grey Lady
+
+- **Tier mix**: cooperation for her witness account of the Thakurs and her relationship with Vikram (she wants to confess this part); compound for the Grey Lady identity and her warning to Bisht.
+- **Key evidence for compound conditions**: `grey-shawl-fresh` + `anya-bus-ticket` for Grey Lady identity. `anya-bus-ticket` + `anya-payments` for the warning to Bisht.
+- **CooperationCue (broad)**: gentle, respectful questions about her work, son, time with the Thakurs, her age in 2011. Hostile interrogation of an older Garhwali domestic worker should NOT fire — she goes silent.
+- **`hostFallbackAfterTurns`**: 6-8.
+- **Care note**: cue text should not frame her as malicious. She's a tragic accomplice carrying 15 years of guilt.
+- **Workdir**: `/Users/shashankmendiratta/shire/PartyGame-2g2-anya/`
+
+#### Prof. Kabir Iyer — college friend, coward, second-letter sender
+
+- **Tier mix**: cooperation for plagiarism admission (he's a coward, folds under polite pressure); evidence-tier (or compound with soft cue) for him being the second-letter sender.
+- **Key evidence**: `chai-shop-receipt` (argued with Vikram hours before the murder), `pawn-shop-receipt` (sold his watch to raise bribe money), plus any handwriting-match evidence (check `case.json`; design.md mentions handwriting analysis as a breaking-point trigger).
+- **CooperationCue (broad and forgiving)**: questions about the chai shop, his PhD/academic career, his college days with Vikram, or the plagiarism specifically. Threats to call his university would SHUT HIM DOWN — should not fire. He needs psychological safety to come clean.
+- **`hostFallbackAfterTurns`**: 4-5 (low patience; he wants to talk).
+- **Workdir**: `/Users/shashankmendiratta/shire/PartyGame-2g2-kabir/`
+
+#### Authoring workflow (per suspect)
+
+1. `cd` to the suspect's workdir (or work directly in `/Users/shashankmendiratta/shire/PartyGame` if you'd rather not use the isolated dirs).
+2. Read `cases/mussoorie/case.json` for that suspect's full block. Read `cases/mussoorie/design.md` section 7.{1-6} for canonical narrative.
+3. Read `cases/mussoorie/evals/naina.eval.json` — this is the template. Same shape for every other suspect.
+4. Read `cases/mussoorie/evals/README.md` — authoring gotchas. Most important:
+   - Cue describes **player behavior** ("interviewer asks X"), not suspect behavior.
+   - Never write engine notes into cue text ("cascade", "fires after Y") — the LLM reads it literally.
+   - For compound tier, evidence gate is necessary but NOT sufficient — the cue must still apply. Off-topic questions should fail even with evidence presented.
+5. Add `unlockBehavior` to each of the suspect's secrets and breakingPoints. Use `Edit` with the unique anchor of each condition's `"id"` field. Don't touch other suspects.
+6. Author `cases/mussoorie/evals/{suspect}.eval.json` with 4-6 test cases per condition. Required mix:
+   - Positive case (cue fires correctly).
+   - Hostile-framing case (should NOT fire — different per suspect).
+   - Off-topic case (should NOT fire).
+   - Adjacent-but-wrong case (close to the cue but missing the load-bearing element).
+   - For evidence/compound tier: evidence-presented-but-wrong-question case (should NOT fire).
+7. Run `npm run eval:adjudicator -- {suspect}` and iterate. If a case fails, EITHER tighten the cue OR fix the test expectation — pick one before re-running. Iterate until 100% pass.
+
+#### Merge step (after all five are authored)
+
+Each suspect's authoring touches:
+- A unique block in `cases/mussoorie/case.json`.
+- A unique new file at `cases/mussoorie/evals/{suspect}.eval.json`.
+
+If you used the isolated workdirs, merge by:
+1. For each `cases/mussoorie/evals/{suspect}.eval.json` — copy from the workdir to the main repo. New files, no conflicts.
+2. For `cases/mussoorie/case.json` — use a JSON merge or a diff-based approach. Each suspect's edits are scoped to their own block; there should be no conflicts as long as no agent strayed.
+3. After merge: from the main repo, run the full check suite:
+   ```bash
+   npm run validate-cases
+   npm test
+   npm run lint
+   npm run build
+   npm run eval:adjudicator -- all
+   ```
+   Expect 0 errors / 15 expected asset warnings / 72 tests / clean lint / clean build / all eval cases passing.
+
+If you worked directly in the main repo without using the isolated workdirs, just run the check suite.
+
+#### After 2g.2 ships
+
+Update this handoff doc:
+- Move 2g.2 to "Completed Work" with the actual artifacts produced.
+- Move the deferred items in the "Mussoorie cadence status" table (the `vikram-voice-memo` and Round1 printable Exhibits F/G cleanup) to either resolved or 2g.3.
+- Update "Current phase" line at the top.
+
+Then the next phase is **Phase 2h — Realtime infrastructure + token streaming** (see "Later Phases" below).
+
+---
+
+### Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)
 
 Goal: Make interview revelations *conditional* on what the player actually asks. Adds a second LLM call ("the adjudicator") that judges whether the player has earned the next unlock, plus a host-fallback intervention mechanic when players are stuck.
 
@@ -400,19 +585,17 @@ Keep the implementation case-agnostic. The unlock tiers and the host-fallback th
 
 **Cadence status — Mussoorie:**
 
-Phase 2g.1 partially resolved the original "everything-in-round-1" pacing problem. Current state:
+Phase 2g.2 further resolved the original "everything-in-round-1" pacing problem. Current state:
 
 | Artifact | `unlockedAtChapter` | Dynamic unlock |
 |---|---|---|
 | `instagram-grey-lady`, `youtube-channel-page` | `r1-vikram-life` | None — round 1 establishes the victim |
 | `vikram-working-wall` | `r1-vikram-life` | None — the visual gut-punch + diegetic justification for the six suspects |
-| `vikram-voice-memo` | `r1-vikram-life` | None *(will move to mid-Anya or round-3 in 2g.2 once Anya's cues are authored)* |
+| `vikram-voice-memo` | `r3-recap` | None — now lands after the Thakur evidence/Anya thread is active |
 | `vikram-naina-whatsapp` | `r2-interview-naina` *(forgiving fallback)* | Cooperation-tier; fires when player asks Naina any reasonable professional question |
 | `naina-corporate-memo` | `r2-interview-naina` *(forgiving fallback)* | Cooperation-tier; cascade with the WhatsApp thread |
 
-**Remaining cadence debt for 2g.2:** the voice memo currently still appears in round 1's evidence locker. The right cadence is mid-Anya-interview or in a round-3 reveal, when Vikram's own line *"Anya knows something. She won't sit down with me"* lands hardest. This will move when Anya's `unlockBehavior` cues are authored.
-
-**Printable inconsistency (low priority):** `cases/mussoorie/printables/Round1_The_Scene.html` still includes Exhibits F (memo) and G (WhatsApp), which are now round-2 dynamic unlocks. The two blocks should be cut from Round 1's printable and moved to Round 2's (where they'd become Exhibits M and N). Engine behavior is unaffected — printables are author-facing HTML, not loaded at runtime. Schedule the cleanup with 2g.2's authoring pass on the rest of the suspects.
+**Resolved in 2g.2 cleanup:** the voice memo no longer appears in round 1's evidence locker and now unlocks at `r3-recap`. `Round3_Thakur_Connection.html` includes a new Exhibit U voice-memo excerpt. `Round1_The_Scene.html` has been pruned so it only contains Round 1 material, with the working wall renumbered as Exhibit F. The Naina memo and WhatsApp thread now live in `Round2_Suspects_Crack.html` as supplemental interview-unlock exhibits M/N.
 
 ---
 
@@ -479,6 +662,16 @@ Verify:
 - If tests fail after type generation, inspect whether generated formatting/content changed intentionally.
 - Preserve expected asset warnings until Phase 4.
 - Prefer small, verifiable phase slices.
+
+### Phase 2g-specific guardrails
+
+- The cooperationCue field on an `unlockBehavior` is read literally by the adjudicator LLM. Never include engine notes ("cascade", "fires after X", "same cue as Y") in cue text — the LLM treats them as criteria.
+- Cue text describes player BEHAVIOR ("interviewer asks/shows X"), not suspect behavior.
+- For compound-tier conditions, the evidence gate is necessary but NOT sufficient — the cue must still apply. Off-topic questions should fail even with the evidence presented.
+- `pressure_count` increments only on `met: true` turns. The unlock fires when `pressure_count >= pressureThreshold` (default 1).
+- Evidence-gated turns where the gate is not satisfied do NOT increment `attempts` — the host-fallback clock only starts ticking once the required evidence is in conversation.
+- The legacy `unlockedAtChapter` mechanism is silently skipped for evidence with `unlockBehavior` (see `getUnlockedEvidenceForChapter` in `src/lib/session-store.ts`). This is by design — dynamic unlocks must not race with chapter-completion unlocks.
+- The eval harness (`npm run eval:adjudicator`) is the contract between authors and the engine. Whenever a cue is added or changed, eval cases must also be added or updated. CI-style: an unauthored condition is a failure, not a skip.
 
 ---
 

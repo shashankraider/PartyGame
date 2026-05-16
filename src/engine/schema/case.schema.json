@@ -379,6 +379,10 @@
         "thumbnailUrl": { "type": "string" },
         "fullViewUrl": { "type": "string" },
         "pdfUrl": { "type": "string" },
+        "printableHtml": {
+          "type": "string",
+          "description": "Basename only: HTML file under the case printables/ folder. Mobile locker opens this file at #evidenceId."
+        },
         "description": { "type": "string", "description": "Short label that appears on the evidence card on the TV." },
         "loreText": { "type": "string", "description": "Longer description fed to the LLM when this evidence is presented in an interview." },
         "revealedInRound": { "type": "integer", "minimum": 1, "description": "Round in which this evidence becomes available." },

@@ -1,0 +1,179 @@
+{
+  "suspectId": "devraj",
+  "conditions": {
+    "secret:thakur-bribe": [
+      {
+        "name": "both old-case evidence pieces and asks about Bisht burying file",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Inspector, these records show Bisht had a revenge motive and later bought the Thakur land through shell companies. Why was your 2011 Thakur file only three pages? Did Bisht pay you to bury it?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "both old-case evidence pieces and asks about missing statement",
+        "expected": "met",
+        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "When the Thakur case was yours, why did every lead pointing toward Bisht disappear from the file?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      },
+      {
+        "name": "right question with only one required evidence piece",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Did Bisht pay you to keep the Thakur investigation thin?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but generic corruption question",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Have you ever taken money from builders in Mussoorie?",
+            "presentedEvidenceId": "land-registry"
+          }
+        ]
+      },
+      {
+        "name": "both evidence pieces but asks present-day murder only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Where were you when Vikram fell from Camel's Back Road?",
+            "presentedEvidenceId": "bisht-family-history"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:jeep-cctv": [
+      {
+        "name": "jeep cctv presented and asks why jeep was there",
+        "expected": "met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "This shop camera shows your police jeep on Camel's Back Road at 8:10 PM. Why does your duty log say you were at the station?",
+            "presentedEvidenceId": "devraj-jeep-cctv"
+          }
+        ]
+      },
+      {
+        "name": "jeep cctv presented and asks about false duty log",
+        "expected": "met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Did you falsify the station duty log after driving to Camel's Back Road?",
+            "presentedEvidenceId": "devraj-jeep-cctv"
+          }
+        ]
+      },
+      {
+        "name": "right question but no jeep evidence",
+        "expected": "not-met",
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Why was your police jeep on Camel's Back Road at 8:10 PM?"
+          }
+        ]
+      },
+      {
+        "name": "jeep evidence presented but asks patrol routes generally",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "How often do you patrol the Camel's Back Road area in a normal week?",
+            "presentedEvidenceId": "devraj-jeep-cctv"
+          }
+        ]
+      }
+    ],
+
+    "breaking-point:lathi-confession": [
+      {
+        "name": "all three evidence pieces and direct lathi accusation",
+        "expected": "met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Bisht called you at 8, your jeep was on the road at 8:10, and the independent review says Vikram was hit by a lathi. Did you strike him and push him over?",
+            "presentedEvidenceId": "lathi-postmortem"
+          }
+        ]
+      },
+      {
+        "name": "all three evidence pieces and asks if Bisht ordered him",
+        "expected": "met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "What did Bisht tell you in that 8 PM call, and why did you go straight to Vikram with your service lathi?",
+            "presentedEvidenceId": "bisht-devraj-call"
+          }
+        ]
+      },
+      {
+        "name": "missing Bisht call evidence",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Your jeep was there and the injury matches a lathi. Did you kill Vikram?",
+            "presentedEvidenceId": "lathi-postmortem"
+          }
+        ]
+      },
+      {
+        "name": "all evidence but asks about Thakur case only",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Fifteen years ago, why did the Thakur investigation go nowhere?",
+            "presentedEvidenceId": "bisht-devraj-call"
+          }
+        ]
+      },
+      {
+        "name": "all evidence but only insults him",
+        "expected": "not-met",
+        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "You're corrupt and incompetent. You have ruined this whole town.",
+            "presentedEvidenceId": "devraj-jeep-cctv"
+          }
+        ]
+      }
+    ]
+  }
+}
