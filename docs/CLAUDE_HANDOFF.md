@@ -488,7 +488,12 @@ Companion structural change: collapse the round-2/3/4 chapter walls into one ope
 
 **Phase 2h (Realtime + token streaming) has been bumped to after 2i.** 2i is the higher-leverage design change; 2h is infrastructure polish that benefits more from landing on top of the new architecture.
 
-This is a real refactor. Split into six sequenced sub-phases below. **Land one, merge, then start the next.** Each sub-phase has its own `/goal`-ready brief — copy-paste into a fresh session and run it in a worktree.
+This is a real refactor. Split into six sequenced sub-phases below. **Land one, merge, then start the next.** Each sub-phase below has two blocks:
+
+1. **"Paste this into `/goal`"** — a short (<2000 char) command that fits the `/goal` 4000-char limit. Copy the content of that fenced code block, paste into `/goal`, run.
+2. **"Full implementation reference"** — the longer detailed brief. The agent reads this from the doc *after* kicking off via `/goal`. Contains exact file paths, test cases, hard-gate command sequence, manual smoke checklist, and handoff-update steps.
+
+Both blocks live in the same section so a new agent finds the long context naturally after `/goal`-ing the short version.
 
 #### Sub-phase dependency graph
 
@@ -503,7 +508,25 @@ This is a real refactor. Split into six sequenced sub-phases below. **Land one, 
 
 Strict ordering: **2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel) → 2i.6**. 2i.4 is independent and can land any time before 2i.6.
 
-#### 2i.1 — AI host-judgment service (/goal brief)
+#### 2i.1 — AI host-judgment service
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.1 — AI host-judgment service for the second-letter decision.
+
+Repo: /Users/shashankmendiratta/shire/PartyGame (main branch). Work in a fresh git worktree. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.1 — AI host-judgment service" — it has all the file paths, test cases, hard-gate command sequence, and handoff-update steps you must follow before committing.
+
+Scope (one-line): build src/lib/host-judgment.ts mirroring src/lib/adjudicator.ts; it judges ONE thing — should anonymous-letter-2 land now? Wire it into askSuspect after the unlock-evaluation pass. Single-decision scope on purpose; phase machine and other forensic drops are 2i.2/2i.3.
+
+Hard gate before commit (do not push if any fail): create tests/host-judgment.test.mjs + scripts/eval-host.ts + cases/mussoorie/evals/host.eval.json with the cases listed in the full brief; then run npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build.
+
+After tests pass: update CLAUDE_HANDOFF.md as the brief specifies (Current phase banner, Completed Work entry with your final trigger threshold, mark 2i.1 ✅ in Next Recommended Phase). Commit message: "Phase 2i.1 — AI host-judgment service for the second letter." Push to main.
+
+Report back with the trigger threshold text you settled on and the final eval pass counts.
+```
+
+**Full implementation reference** (do not paste this into `/goal` — read it from the doc after kicking off):
 
 ```
 /goal Phase 2i.1 — Build the AI host-judgment service.
@@ -596,7 +619,23 @@ Handoff update (do this before committing):
 Commit message: 'Phase 2i.1 — AI host-judgment service for the second letter.'
 ```
 
-#### 2i.2 — Phase state machine (/goal brief)
+#### 2i.2 — Phase state machine
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into one Interrogation phase.
+
+Depends on: 2i.1 must be merged on main first. Repo: /Users/shashankmendiratta/shire/PartyGame. Work in a fresh worktree. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.2 — Phase state machine".
+
+Scope (one-line): add migration supabase/migrations/0005_session_phase.sql (sessions.phase column: briefing | interrogation | accusation | reveal). Add arrivesWhen field to Evidence in case.schema.json; regenerate types.ts. Within interrogation, advanceSessionChapter becomes a no-op; setSessionScene still works for free-choice picker. Extend host-judgment service to also decide phase transitions (briefing->interrogation, interrogation->accusation, accusation->reveal).
+
+Hard gate before commit: add tests/phase-machine.test.mjs with the cases listed in the full brief (valid-transitions-only, defaults, interrogation no-op, picker still works). Run supabase db reset --local first, then npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build.
+
+After tests pass: update CLAUDE_HANDOFF.md per the brief (Current phase, Completed Work entry, mark 2i.2 ✅, add 0005 migration to Repository Map). Commit: "Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation." Push to main.
+```
+
+**Full implementation reference** (do not paste — read from doc):
 
 ```
 /goal Phase 2i.2 — Collapse round-2/3/4 chapters into an open Interrogation phase.
@@ -687,7 +726,25 @@ Handoff update (do this before committing):
 Commit message: 'Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation.'
 ```
 
-#### 2i.3 — Author `arrivesWhen` on round-3/4 evidence (/goal brief)
+#### 2i.3 — Author `arrivesWhen` on round-3/4 evidence
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.3 — Author arrivesWhen conditions + eval cases for every round-3/4 forensic evidence.
+
+Depends on: 2i.2 must be merged. Repo: /Users/shashankmendiratta/shire/PartyGame. Work in a fresh worktree. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.3 — Author arrivesWhen on round-3/4 evidence".
+
+Scope (one-line): pure authoring, no engine code. For every round-3 and round-4 evidence in case.json (anonymous-letter-2, old-newspaper-clipping, theft-fir-inventory, wall-mount-photo, office-rifle-photo, land-registry, bisht-family-history, anya-bus-ticket, bisht-devraj-call, devraj-jeep-cctv, lathi-postmortem, grey-shawl-fresh, anya-payments, vikram-research-notes), add an arrivesWhen natural-language condition the AI host evaluates. Extend cases/mussoorie/evals/host.eval.json with 4 cases per evidence (positive, too-early, wrong-thread, already-fired).
+
+CRITICAL gotchas (re-read cases/mussoorie/evals/README.md): arrivesWhen is read literally by the host LLM — never write engine notes ("cascade", "fires after"). Describe player behavior and case state, not engine behavior. Err conservative (under-drop > over-drop).
+
+Hard gate before commit: npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host (all ~60+ authored cases) && npm run lint && npm run build.
+
+After tests pass: update CLAUDE_HANDOFF.md per brief (Current phase, Completed Work with final eval count + authoring-gotcha notes, mark 2i.3 ✅). Commit: "Phase 2i.3 — arrivesWhen content + eval for round-3/4 forensic evidence." Push.
+```
+
+**Full implementation reference** (do not paste — read from doc):
 
 ```
 /goal Phase 2i.3 — Author arrivesWhen conditions on every round-3/4 forensic evidence.
@@ -788,7 +845,23 @@ Handoff update (do this before committing):
 Commit message: 'Phase 2i.3 — arrivesWhen content + eval for round-3/4 forensic evidence.'
 ```
 
-#### 2i.4 — Round-robin interviewer (/goal brief)
+#### 2i.4 — Round-robin interviewer
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.4 — Round-robin interviewer rotation (default 3 questions per detective).
+
+Depends on: nothing. Can land in parallel with 2i.1/2i.2/2i.3. Repo: /Users/shashankmendiratta/shire/PartyGame. Work in a fresh worktree. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.4 — Round-robin interviewer".
+
+Scope (one-line): add optional case.rules.questionsPerDetective (default 3) to case.schema.json; regenerate types.ts. After every N askSuspect calls from the current interviewer, auto-rotate current_interviewer_player_id to the next non-observer seat. Existing manual Take Control / Pass Control buttons stay as override. Phone UI shows "Next: Detective X" label.
+
+Hard gate before commit: extract the pure rotation arithmetic into a unit-testable helper (e.g., pickNextInterviewer(players, currentId, stepIndex)). Add tests/round-robin.test.mjs with the cases listed in the full brief: 6 detectives wrap-around, observers excluded, 1-detective no-op, custom step size, 0-detectives edge. Run npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build.
+
+After tests pass: update CLAUDE_HANDOFF.md per brief (Current phase, Completed Work entry, mark 2i.4 ✅). 2i.4 is independent; do not touch other sub-phases' statuses. Commit: "Phase 2i.4 — Round-robin interviewer rotation (default 3 questions)." Push.
+```
+
+**Full implementation reference** (do not paste — read from doc):
 
 ```
 /goal Phase 2i.4 — Round-robin interviewer rotation.
@@ -864,7 +937,25 @@ Handoff update (do this before committing):
 Commit message: 'Phase 2i.4 — Round-robin interviewer rotation (default 3 questions).'
 ```
 
-#### 2i.5 — TV host strip + case status panel (/goal brief)
+#### 2i.5 — TV host strip + case status panel
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.5 — Strip story controls from the TV host strip; add a Case Status panel.
+
+Depends on: 2i.2 must be merged (needs the phase machine to drive what shows). Repo: /Users/shashankmendiratta/shire/PartyGame. Work in a fresh worktree. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.5 — TV host strip + case status panel".
+
+Scope (one-line): in src/components/HostLobbyView.tsx replace the existing host control strip with coordination-only buttons (Start game, Pause, Open accusation, End session — remove Previous/Next/Drop-evidence). Add a CaseStatusPanel that polls /api/sessions/[id]/events for recent interview.host_judgment events and shows the AI host's most recent reasoning ("Forensic update incoming", "Three suspects opened up", etc.). New route: GET /api/sessions/[sessionId]/events that returns filtered recent events.
+
+Hard gate before commit: if you extracted any pure formatting helper from CaseStatusPanel, add tests/case-status.test.mjs. If you added the events route, add tests/events-route.test.mjs covering empty session / type filter / invalid session / max-20 results. Manual smoke is the primary verification for UI changes (no React component framework in repo); paste the checklist results in the commit body — see the brief.
+
+Run npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build before commit.
+
+After tests pass: update CLAUDE_HANDOFF.md per brief (Current phase, Completed Work entry, mark 2i.5 ✅). Commit: "Phase 2i.5 — TV host strip refactor + Case Status panel." Push.
+```
+
+**Full implementation reference** (do not paste — read from doc):
 
 ```
 /goal Phase 2i.5 — Strip story controls from the TV host strip; add case status panel.
@@ -946,7 +1037,23 @@ Handoff update (do this before committing):
 Commit message: 'Phase 2i.5 — TV host strip refactor + Case Status panel.'
 ```
 
-#### 2i.6 — Verify + eval + handoff doc (/goal brief)
+#### 2i.6 — Verify + eval + handoff doc
+
+**Paste this into `/goal`** (fits the 4000-char cap):
+
+```text
+/goal Phase 2i.6 — Phase 2i wrap: full verify, design.md rewrite, handoff cleanup. Promote Phase 2h to Next Recommended.
+
+Depends on: 2i.1, 2i.2, 2i.3, 2i.4, 2i.5 all merged. Repo: /Users/shashankmendiratta/shire/PartyGame. Work in a fresh worktree on tip of main. Read the full brief in docs/CLAUDE_HANDOFF.md under "#### 2i.6 — Verify + eval + handoff doc".
+
+Scope (one-line): no new code. End-to-end verification that the new AI-host + free-interrogation model plays cleanly. Then rewrite cases/mussoorie/design.md sections 5/6/9b/10 to reflect three phases (Briefing → Interrogation → Accusation → Reveal) instead of four rounds, keeping all narrative content. Then promote Phase 2h (Realtime + token streaming) into the Next Recommended Phase slot in CLAUDE_HANDOFF.md; consolidate 2i.1-2i.5 into a single roll-up Completed Work entry; delete the six sub-phase /goal briefs (they're done).
+
+Hard gate before commit: full suite green simultaneously — npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build. Plus an end-to-end manual walkthrough (briefing → interrogation → suspect picks → Thakur thread → automatic forensic drops → accusation → reveal) with NO Next/Previous click on the TV. If any step regresses behavior from earlier sub-phases, fix it here — the buck stops with 2i.6.
+
+Commit: "Phase 2i.6 — Wrap: design.md + handoff updated; Phase 2i complete." Push to main.
+```
+
+**Full implementation reference** (do not paste — read from doc):
 
 ```
 /goal Phase 2i.6 — Phase 2i wrap: full verify, design.md update, handoff cleanup.
