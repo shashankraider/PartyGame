@@ -127,6 +127,7 @@ export interface Case {
   solution: Solution;
   theme?: ThemeOverride;
   llm?: LLMConfig;
+  rules?: CaseRules;
 }
 export interface CaseMeta {
   title: string;
@@ -727,4 +728,10 @@ export interface LLMConfig {
   modelOverride?: string;
   validatorModelOverride?: string;
   temperature?: number;
+}
+export interface CaseRules {
+  /**
+   * During a live interview, each detective may ask this many questions before the mic auto-rotates to the next seat. Manual Take Control / Pass Control resets the stretch for the new interviewer.
+   */
+  questionsPerDetective?: number;
 }

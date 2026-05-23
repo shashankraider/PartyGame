@@ -4,6 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
 import { getEvidencePrintableUrl } from "@/lib/printables";
+import {
+  countQuestionsInCurrentStretch,
+  getNextInterviewerName,
+  getQuestionsPerDetective,
+  listRotatingDetectives,
+  questionsUntilRotation,
+} from "@/lib/round-robin";
 import type { MessageRow, PlayerRow, SessionRow, SessionScene } from "@/lib/supabase";
 
 type PlayerLobbyViewProps = {
@@ -132,6 +139,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
             chapter={chapter}
             session={lobby.session}
             player={player}
+            players={lobby.players}
             unlocked={lobby.session.unlocked_evidence}
             onSession={updateSession}
             onError={setError}
@@ -577,6 +585,7 @@ function InterviewMode({
   chapter,
   session,
   player,
+  players,
   unlocked,
   onSession,
   onError,
@@ -585,6 +594,7 @@ function InterviewMode({
   chapter: Chapter | null;
   session: SessionRow;
   player: PlayerRow;
+  players: PlayerRow[];
   unlocked: string[];
   onSession: (session: SessionRow) => void;
   onError: (error: string | null) => void;
@@ -601,6 +611,29 @@ function InterviewMode({
   const transcript = useTranscript(session.id, suspect?.id ?? null);
 
   const isInterviewer = session.current_interviewer_player_id === player.id;
+  const questionsPerDetective = getQuestionsPerDetective(caseData);
+  const detectiveCount = listRotatingDetectives(players).length;
+  const questionsInStretch = useMemo(() => {
+    if (!suspect || !session.current_interviewer_player_id) {
+      return 0;
+    }
+    return countQuestionsInCurrentStretch(
+      transcript.messages,
+      suspect.id,
+      session.current_interviewer_player_id,
+    );
+  }, [transcript.messages, suspect, session.current_interviewer_player_id]);
+  const nextInterviewerName = useMemo(() => {
+    if (!session.current_interviewer_player_id || detectiveCount <= 1) {
+      return null;
+    }
+    return getNextInterviewerName(players, session.current_interviewer_player_id);
+  }, [players, session.current_interviewer_player_id, detectiveCount]);
+  const showNextRotationCue =
+    isInterviewer &&
+    detectiveCount > 1 &&
+    nextInterviewerName !== null &&
+    questionsUntilRotation(questionsInStretch, questionsPerDetective) === 1;
 
   async function claimInterviewer(targetPlayerId: string | null) {
     setIsClaiming(true);
@@ -642,6 +675,7 @@ function InterviewMode({
     const payload = (await response.json().catch(() => ({}))) as {
       userMessage?: MessageRow;
       assistantMessage?: MessageRow;
+      session?: SessionRow;
       error?: string;
     };
 
@@ -649,6 +683,10 @@ function InterviewMode({
       onError(payload.error ?? "The suspect did not respond.");
       setIsAsking(false);
       return;
+    }
+
+    if (payload.session) {
+      onSession(payload.session);
     }
 
     setQuestion("");
@@ -714,6 +752,12 @@ function InterviewMode({
       <Transcript messages={transcript.messages} suspectName={suspect?.name ?? null} />
 
       <InterviewEvidencePanel caseData={caseData} unlocked={unlocked} />
+
+      {showNextRotationCue ? (
+        <p className="mt-5 rounded-2xl border border-[#c8a46a]/40 bg-[#c8a46a]/10 px-4 py-3 text-sm text-[#e6bd77]">
+          Next: {nextInterviewerName}
+        </p>
+      ) : null}
 
       <label className="mt-6 block text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
         Your next question

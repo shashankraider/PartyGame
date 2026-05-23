@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import type { Case, Chapter } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
+import { getQuestionsPerDetective } from "@/lib/round-robin";
 import type { MessageRow, SessionScene } from "@/lib/supabase";
 
 type HostLobbyViewProps = {
@@ -617,6 +618,9 @@ function InterviewScene({
             Seat {interviewer.seat_number}
           </span>
         ) : null}
+        <span className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
+          Mic rotates every {getQuestionsPerDetective(caseData)} questions
+        </span>
       </div>
       {suspect ? (
         <HostFallbackBanner sessionId={sessionId} suspectName={suspect.name} />

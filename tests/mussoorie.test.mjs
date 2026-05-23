@@ -74,6 +74,26 @@ describe("Mussoorie case", () => {
     assert.ok(c.evidence.every((e) => !("arrivesWhen" in e) || typeof e.arrivesWhen === "string"));
   });
 
+  test("case.rules.questionsPerDetective is optional with engine default 3", async () => {
+    const { loadCaseFromFile } = await import("../src/engine/validator.mjs");
+    const { getQuestionsPerDetective } = await import("../src/lib/round-robin.ts");
+    const { join, dirname } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const c = await loadCaseFromFile(
+      join(__dirname, "..", "cases", "mussoorie", "case.json"),
+    );
+
+    assert.equal(c.rules, undefined);
+    assert.equal(getQuestionsPerDetective(c), 3);
+
+    const { getSchemaValidator } = await import("./helpers/make-case.mjs");
+    const withRules = structuredClone(await (await import("./helpers/make-case.mjs")).templateClone());
+    withRules.rules = { questionsPerDetective: 2 };
+    const validator = await getSchemaValidator();
+    assert.equal(validator(withRules), true, JSON.stringify(validator.errors, null, 2));
+  });
+
   test("validates with no asset warnings (Phase 4 art has shipped)", async () => {
     const { issues } = await validateCaseById("mussoorie");
     const warnings = issues.filter((i) => i.level === "warn");

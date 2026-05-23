@@ -1130,6 +1130,63 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
     throw new SessionStoreError("database_error", "Could not persist question", 500, userInsertError);
   }
 
+  const {
+    countQuestionsInCurrentStretch,
+    getQuestionsPerDetective,
+    listRotatingDetectives,
+    pickNextInterviewer,
+    shouldRotateAfterQuestion,
+  } = await import("@/lib/round-robin");
+  const { players } = await getLobbyState(session.id);
+  const questionsPerDetective = getQuestionsPerDetective(caseData);
+  const detectives = listRotatingDetectives(players);
+  const transcriptWithQuestion = [...messages, userRow];
+  const questionsInStretch = countQuestionsInCurrentStretch(
+    transcriptWithQuestion,
+    suspect.id,
+    input.playerId,
+  );
+  let activeSession = session;
+
+  if (
+    shouldRotateAfterQuestion(questionsInStretch, questionsPerDetective, detectives.length)
+  ) {
+    const nextInterviewerId = pickNextInterviewer(players, input.playerId, 1);
+    if (nextInterviewerId && nextInterviewerId !== input.playerId) {
+      const { data: rotatedSession, error: rotateError } = await supabase
+        .from("sessions")
+        .update({
+          current_interviewer_player_id: nextInterviewerId,
+          last_activity_at: new Date().toISOString(),
+        })
+        .eq("id", session.id)
+        .select("*")
+        .single();
+
+      if (rotateError || !rotatedSession) {
+        throw new SessionStoreError(
+          "database_error",
+          "Could not rotate interviewer",
+          500,
+          rotateError,
+        );
+      }
+
+      activeSession = rotatedSession;
+
+      await supabase.from("events").insert({
+        session_id: session.id,
+        type: "session.interviewer_set",
+        payload: {
+          playerId: nextInterviewerId,
+          via: "auto_rotate",
+          previousPlayerId: input.playerId,
+          suspectId: suspect.id,
+        },
+      });
+    }
+  }
+
   const model = caseData.llm?.modelOverride ?? process.env.OPENROUTER_MODEL ?? "openai/gpt-4o-mini";
   const temperature = caseData.llm?.temperature ?? 0.7;
 
@@ -1188,7 +1245,7 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
   const { evaluatePendingUnlocks } = await import("@/lib/interview-unlocks");
   const evalResult = await evaluatePendingUnlocks({
     caseData,
-    session,
+    session: activeSession,
     suspect,
     messages, // history before this turn
     latestUserMessage: userRow,
@@ -1367,7 +1424,10 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
     systemMessages: systemMessagesToReturn,
     unlockOutcomes: evalResult.outcomes,
     hostJudgment,
-    session: workingSession,
+    session: {
+      ...workingSession,
+      current_interviewer_player_id: activeSession.current_interviewer_player_id,
+    },
   };
 }
 

@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-05-23
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2i.3 — `arrivesWhen` authoring for round-3/4 forensic evidence — shipped. **Next: Phase 2i.5 (TV host strip + Case Status panel) remains unblocked; 2i.4 remains independent.** Remaining order: (2i.5 + 2i.4, either order) → 2i.6.
+**Current phase**: Phase 2i.4 — round-robin interviewer rotation — shipped. **Next: Phase 2i.5 (TV host strip + Case Status panel) remains unblocked.** Remaining order: 2i.5 → 2i.6.
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -333,6 +333,16 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 
 ## Completed Work
 
+### Phase 2i.4 — Round-robin interviewer rotation
+
+Shipped automatic mic rotation during live interviews:
+
+- **Schema**: optional `case.rules.questionsPerDetective` (integer, default **3** when omitted). Regenerated `src/engine/types.ts`.
+- **Engine**: `src/lib/round-robin.ts` — pure helpers `pickNextInterviewer`, `countQuestionsInCurrentStretch`, `shouldRotateAfterQuestion`, `getQuestionsPerDetective`. `askSuspect` in `src/lib/session-store.ts` rotates `current_interviewer_player_id` after the user message when the current stretch hits the cap; stretch count is derived from trailing `messages` rows (no migration). Manual **Take Control** / **Pass Control** still writes `current_interviewer_player_id` via the existing route and resets the stretch because only consecutive questions from the current interviewer count.
+- **Phone UI**: `PlayerLobbyView` **InterviewMode** shows **`Next: {detective name}`** on the question that will trigger rotation; applies returned `session` after each ask so mic handoff is immediate.
+- **TV UI**: `HostLobbyView` **InterviewScene** shows **`Mic rotates every N questions`** beside the interviewer badge.
+- **Tests**: `tests/round-robin.test.mjs` + schema pin in `tests/mussoorie.test.mjs`.
+
 ### Phase 2i.3 — `arrivesWhen` content + eval for round-3/4 forensic evidence
 
 Shipped: authored natural-language `arrivesWhen` conditions on all 14 host-paced round-3/4 forensic evidence items in `cases/mussoorie/case.json`: `anonymous-letter-2`, `old-newspaper-clipping`, `theft-fir-inventory`, `wall-mount-photo`, `office-rifle-photo`, `land-registry`, `bisht-family-history`, `anya-bus-ticket`, `bisht-devraj-call`, `devraj-jeep-cctv`, `lathi-postmortem`, `grey-shawl-fresh`, `anya-payments`, and `vikram-research-notes`. The second anonymous letter's 2i.1 trigger is now authored on the evidence row instead of only living in prompt code.
@@ -593,7 +603,7 @@ Both blocks live in the same section so a new agent finds the long context natur
 | 2i.1 — AI host service ✅ | none | 2i.2, 2i.5 |
 | 2i.2 — Phase state machine ✅ | 2i.1 | 2i.3 |
 | 2i.3 — Author `arrivesWhen` on round-3/4 evidence ✅ | 2i.2 | 2i.6 |
-| 2i.4 — Round-robin interviewer | none | 2i.6 |
+| 2i.4 — Round-robin interviewer ✅ | none | 2i.6 |
 | 2i.5 — TV host strip + case status panel | 2i.2 | 2i.6 |
 | 2i.6 — Verify + eval + handoff doc | all others | — |
 
