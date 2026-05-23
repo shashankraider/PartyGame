@@ -13,9 +13,10 @@
     "types:generate": "node scripts/generate-types.mjs",
     "validate-case": "node scripts/validate-case.mjs",
     "validate-cases": "node scripts/validate-case.mjs --all",
-    "test": "node --test tests/",
-    "test:watch": "node --test --watch tests/",
+    "test": "tsx --test tests/",
+    "test:watch": "tsx --test --watch tests/",
     "eval:adjudicator": "tsx scripts/eval-adjudicator.ts",
+    "eval:host": "tsx scripts/eval-host.ts",
     "repl:interview": "tsx scripts/interview-repl.ts"
   },
   "devDependencies": {

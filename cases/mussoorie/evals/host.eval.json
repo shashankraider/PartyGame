@@ -1,0 +1,175 @@
+{
+  "description": "Phase 2i.1 — golden cases for the AI host-judgment service. Each case feeds a synthetic session-state snapshot through judgeHostAction() and verifies the verdict. The host should fire `anonymous-letter-2` only when ALL three load-bearing conditions hold: (a) Naina + Rhea + Kabir cooperation cues have fired, (b) Thakurs have been mentioned at least twice across transcripts, (c) the letter is not already unlocked. Err conservative.",
+
+  "cases": [
+    {
+      "name": "positive: Naina + Rhea + Kabir opened up, Thakurs mentioned twice",
+      "expected": "drop-evidence",
+      "expectedEvidenceId": "anonymous-letter-2",
+      "unlockedEvidence": ["police-report", "anonymous-letter-1", "instagram-grey-lady", "youtube-channel-page", "vikram-voice-memo", "vikram-working-wall", "chai-shop-receipt", "naina-phone-records", "shopkeeper-statement-naina", "building-cctv-rhea", "rhea-draft-email", "bisht-hotel-cctv-log", "pawn-shop-receipt", "naina-corporate-memo", "vikram-naina-whatsapp"],
+      "transcripts": [
+        {
+          "suspectId": "naina",
+          "suspectName": "Naina Kapoor",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "What were you doing for Vikram in the weeks before he died?" },
+            { "role": "assistant", "content": "I filed a memo on Rhea and Metropolis Media. He was nervous about the channel finances. He scrawled 'pull stripe' in the margin and stopped answering me." },
+            { "role": "user", "content": "Did Vikram ever talk about the Thakur family with you?" },
+            { "role": "assistant", "content": "Yes — he kept circling back to the Thakur cottage in Landour. He said the 2011 robbery story didn't add up. He was obsessed." }
+          ]
+        },
+        {
+          "suspectId": "rhea",
+          "suspectName": "Rhea Bhatia",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Were you negotiating to sell the channel behind Vikram's back?" },
+            { "role": "assistant", "content": "Fine. I was selling the channel. The Delhi offer was real. I'd been taking a cut for a year. Vikram didn't know." },
+            { "role": "user", "content": "Did Vikram ever mention the Thakur family to you?" },
+            { "role": "assistant", "content": "Once, at a dinner. He said the Thakurs in Landour had something he could prove. I didn't follow up." }
+          ]
+        },
+        {
+          "suspectId": "kabir",
+          "suspectName": "Prof. Kabir Iyer",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Why did you pawn your watch before coming to Mussoorie?" },
+            { "role": "assistant", "content": "Vikram was about to expose my PhD thesis as plagiarism. He had original drafts. I needed money to ask him to drop it. He laughed at me." },
+            { "role": "user", "content": "Did Vikram mention the Thakurs to you at the chai shop?" },
+            { "role": "assistant", "content": "He kept saying the Thakur thing was bigger than my exposure could ever be. He wouldn't tell me what 'the Thakur thing' meant. But yes, he named the Thakurs." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "too-early: only Naina has opened up, no Thakur mentions",
+      "expected": "do-nothing",
+      "unlockedEvidence": ["police-report", "anonymous-letter-1", "instagram-grey-lady", "youtube-channel-page", "vikram-voice-memo", "vikram-working-wall", "naina-corporate-memo", "vikram-naina-whatsapp"],
+      "transcripts": [
+        {
+          "suspectId": "naina",
+          "suspectName": "Naina Kapoor",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "What were you doing for Vikram?" },
+            { "role": "assistant", "content": "I'm a corporate-investigations journalist. He asked me to look into Rhea and the Metropolis Media acquisition talks. I filed a memo nine days before he died." }
+          ]
+        },
+        {
+          "suspectId": "rhea",
+          "suspectName": "Rhea Bhatia",
+          "hasOpenedUp": false,
+          "messages": [
+            { "role": "user", "content": "Tell us about your business relationship with Vikram." },
+            { "role": "assistant", "content": "Vikram and I built the channel together. We were equal partners. I'm devastated by what happened — I came up the morning I heard." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "wrong-thread: all three cues fired but no Thakur mentions in any transcript",
+      "expected": "do-nothing",
+      "unlockedEvidence": ["police-report", "anonymous-letter-1", "instagram-grey-lady", "youtube-channel-page", "vikram-voice-memo", "vikram-working-wall", "chai-shop-receipt", "naina-phone-records", "rhea-draft-email", "pawn-shop-receipt", "naina-corporate-memo"],
+      "transcripts": [
+        {
+          "suspectId": "naina",
+          "suspectName": "Naina Kapoor",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "What were you doing for Vikram?" },
+            { "role": "assistant", "content": "I filed him a corporate-investigations memo on Rhea and Metropolis Media nine days before he died. He read it. He stopped answering me." }
+          ]
+        },
+        {
+          "suspectId": "rhea",
+          "suspectName": "Rhea Bhatia",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Were you selling the channel?" },
+            { "role": "assistant", "content": "Fine. The Delhi offer was real. I'd been taking a cut. Vikram didn't know." }
+          ]
+        },
+        {
+          "suspectId": "kabir",
+          "suspectName": "Prof. Kabir Iyer",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Why did you pawn your watch?" },
+            { "role": "assistant", "content": "Vikram was going to expose my PhD as plagiarism. I needed bribe money. He laughed at me." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "already-fired: same shape as positive but letter is already in unlocked_evidence",
+      "expected": "do-nothing",
+      "unlockedEvidence": ["police-report", "anonymous-letter-1", "anonymous-letter-2", "instagram-grey-lady", "youtube-channel-page", "vikram-voice-memo", "vikram-working-wall", "naina-corporate-memo", "rhea-draft-email", "pawn-shop-receipt"],
+      "transcripts": [
+        {
+          "suspectId": "naina",
+          "suspectName": "Naina Kapoor",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "What did Vikram say about the Thakur family?" },
+            { "role": "assistant", "content": "He was investigating the 2011 Thakur murders. He said the official story didn't hold." }
+          ]
+        },
+        {
+          "suspectId": "rhea",
+          "suspectName": "Rhea Bhatia",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Did Vikram ever mention the Thakurs?" },
+            { "role": "assistant", "content": "He mentioned them once at a dinner. Some old Landour cottage. I didn't pay attention." }
+          ]
+        },
+        {
+          "suspectId": "kabir",
+          "suspectName": "Prof. Kabir Iyer",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Why pawn the watch?" },
+            { "role": "assistant", "content": "Plagiarism. Tenure. Bribe money. He refused." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "boundary: Naina + Rhea opened up but Kabir hasn't (only two cues)",
+      "expected": "do-nothing",
+      "unlockedEvidence": ["police-report", "anonymous-letter-1", "naina-corporate-memo", "rhea-draft-email"],
+      "transcripts": [
+        {
+          "suspectId": "naina",
+          "suspectName": "Naina Kapoor",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "Did Vikram mention the Thakurs?" },
+            { "role": "assistant", "content": "Yes. He was investigating the 2011 Thakur murders. He thought the official story was wrong." }
+          ]
+        },
+        {
+          "suspectId": "rhea",
+          "suspectName": "Rhea Bhatia",
+          "hasOpenedUp": true,
+          "messages": [
+            { "role": "user", "content": "What about the Thakurs?" },
+            { "role": "assistant", "content": "He mentioned them. Some Landour cottage." }
+          ]
+        },
+        {
+          "suspectId": "kabir",
+          "suspectName": "Prof. Kabir Iyer",
+          "hasOpenedUp": false,
+          "messages": []
+        }
+      ]
+    }
+  ]
+}

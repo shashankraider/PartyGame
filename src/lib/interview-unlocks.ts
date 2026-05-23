@@ -400,7 +400,7 @@ async function getNextMessageSequence(input: {
   return last + 1;
 }
 
-async function insertSystemMessage(input: {
+export async function insertSystemMessage(input: {
   sessionId: string;
   suspectId: string;
   content: string;
@@ -426,7 +426,7 @@ async function insertSystemMessage(input: {
   return data;
 }
 
-async function addUnlockedEvidence(input: {
+export async function addUnlockedEvidence(input: {
   sessionId: string;
   evidenceId: string;
   currentUnlocked: string[];

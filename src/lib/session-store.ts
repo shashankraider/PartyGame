@@ -808,6 +808,12 @@ export type AskSuspectResult = {
   assistantMessage: MessageRow;
   systemMessages: MessageRow[];
   unlockOutcomes: import("@/lib/interview-unlocks").UnlockOutcome[];
+  /**
+   * Phase 2i.1 — verdict from the AI host-judgment service after the
+   * adjudicator pass. `null` when the call was skipped (e.g., missing API key
+   * tolerated for stability). Non-null when the call ran, regardless of action.
+   */
+  hostJudgment: import("@/lib/host-judgment").HostJudgmentVerdict | null;
   session: SessionRow;
 };
 
@@ -1104,11 +1110,155 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
     }
   }
 
+  // Phase 2i.1 — AI host-judgment pass. Mirrors the adjudicator's per-turn
+  // cadence, but judges ONE thing: should `anonymous-letter-2` land now?
+  // Treats failures (network, missing API key, malformed LLM response) as
+  // non-fatal: the interview is still playable without the auto-drop. 2i.2
+  // broadens this surface to phase transitions and other forensic events.
+  let hostJudgment: import("@/lib/host-judgment").HostJudgmentVerdict | null = null;
+  let workingSession = evalResult.updatedSession;
+  const systemMessagesToReturn = [...evalResult.systemMessagesInserted];
+  try {
+    const hostJudgmentModule = await import("@/lib/host-judgment");
+    const allTranscripts = await collectAllTranscriptsForHost(
+      session.id,
+      caseData,
+    );
+    hostJudgment = await hostJudgmentModule.judgeHostAction({
+      caseData,
+      session: workingSession,
+      allTranscripts,
+      unlockedEvidence: workingSession.unlocked_evidence,
+    });
+
+    if (
+      hostJudgment.action === "drop-evidence" &&
+      hostJudgment.evidenceId === hostJudgmentModule.HOST_JUDGMENT_TARGET_EVIDENCE_ID &&
+      !workingSession.unlocked_evidence.includes(hostJudgment.evidenceId)
+    ) {
+      const evidence = caseData.evidence.find(
+        (item) => item.id === hostJudgment!.evidenceId,
+      );
+      const announcement = evidence
+        ? `Forensic update: ${evidence.title} just arrived in the case file.`
+        : `Forensic update: ${hostJudgment.evidenceId} unlocked.`;
+      const fireResult = await hostJudgmentModule.fireHostJudgmentUnlock({
+        session: workingSession,
+        evidenceId: hostJudgment.evidenceId,
+        suspectId: suspect.id,
+        announcement,
+        reason: hostJudgment.reason,
+      });
+      workingSession = fireResult.updatedSession;
+      systemMessagesToReturn.push(fireResult.systemMessage);
+
+      await supabase.from("events").insert({
+        session_id: session.id,
+        type: "interview.host_judgment_fired",
+        payload: {
+          evidenceId: hostJudgment.evidenceId,
+          reason: hostJudgment.reason,
+          confidence: hostJudgment.confidence,
+          interviewedSuspectId: suspect.id,
+        },
+      });
+    } else {
+      // Log do-nothing verdicts too — the TV's CaseStatusPanel (2i.5) will
+      // read these to surface what the AI host is thinking.
+      await supabase.from("events").insert({
+        session_id: session.id,
+        type: "interview.host_judgment",
+        payload: {
+          action: hostJudgment.action,
+          reason: hostJudgment.reason,
+          confidence: hostJudgment.confidence,
+          interviewedSuspectId: suspect.id,
+        },
+      });
+    }
+  } catch (err) {
+    // Non-fatal: failure here means the auto-drop didn't happen, but the
+    // interview is otherwise complete. Log and move on. Phase 2i.2 may
+    // re-classify some of these as hard errors.
+    if (err instanceof Error) {
+      await supabase.from("events").insert({
+        session_id: session.id,
+        type: "interview.host_judgment_failed",
+        payload: { error: err.message },
+      });
+    }
+  }
+
   return {
     userMessage: userRow,
     assistantMessage: assistantRow,
-    systemMessages: evalResult.systemMessagesInserted,
+    systemMessages: systemMessagesToReturn,
     unlockOutcomes: evalResult.outcomes,
-    session: evalResult.updatedSession,
+    hostJudgment,
+    session: workingSession,
   };
+}
+
+/**
+ * Phase 2i.1 — Gather per-suspect transcripts and "has opened up" flags for
+ * the AI host. The host LLM sees the whole room: every suspect's transcript
+ * plus a boolean derived from interview_unlock_state (any `secret:*` row
+ * with `met_at IS NOT NULL` counts as "opened up").
+ */
+async function collectAllTranscriptsForHost(
+  sessionId: string,
+  caseData: Case,
+): Promise<import("@/lib/host-judgment").HostJudgmentTranscript[]> {
+  const supabase = createSupabaseServerClient();
+
+  const { data: messages, error: messagesError } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("session_id", sessionId)
+    .order("sequence", { ascending: true });
+  if (messagesError) {
+    throw new SessionStoreError(
+      "database_error",
+      "Could not load messages for host-judgment",
+      500,
+      messagesError,
+    );
+  }
+
+  const { data: states, error: statesError } = await supabase
+    .from("interview_unlock_state")
+    .select("*")
+    .eq("session_id", sessionId)
+    .not("met_at", "is", null);
+  if (statesError) {
+    throw new SessionStoreError(
+      "database_error",
+      "Could not load unlock state for host-judgment",
+      500,
+      statesError,
+    );
+  }
+
+  const openedUp = new Set(
+    (states ?? [])
+      .filter((s) => s.condition_id.startsWith("secret:"))
+      .map((s) => s.suspect_id),
+  );
+
+  const byId = new Map<string, MessageRow[]>();
+  for (const m of messages ?? []) {
+    const list = byId.get(m.suspect_id) ?? [];
+    list.push(m);
+    byId.set(m.suspect_id, list);
+  }
+
+  return caseData.suspects.map((suspect) => ({
+    suspectId: suspect.id,
+    suspectName: suspect.name,
+    hasOpenedUp: openedUp.has(suspect.id),
+    messages: (byId.get(suspect.id) ?? []).map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+  }));
 }

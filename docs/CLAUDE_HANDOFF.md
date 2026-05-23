@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-05-23
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2g.2 + Round 2 free-choice suspect picker + persona-prompt fix complete. **Next: Phase 2i — AI host + free-form interrogation**, split into six sequenced sub-phases. Each sub-phase has its own `/goal`-ready brief inside the **Next Recommended Phase** section below — copy-paste one into a fresh session and run it in a worktree. Land sequentially: 2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
+**Current phase**: Phase 2i.1 — AI host-judgment service for the second letter — shipped. **Next: Phase 2i.2 — Phase state machine** (collapse rounds 2/3/4 into one Interrogation phase). Sub-phase briefs live in the **Next Recommended Phase** section below — copy-paste 2i.2 into a fresh session and run it in a worktree. Remaining order: 2i.2 → (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -327,6 +327,25 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 
 ## Completed Work
 
+### Phase 2i.1 — AI host-judgment service for the second letter
+
+Shipped: a thin server-side AI host service that judges ONE thing per `askSuspect` turn — should the second anonymous letter (`anonymous-letter-2`, the Thakur-pivot letter) be revealed now? Mirrors `src/lib/adjudicator.ts` in shape (system+user prompt builder, strict-JSON `response_format`, prose-fallback parser, OpenRouter call with `temperature: 0.1`, model defaults to `openai/gpt-4o-mini`). Single-decision scope on purpose; broader forensic events and the phase machine are deferred to 2i.2/2i.3.
+
+**Trigger threshold** the AI host enforces (verbatim from the system prompt):
+- At least Naina, Rhea, and Kabir have each opened up to the players (their cooperation cues have fired).
+- AND the Thakur family (or the Thakurs, or the 2011 Thakur murders) has been mentioned at least twice across all suspect transcripts, by either an interviewer or a suspect.
+- Both must hold; if either is missing, the host returns `do-nothing`. Conservative by design.
+
+**Files shipped**:
+- `src/lib/host-judgment.ts` — `judgeHostAction()`, `parseHostJudgmentVerdict()`, `alreadyUnlockedVerdict()`, `fireHostJudgmentUnlock()`, system + user prompt builders, `HOST_JUDGMENT_TARGET_EVIDENCE_ID = "anonymous-letter-2"`. Short-circuits without an LLM call when the letter is already in `session.unlocked_evidence`.
+- `scripts/eval-host.ts` + `cases/mussoorie/evals/host.eval.json` — golden eval harness (5 cases: positive, too-early, wrong-thread, already-fired, boundary). All 5 pass at `temperature: 0.1` against `openai/gpt-4o-mini`. Run via `npm run eval:host`.
+- `tests/host-judgment.test.mjs` — 16 unit tests (pure helpers + the `missing_api_key` and `already-unlocked short-circuit` paths). Run via `npm test`.
+- `src/lib/session-store.ts` — extended `AskSuspectResult` with `hostJudgment: HostJudgmentVerdict | null`; added a new pass in `askSuspect` after `evaluatePendingUnlocks` that calls `judgeHostAction()`, fires the unlock when the verdict is `drop-evidence`, and logs `interview.host_judgment_failed` events on non-fatal LLM failures. New helper `collectAllTranscriptsForHost(sessionId, caseData)` queries all messages + `interview_unlock_state` and derives `hasOpenedUp` from `condition_id LIKE 'secret:%' AND met_at IS NOT NULL`.
+- `src/lib/interview-unlocks.ts` — exported `insertSystemMessage` and `addUnlockedEvidence` so host-judgment can reuse the same unlock-firing primitives as the adjudicator.
+- `package.json` — `test`/`test:watch` now use `tsx --test` (was `node --test`) so tests importing `.ts` modules from `src/lib/` run without compile step; added `eval:host` script.
+
+**Eval results**: 88/88 unit tests, 5/5 host-eval cases, 103/104 adjudicator cases (the one failure is the pre-existing Bisht `secret:the-rifle` "challenges collector explanation" flake — reproduces identically on untouched `main`; called out as acceptable in the brief).
+
 ### Post–Phase 2g.2 — LAN dev, join robustness, mobile case board, printables route
 
 Shipped in mainline after 2g.2 content freeze:
@@ -499,7 +518,7 @@ Both blocks live in the same section so a new agent finds the long context natur
 
 | Sub-phase | Depends on | Blocks |
 |---|---|---|
-| 2i.1 — AI host service | none | 2i.2, 2i.5 |
+| 2i.1 — AI host service ✅ | none | 2i.2, 2i.5 |
 | 2i.2 — Phase state machine | 2i.1 | 2i.3 |
 | 2i.3 — Author `arrivesWhen` on round-3/4 evidence | 2i.2 | 2i.6 |
 | 2i.4 — Round-robin interviewer | none | 2i.6 |
@@ -508,7 +527,9 @@ Both blocks live in the same section so a new agent finds the long context natur
 
 Strict ordering: **2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel) → 2i.6**. 2i.4 is independent and can land any time before 2i.6.
 
-#### 2i.1 — AI host-judgment service
+#### 2i.1 — AI host-judgment service ✅ SHIPPED
+
+(See **Completed Work → Phase 2i.1** above for the final trigger threshold and shipped files. The brief below is kept for reference; next agent should pick up 2i.2.)
 
 **Paste this into `/goal`** (fits the 4000-char cap):
 
