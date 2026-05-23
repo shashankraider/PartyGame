@@ -188,18 +188,28 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
         />
       ) : null}
       {lobby.session.current_scene === "interview" ? (
-        <InterviewScene
-          key={currentChapter?.id ?? "interview"}
-          sessionId={lobby.session.id}
-          caseData={caseData}
-          chapter={currentChapter}
-          unlockedEvidence={lobby.session.unlocked_evidence}
-          interviewer={
-            lobby.players.find(
-              (player) => player.id === lobby.session.current_interviewer_player_id,
-            ) ?? null
-          }
-        />
+        <>
+          {currentChapter?.roundNumber === 2 ? (
+            <Round2InterviewPicker
+              sessionId={lobby.session.id}
+              caseData={caseData}
+              currentChapterId={currentChapter.id}
+              onError={setError}
+            />
+          ) : null}
+          <InterviewScene
+            key={currentChapter?.id ?? "interview"}
+            sessionId={lobby.session.id}
+            caseData={caseData}
+            chapter={currentChapter}
+            unlockedEvidence={lobby.session.unlocked_evidence}
+            interviewer={
+              lobby.players.find(
+                (player) => player.id === lobby.session.current_interviewer_player_id,
+              ) ?? null
+            }
+          />
+        </>
       ) : null}
       {lobby.session.current_scene === "phone_hack" ? (
         <PhoneHackScene chapter={currentChapter} />
@@ -441,6 +451,107 @@ function CaseBoardScene({
           </div>
         ) : null}
       </aside>
+    </div>
+  );
+}
+
+/**
+ * Round 2 free-choice suspect picker. Lets the host (and the room) pick which
+ * suspect to interview next. Tapping a card jumps to that suspect's chapter
+ * via the existing scene/set route; the engine reloads that suspect's
+ * transcript and unlock state from the DB so re-entry is lossless.
+ */
+function Round2InterviewPicker({
+  sessionId,
+  caseData,
+  currentChapterId,
+  onError,
+}: {
+  sessionId: string;
+  caseData: Case;
+  currentChapterId: string;
+  onError: (msg: string | null) => void;
+}) {
+  const round2InterviewChapters = useMemo(
+    () =>
+      caseData.chapters.filter(
+        (chapter): chapter is Extract<Chapter, { type: "interview" }> =>
+          chapter.type === "interview" && chapter.roundNumber === 2,
+      ),
+    [caseData.chapters],
+  );
+
+  const suspectsById = useMemo(
+    () => new Map(caseData.suspects.map((suspect) => [suspect.id, suspect])),
+    [caseData.suspects],
+  );
+
+  const [busyChapterId, setBusyChapterId] = useState<string | null>(null);
+
+  async function jumpTo(chapterId: string) {
+    if (chapterId === currentChapterId || busyChapterId) return;
+    setBusyChapterId(chapterId);
+    onError(null);
+    const response = await fetch(`/api/sessions/${sessionId}/scene`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set", scene: "interview", chapterId }),
+    });
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      onError(payload.error ?? "Could not switch suspect.");
+    }
+    setBusyChapterId(null);
+  }
+
+  if (round2InterviewChapters.length === 0) return null;
+
+  return (
+    <div className="mb-6 rounded-3xl border border-white/10 bg-zinc-950/70 p-6">
+      <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Round 2 — pick a suspect</p>
+      <p className="mt-2 text-sm text-[#a6a29a]">
+        Interview anyone in any order. Switch between suspects to follow leads as they emerge —
+        each suspect remembers your conversation.
+      </p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {round2InterviewChapters.map((chapter) => {
+          const suspect = suspectsById.get(chapter.suspectId);
+          if (!suspect) return null;
+          const isCurrent = chapter.id === currentChapterId;
+          const isBusy = busyChapterId === chapter.id;
+          return (
+            <button
+              key={chapter.id}
+              type="button"
+              onClick={() => jumpTo(chapter.id)}
+              disabled={isCurrent || busyChapterId !== null}
+              className={`rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed ${
+                isCurrent
+                  ? "border-[#c8a46a] bg-[#c8a46a]/15"
+                  : "border-white/10 hover:border-[#c8a46a]/60 hover:bg-white/[0.03]"
+              } ${busyChapterId !== null && !isCurrent ? "opacity-60" : ""}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-lg font-semibold">{suspect.name}</p>
+                {isCurrent ? (
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
+                    Current
+                  </span>
+                ) : isBusy ? (
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
+                    Loading…
+                  </span>
+                ) : null}
+              </div>
+              {suspect.shortDescription ? (
+                <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">
+                  {suspect.shortDescription}
+                </p>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

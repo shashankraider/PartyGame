@@ -776,6 +776,16 @@ function InterviewMode({
         {isAsking ? "Suspect is responding..." : "Ask suspect"}
       </button>
 
+      {chapter?.roundNumber === 2 ? (
+        <SwitchSuspectControl
+          sessionId={session.id}
+          caseData={caseData}
+          currentChapterId={chapter.id}
+          disabled={isAsking}
+          onError={onError}
+        />
+      ) : null}
+
       <button
         type="button"
         onClick={() => claimInterviewer(null)}
@@ -784,6 +794,109 @@ function InterviewMode({
       >
         {isClaiming ? "Passing..." : "Pass control"}
       </button>
+    </div>
+  );
+}
+
+/**
+ * Round 2 only: the player holding interviewer control can move the room to
+ * another round-2 suspect without going back to the TV. Collapsed by default
+ * so it doesn't clutter the interview view.
+ */
+function SwitchSuspectControl({
+  sessionId,
+  caseData,
+  currentChapterId,
+  disabled,
+  onError,
+}: {
+  sessionId: string;
+  caseData: Case;
+  currentChapterId: string;
+  disabled: boolean;
+  onError: (msg: string | null) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [busyChapterId, setBusyChapterId] = useState<string | null>(null);
+
+  const otherChapters = useMemo(
+    () =>
+      caseData.chapters.filter(
+        (chapter): chapter is Extract<Chapter, { type: "interview" }> =>
+          chapter.type === "interview" &&
+          chapter.roundNumber === 2 &&
+          chapter.id !== currentChapterId,
+      ),
+    [caseData.chapters, currentChapterId],
+  );
+
+  const suspectsById = useMemo(
+    () => new Map(caseData.suspects.map((s) => [s.id, s])),
+    [caseData.suspects],
+  );
+
+  if (otherChapters.length === 0) return null;
+
+  async function jumpTo(chapterId: string) {
+    if (busyChapterId) return;
+    setBusyChapterId(chapterId);
+    onError(null);
+    const response = await fetch(`/api/sessions/${sessionId}/scene`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set", scene: "interview", chapterId }),
+    });
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      onError(payload.error ?? "Could not switch suspect.");
+    }
+    setBusyChapterId(null);
+    setExpanded(false);
+  }
+
+  return (
+    <div className="mt-3 rounded-2xl border border-white/10 bg-black/20">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        disabled={disabled}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
+          Switch suspect
+        </span>
+        <span className="text-xs text-[#a6a29a]">{expanded ? "▾" : "▸"}</span>
+      </button>
+      {expanded ? (
+        <div className="grid gap-2 border-t border-white/10 p-3">
+          {otherChapters.map((chapter) => {
+            const suspect = suspectsById.get(chapter.suspectId);
+            if (!suspect) return null;
+            const isBusy = busyChapterId === chapter.id;
+            return (
+              <button
+                key={chapter.id}
+                type="button"
+                onClick={() => jumpTo(chapter.id)}
+                disabled={disabled || busyChapterId !== null}
+                className="rounded-2xl border border-white/15 px-4 py-3 text-left text-sm transition hover:border-[#c8a46a] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-semibold">{suspect.name}</span>
+                  {isBusy ? (
+                    <span className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
+                      Loading…
+                    </span>
+                  ) : null}
+                </div>
+                {suspect.shortDescription ? (
+                  <p className="mt-1 text-xs text-[#a6a29a]">{suspect.shortDescription}</p>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -378,8 +378,7 @@ export interface Evidence {
   fullViewUrl?: string;
   pdfUrl?: string;
   /**
-   * Basename of an HTML file under the case `printables/` folder (e.g. `Round1_The_Scene.html`).
-   * Mobile digital case file opens `#${id}` inside this deck when present.
+   * Basename only: HTML file under the case printables/ folder. Mobile locker opens this file at #evidenceId.
    */
   printableHtml?: string;
   /**

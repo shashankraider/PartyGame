@@ -62,17 +62,15 @@ describe("Mussoorie case", () => {
     assert.equal(perRound[4], 6, "Round 4 should have 6 evidence items");
   });
 
-  test("only asset warnings are present (until Phase 4 ships art)", async () => {
+  test("validates with no asset warnings (Phase 4 art has shipped)", async () => {
     const { issues } = await validateCaseById("mussoorie");
     const warnings = issues.filter((i) => i.level === "warn");
-    // Every warning should be an asset-not-found warning.
-    for (const w of warnings) {
-      assert.ok(
-        /not found on disk/.test(w.message),
-        `unexpected non-asset warning: ${w.message}`
-      );
-    }
-    // Suspect portraits (6) + cover image (1) + location images (8) = 15 expected
-    assert.equal(warnings.length, 15);
+    // If any asset warnings reappear (art removed/renamed), surface what's missing
+    // in the assertion message rather than failing on a bare count.
+    assert.equal(
+      warnings.length,
+      0,
+      `Unexpected warnings:\n${warnings.map((w) => "  - " + w.message).join("\n")}`,
+    );
   });
 });
