@@ -557,6 +557,12 @@ Success criteria:
   second-letter unlock automatically. With only Naina's cue fired, it does
   not. Document the trigger threshold you settled on.
 
+Handoff update (do this before committing):
+- Update the **Current phase** banner at the top of CLAUDE_HANDOFF.md to note 2i.1 is shipped and 2i.2 is next.
+- Add a 2i.1 entry to the **Completed Work** section with: one-line description of what shipped (the host-judgment service + second-letter decision), files touched (`src/lib/host-judgment.ts`, `scripts/eval-host.ts`, edits to `src/lib/session-store.ts`), and the trigger threshold you settled on (the conditions under which the AI host actually fires the second letter — paste your final cooperationCue-equivalent text).
+- In the **Next Recommended Phase** section, mark 2i.1 as ✅ shipped (e.g., a checkmark next to the heading) so the next agent picks 2i.2 cleanly.
+- If 2i.4 is also shipped by the time of your commit (it can land in parallel), don't touch its line — just make sure your changes don't conflict with theirs.
+
 Commit message: 'Phase 2i.1 — AI host-judgment service for the second letter.'
 ```
 
@@ -611,6 +617,12 @@ Success criteria:
   Next/Previous buttons on the TV are no-ops or hidden during this
   phase. Accusation phase opens via AI host judgment OR manual host
   trigger (Open accusation button remains in TV strip).
+
+Handoff update (do this before committing):
+- Update the **Current phase** banner to note 2i.2 is shipped; 2i.3 and 2i.5 unblocked.
+- Add a 2i.2 entry to **Completed Work** describing: new migration 0005_session_phase.sql (the `phase` column), schema extension (`arrivesWhen` on Evidence), files modified, and exactly what `setSessionScene` / `advanceSessionChapter` now do in the Interrogation phase (e.g., "advance is a no-op").
+- In **Next Recommended Phase**, mark 2i.2 ✅ shipped. Note that 2i.3 and 2i.5 can land in parallel from here.
+- Update the **Repository Map** section to add the new migration filename.
 
 Commit message: 'Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation.'
 ```
@@ -672,6 +684,13 @@ Success criteria:
   + Bisht family history + land registry land in roughly the right
   order without any human action.
 
+Handoff update (do this before committing):
+- Update the **Current phase** banner to note 2i.3 is shipped.
+- Add a 2i.3 entry to **Completed Work** listing: how many evidence pieces now have `arrivesWhen`, the new eval file path (`cases/mussoorie/evals/host.eval.json`), and the total eval count (`npm run eval:host` final number).
+- In **Next Recommended Phase**, mark 2i.3 ✅ shipped.
+- If 2i.5 is also shipped by the time of your commit, mark both ✅ and note 2i.6 is next.
+- Flag any forensic evidence that needed *especially* narrow `arrivesWhen` text — same pattern as the 2g.2 Bisht caveat. Document it under a "Phase 2i.3 authoring notes" sub-section in the Completed Work entry so future authoring (Phase 2k+ new cases) doesn't relearn the lesson.
+
 Commit message: 'Phase 2i.3 — arrivesWhen content + eval for round-3/4 forensic evidence.'
 ```
 
@@ -715,6 +734,11 @@ Success criteria:
   mic auto-passes to detective B. Detective A's phone shows 'Detective
   B is now the interviewer.' Detective B's phone shows the Ask suspect
   button. Manual pass / claim still works.
+
+Handoff update (do this before committing):
+- Update the **Current phase** banner to note 2i.4 is shipped.
+- Add a 2i.4 entry to **Completed Work**: schema extension (`case.rules.questionsPerDetective`), files touched, default value (3), what the UI shows ("Next: Detective X" label), and confirmation that manual claim/pass still works as override.
+- In **Next Recommended Phase**, mark 2i.4 ✅ shipped. 2i.4 is independent of 2i.1/2i.2/2i.3/2i.5 — your commit shouldn't change any of their statuses.
 
 Commit message: 'Phase 2i.4 — Round-robin interviewer rotation (default 3 questions).'
 ```
@@ -763,6 +787,12 @@ Success criteria:
 - Open accusation button works; AI host can also trigger phase
   transition automatically when judging the case is solvable.
 
+Handoff update (do this before committing):
+- Update the **Current phase** banner to note 2i.5 is shipped.
+- Add a 2i.5 entry to **Completed Work**: which TV controls were removed (Previous, Next, Drop evidence) vs which remain (Start game, Pause, Open accusation, End session), the new CaseStatusPanel component, and any new route you added (e.g., `GET /api/sessions/[id]/events`).
+- In **Next Recommended Phase**, mark 2i.5 ✅ shipped.
+- If 2i.3 is also shipped by your commit time, mark both ✅ — 2i.6 is the next remaining task.
+
 Commit message: 'Phase 2i.5 — TV host strip refactor + Case Status panel.'
 ```
 
@@ -800,6 +830,14 @@ Success criteria:
   drops forensic evidence at story-relevant moments, accusation opens
   when the case is ready.
 - CLAUDE_HANDOFF.md cleanly hands off to whoever picks up Phase 2h.
+
+Handoff update (this is the wrap; do all of the following before committing):
+- Update the **Current phase** banner to: "Phase 2i complete. Next: Phase 2h (Realtime infrastructure + token streaming)."
+- In the **Completed Work** section, add a single Phase 2i roll-up entry that consolidates 2i.1–2i.5 (the individual sub-phase entries added by previous commits can stay or you can collapse them into the roll-up — your call, but pick one).
+- **Delete or archive the six sub-phase /goal briefs** from the **Next Recommended Phase** section. Replace with the existing Phase 2h brief (currently in "Later Phases") — promote it to Next Recommended Phase.
+- Move the old "Phase 2h - Realtime Infrastructure + Token Streaming" section under "Later Phases" up to "Next Recommended Phase".
+- Update the **Pickup TL;DR**: point step 2 at Phase 2h instead of Phase 2i; update step 4 to summarize what Phase 2i shipped (AI host, free-form interrogation, round-robin); update the verification suite expectations if eval counts changed.
+- Confirm the `Repository Map` mentions any new files (host-judgment.ts, host.eval.json, the 0005 migration).
 
 Commit message: 'Phase 2i.6 — Wrap: design.md + handoff updated; Phase 2i complete.'
 ```
