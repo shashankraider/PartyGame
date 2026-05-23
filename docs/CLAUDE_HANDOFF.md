@@ -1,9 +1,9 @@
 # Mystery Engine — Handoff
 
-**Last updated**: 2026-05-15
-**Repository**: Git remote `origin` → `git@github.com:shashankraider/PartyGame.git` (private). Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2g.2 complete. All six Mussoorie suspects now have authored adjudicator unlock cues and eval coverage; next recommended phase is Phase 2h (Realtime infrastructure + token streaming).
-**Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` were created for the failed parallel attempt and are no longer needed for mainline work.
+**Last updated**: 2026-05-23
+**Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
+**Current phase**: Phase 2g.2 + Round 2 free-choice suspect picker + persona-prompt fix complete. **Next: Phase 2i — AI host + free-form interrogation**, split into six sequenced sub-phases. Each sub-phase has its own `/goal`-ready brief inside the **Next Recommended Phase** section below — copy-paste one into a fresh session and run it in a worktree. Land sequentially: 2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
+**Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
 
@@ -17,29 +17,31 @@ If you're a new agent (Cursor included) taking over this project:
    ```bash
    cd /Users/shashankmendiratta/shire/PartyGame
    npm install                 # if node_modules isn't current
-   npm run validate-cases      # expect: 0 errors, 15 expected asset warnings
+   npm run validate-cases      # expect: 0 errors, 0 warnings (Phase 4 art has shipped)
    npm test                    # expect: 72/72 passing
-   npm run eval:adjudicator -- all  # expect: 104/104 passing
+   npm run eval:adjudicator -- all  # expect: 104/104 (one known flake on Bisht 'rifle/challenges' may toggle)
    npm run lint                # expect: clean
    npm run build               # expect: clean build, all routes registered
    ```
    If anything fails here, **stop and investigate before continuing** — the state is not what this doc describes.
 
 2. **Read `docs/CLAUDE_HANDOFF.md` end-to-end** (this file). The most important sections after this TL;DR:
+   - "Next Recommended Phase" — Phase 2i breakdown with six `/goal`-ready sub-phase briefs. Run them sequentially in worktrees.
    - "Completed Work" — every shipped phase with its concrete artifacts.
-   - "Next Recommended Phase" — full brief on Phase 2h.
-   - "Phase 2g.2 — Author Unlock Cues for the Other Five Suspects" — now shipped; useful as historical context for cue design.
+   - "Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)" — the locked design language for the unlock-tier system you'll be extending in 2i.
 
-3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
+3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The round-2 free-choice suspect picker ships on top. The persona-prompt fix scopes the cover-story alibi to whereabouts questions only. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
 
-4. **Local environment** required for Phase 2g.2:
+4. **Phase 2i is the active next slice.** It removes story-judgment from the human host (an AI host service makes those calls instead), collapses round-2/3/4 chapter walls into one open Interrogation phase, and adds a round-robin interviewer for participation. Six sub-phases with explicit dependency graph in "Next Recommended Phase" below. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
+
+5. **Local environment** required for Phase 2i work:
    - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
    - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work).
    - `OPENROUTER_API_KEY` is the only thing the eval script needs.
 
-5. **Phones on Wi‑Fi testing the dev server** (`http://<LAN-IP>:3000`): `npm run dev` listens on `0.0.0.0`; `next.config.ts` auto-adds this machine’s non-loopback IPv4 addresses to `allowedDevOrigins` so Next 16 does not 403 `/_next/*` when the page is loaded from a LAN host. Optional: `NEXT_ALLOWED_DEV_ORIGINS=host1,host2,tailscale.hostname`.
+6. **Phones on Wi‑Fi testing the dev server** (`http://<LAN-IP>:3000`): `npm run dev` listens on `0.0.0.0`; `next.config.ts` auto-adds this machine’s non-loopback IPv4 addresses to `allowedDevOrigins` so Next 16 does not 403 `/_next/*` when the page is loaded from a LAN host. Optional: `NEXT_ALLOWED_DEV_ORIGINS=host1,host2,tailscale.hostname`.
 
-6. **`Game_Bible.docx` is stale**; `cases/mussoorie/design.md` is the canonical narrative source.
+7. **`Game_Bible.docx` is stale**; `cases/mussoorie/design.md` is the canonical narrative source.
 
 ---
 
@@ -476,15 +478,339 @@ The old `/api/interview` route has been removed; all interview traffic flows thr
 
 ## Next Recommended Phase
 
-### Phase 2h — Realtime Infrastructure + Token Streaming
+### Phase 2i — AI host + free-form interrogation
 
-Goal: replace the current polling loops with authenticated Supabase Realtime, then upgrade the session-scoped interview route from non-streaming OpenRouter calls to token-by-token streaming. See the Phase 2h section under "Later Phases" for the detailed implementation sketch.
+Goal: remove the human host from story-judgment decisions. A human still coordinates the room (Start game, Pause, Open accusation, End session — pure social-fabric controls), but every story call — when forensic evidence arrives, when the second anonymous letter lands, when the case opens accusation — is made by an AI host service that watches the conversation. Players collectively run the investigation; nobody at the table has to know the case.
 
-Likely first slice:
-- Add a server-side helper that mints short-lived session-scoped Realtime auth tokens.
-- Replace host/player polling for sessions, players, accusation votes, messages, and interview unlock state with Realtime subscriptions.
-- Convert `POST /api/sessions/[sessionId]/interview` to stream model tokens while updating the persisted message row incrementally.
-- Verify two simultaneous sessions cannot see each other's rows.
+Companion change: round-robin interviewer (mic auto-rotates every 3 questions) so everyone participates. The current "Take control / Pass control" buttons stay as manual override.
+
+Companion structural change: collapse the round-2/3/4 chapter walls into one open **Interrogation phase**. Any suspect, any order, any number of times. Forensic evidence (`anonymous-letter-2`, `bisht-family-history`, `land-registry`, `anya-payments`, `devraj-jeep-cctv`, `lathi-postmortem`, etc.) lands when the AI host judges the moment is right — based on what's been said, asked, and revealed across all six suspects' transcripts. Not on a chapter click.
+
+**Phase 2h (Realtime + token streaming) has been bumped to after 2i.** 2i is the higher-leverage design change; 2h is infrastructure polish that benefits more from landing on top of the new architecture.
+
+This is a real refactor. Split into six sequenced sub-phases below. **Land one, merge, then start the next.** Each sub-phase has its own `/goal`-ready brief — copy-paste into a fresh session and run it in a worktree.
+
+#### Sub-phase dependency graph
+
+| Sub-phase | Depends on | Blocks |
+|---|---|---|
+| 2i.1 — AI host service | none | 2i.2, 2i.5 |
+| 2i.2 — Phase state machine | 2i.1 | 2i.3 |
+| 2i.3 — Author `arrivesWhen` on round-3/4 evidence | 2i.2 | 2i.6 |
+| 2i.4 — Round-robin interviewer | none | 2i.6 |
+| 2i.5 — TV host strip + case status panel | 2i.2 | 2i.6 |
+| 2i.6 — Verify + eval + handoff doc | all others | — |
+
+Strict ordering: **2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel) → 2i.6**. 2i.4 is independent and can land any time before 2i.6.
+
+#### 2i.1 — AI host-judgment service (/goal brief)
+
+```
+/goal Phase 2i.1 — Build the AI host-judgment service.
+
+Scope:
+After the existing askSuspect flow runs (suspect responds + adjudicator
+evaluates per-cue unlocks), invoke a new server-side AI host service to
+make ONE specific judgment call: should the second anonymous letter
+(evidence id `anonymous-letter-2`) be revealed now? Output a structured
+JSON verdict. If yes, the engine fires it the same way an adjudicator
+unlock fires today: insert a 'system' role message, add the evidence id
+to session.unlocked_evidence, log an event.
+
+This is intentionally a single-decision scope. Other forensic drops and
+phase transitions are deferred to 2i.2 — they'll plug into the same
+service once the surface is proven.
+
+Files to create:
+- src/lib/host-judgment.ts — mirrors src/lib/adjudicator.ts in shape.
+  Function: judgeHostAction({ caseData, session, allTranscripts,
+  unlockedEvidence }) -> { action: 'do-nothing' | 'drop-evidence',
+  evidenceId?: string, reason: string }. Cheap model (gpt-4o-mini or
+  case.llm.adjudicatorModelOverride).
+
+Files to modify:
+- src/lib/session-store.ts — askSuspect calls judgeHostAction after
+  evaluatePendingUnlocks. If the verdict says drop-evidence, fire the
+  same unlock pipeline as an adjudicator-driven unlock. Add the result
+  to AskSuspectResult so the route returns it.
+
+Eval:
+- scripts/eval-host.ts (new) — golden test cases for the 'should the
+  second letter land now?' decision. At minimum: positive (Thakurs have
+  been mentioned multiple times, Naina+Rhea+Kabir have all opened up),
+  too-early (only Naina has opened up), too-vague (Thakurs never
+  mentioned). Run with `npm run eval:host`. Add the npm script.
+
+What NOT to do:
+- Don't extend the phase machine (that's 2i.2).
+- Don't touch any other forensic-evidence triggers.
+- Don't remove host controls (that's 2i.5).
+- Don't change the chapter walk.
+- Keep adjudicator.ts and interview-unlocks.ts untouched.
+
+Success criteria:
+- npm run lint, npm test, npm run validate-cases, npm run build all clean.
+- npm run eval:adjudicator -- all still passes 104/104.
+- npm run eval:host passes its authored golden cases.
+- Manual: in REPL or live, after firing all the cooperation cues on
+  Naina/Rhea/Kabir in a session, the next askSuspect call surfaces the
+  second-letter unlock automatically. With only Naina's cue fired, it does
+  not. Document the trigger threshold you settled on.
+
+Commit message: 'Phase 2i.1 — AI host-judgment service for the second letter.'
+```
+
+#### 2i.2 — Phase state machine (/goal brief)
+
+```
+/goal Phase 2i.2 — Collapse round-2/3/4 chapters into an open Interrogation phase.
+
+Depends on: 2i.1 merged.
+
+Scope:
+Add session.phase column (briefing | interrogation | accusation |
+reveal) via a new migration. Replace the chapter-walk progression model
+inside round 2/3/4 with a phase machine. Within the Interrogation
+phase, ANY suspect can be interviewed in ANY order, multiple times
+(the round-2 picker we already shipped becomes the picker for the
+whole Interrogation phase).
+
+Round-3/4 chapters get repurposed: their narration/printable hooks
+remain as 'forensic events' but they're no longer linear-walkable. The
+AI host (extended in this phase to handle more than just the second
+letter — see 2i.3 for content authoring) decides when each forensic
+event triggers.
+
+Files to modify:
+- supabase/migrations/0005_session_phase.sql — add session.phase column
+  with default 'briefing'. Set on r1-suspect-board completion to
+  'interrogation'.
+- src/engine/schema/case.schema.json — Evidence gains an optional
+  `arrivesWhen` natural-language condition string. Regenerate types.ts.
+- src/lib/session-store.ts — setSessionScene and advanceSessionChapter
+  become phase-aware. Within Interrogation, advance is a no-op; only
+  phase transitions fire.
+- src/lib/host-judgment.ts — extend judgeHostAction to also decide
+  phase transitions (briefing -> interrogation when r1-suspect-board
+  ends; interrogation -> accusation when AI judges the case is solvable;
+  accusation -> reveal after votes are in).
+- src/lib/supabase.ts — add `phase` to SessionRow type.
+
+What NOT to do:
+- Don't author arrivesWhen content for any evidence (that's 2i.3).
+- Don't change UI controls beyond what's necessary for phase rendering
+  (the TV strip rewrite is 2i.5).
+- Don't break the existing 2i.1 second-letter decision — port it into
+  the new arrivesWhen shape.
+
+Success criteria:
+- npm run lint, npm test, npm run validate-cases, npm run build clean.
+- Manual: a fresh session walks Briefing through r1-* chapters as
+  today, then transitions to Interrogation. Inside Interrogation, the
+  round-2 picker shows ALL six suspects with no chapter-walk gate; the
+  Next/Previous buttons on the TV are no-ops or hidden during this
+  phase. Accusation phase opens via AI host judgment OR manual host
+  trigger (Open accusation button remains in TV strip).
+
+Commit message: 'Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation.'
+```
+
+#### 2i.3 — Author `arrivesWhen` on round-3/4 evidence (/goal brief)
+
+```
+/goal Phase 2i.3 — Author arrivesWhen conditions on every round-3/4 forensic evidence.
+
+Depends on: 2i.2 merged.
+
+Scope:
+For every evidence currently gated by entering r3-* or r4-* chapters,
+author a natural-language arrivesWhen condition the AI host will
+evaluate. Plus eval cases proving each condition fires when expected
+and doesn't fire when not.
+
+Affected evidence (check current case.json against r3-* and r4-*
+chapters for the actual list):
+- anonymous-letter-2 — already wired in 2i.1 as the proof-of-concept;
+  port its trigger into the new arrivesWhen field on Evidence.
+- old-newspaper-clipping, theft-fir-inventory, wall-mount-photo,
+  office-rifle-photo, land-registry, bisht-family-history,
+  anya-bus-ticket — round-3 evidence; arrives when Thakur-related
+  questioning is sustained or when the second letter has landed.
+- bisht-devraj-call, devraj-jeep-cctv, lathi-postmortem,
+  grey-shawl-fresh, anya-payments, vikram-research-notes — round-4
+  forensic; arrives when the case is mid-late game (most suspects
+  opened up, Thakur thread surfaced).
+
+Authoring pattern (mirrors how unlockBehavior.cooperationCue works for
+suspects):
+- Describe the conversational/state preconditions for the AI host to
+  judge 'yes, drop this now.' Use plain English; the host LLM reads it
+  literally. Don't write engine notes.
+- Include 'do NOT fire if...' clauses for false positives (premature
+  drops, wrong-thread drops).
+
+Eval:
+- cases/mussoorie/evals/host.eval.json (new) — per-evidence golden
+  test cases. Each case carries a fake session-state snapshot (which
+  suspects' cues have fired, what's been asked across transcripts) and
+  expected: 'drop-now' | 'wait'. Run via the npm run eval:host harness
+  built in 2i.1.
+
+What NOT to do:
+- Don't add engine logic. This is pure authoring + eval.
+- Don't change unlockBehavior on existing suspect secrets/BPs.
+- Don't remove the legacy unlockedAtChapter values — leave them as a
+  forgiving fallback for the rare case where the AI host never triggers
+  but the host manually opens accusation.
+
+Success criteria:
+- npm run eval:host passes all authored cases.
+- npm run eval:adjudicator -- all still passes.
+- npm run validate-cases clean.
+- A live REPL run can walk through Naina -> Rhea -> Kabir, then push
+  Thakur-themed questions to any other suspect, and the second letter
+  + Bisht family history + land registry land in roughly the right
+  order without any human action.
+
+Commit message: 'Phase 2i.3 — arrivesWhen content + eval for round-3/4 forensic evidence.'
+```
+
+#### 2i.4 — Round-robin interviewer (/goal brief)
+
+```
+/goal Phase 2i.4 — Round-robin interviewer rotation.
+
+Depends on: nothing. Can land in parallel with 2i.1/2i.2/2i.3.
+
+Scope:
+Add automatic mic rotation: after every N questions from the current
+interviewer (default 3, configurable per case via
+case.rules.questionsPerDetective), the engine auto-rotates
+current_interviewer_player_id to the next detective seat. The phone
+UI shows 'Your turn next' / 'Detective X's turn'. The existing manual
+Take Control / Pass Control buttons stay as override.
+
+Files to modify:
+- src/engine/schema/case.schema.json — case gains optional
+  `rules.questionsPerDetective` (default 3). Regenerate types.ts.
+- src/lib/session-store.ts — askSuspect, after persisting the user
+  message, checks if the current interviewer has hit the cap; if so,
+  rotates current_interviewer_player_id to the next non-observer seat
+  in seat-number order. Tracks per-(session, suspect) question count
+  via a small denormalized counter or computed from messages.
+- src/components/PlayerLobbyView.tsx InterviewMode — show 'Next:
+  Detective X' label when the rotation is about to fire. Same Take
+  Control / Pass Control buttons remain.
+- src/components/HostLobbyView.tsx InterviewScene — surface 'Mic
+  rotates every N questions' label near the current-interviewer badge.
+
+What NOT to do:
+- Don't change the underlying interviewer-claim mechanics. Auto-rotate
+  is just another reason current_interviewer_player_id changes.
+- Don't touch the AI host service.
+
+Success criteria:
+- npm run lint / test / build clean.
+- Manual: with 3 detectives, after 3 questions from detective A, the
+  mic auto-passes to detective B. Detective A's phone shows 'Detective
+  B is now the interviewer.' Detective B's phone shows the Ask suspect
+  button. Manual pass / claim still works.
+
+Commit message: 'Phase 2i.4 — Round-robin interviewer rotation (default 3 questions).'
+```
+
+#### 2i.5 — TV host strip + case status panel (/goal brief)
+
+```
+/goal Phase 2i.5 — Strip story controls from the TV host strip; add case status panel.
+
+Depends on: 2i.2 merged (needs the phase machine to drive what shows).
+
+Scope:
+The TV's existing host strip has Start game / Previous / Next / Pause.
+Replace with coordination-only controls: Start game, Pause, Open
+accusation, End session. Remove Previous/Next. The Open Accusation
+button is the explicit social-fabric handoff between Interrogation and
+Accusation phases (the AI host can also trigger this automatically
+when it judges the case is solvable).
+
+Add a 'Case status' panel near the host strip showing the AI host's
+most recent reasoning. Pulled from a new server-side event stream
+(interview.host_judgment events written by the AI host service in
+2i.1/2i.2). Examples:
+  - 'Forensic update incoming — bank records.'
+  - 'Three suspects have opened up.'
+  - 'Thakur thread surfacing — second letter en route.'
+
+Files to modify:
+- src/components/HostLobbyView.tsx — replace top control strip;
+  add CaseStatusPanel component that polls /api/sessions/[id]/events
+  for recent interview.host_judgment events.
+- src/app/api/sessions/[sessionId]/events/route.ts (probably new) —
+  GET returns the most recent N events of certain types, filtered.
+
+What NOT to do:
+- Don't remove the existing host-fallback banner inside InterviewScene.
+- Don't redesign the round-2 picker (already exists and works inside
+  Interrogation phase).
+- Don't touch phone UI.
+
+Success criteria:
+- TV no longer shows Previous/Next buttons.
+- Case status line updates within ~2.5s of the AI host making a
+  judgment call (limited by the lobby poll until Phase 2h ships
+  Realtime).
+- Open accusation button works; AI host can also trigger phase
+  transition automatically when judging the case is solvable.
+
+Commit message: 'Phase 2i.5 — TV host strip refactor + Case Status panel.'
+```
+
+#### 2i.6 — Verify + eval + handoff doc (/goal brief)
+
+```
+/goal Phase 2i.6 — Phase 2i wrap: full verify, design.md update, handoff cleanup.
+
+Depends on: 2i.1, 2i.2, 2i.3, 2i.4, 2i.5 all merged.
+
+Scope:
+End-to-end verification that the new AI-host + free-interrogation model
+plays cleanly. Update design.md to reflect the new phase model (the
+existing '9b. Round 2 scenario playbook' becomes obsolete or merges
+into a broader 'Interrogation scenario playbook'). Update
+CLAUDE_HANDOFF.md to mark Phase 2i complete and point next at 2h.
+
+Files to modify:
+- cases/mussoorie/design.md — rewrite sections 5/6/9b/10 to reflect
+  three phases (Briefing -> Interrogation -> Accusation -> Reveal)
+  instead of four rounds. Keep the narrative content; just update the
+  pacing language.
+- docs/CLAUDE_HANDOFF.md — move Phase 2i to Completed Work. Update
+  Current phase line. Set Next Recommended Phase to 2h (Realtime).
+- Test pin updates if the evidence count per round changed.
+
+What NOT to do:
+- Don't author new evidence. (2i.3 owns content; this phase is wrap-up.)
+- Don't touch any engine code. (Verify; don't rebuild.)
+
+Success criteria:
+- Full suite green: validate-cases / test / lint / build / eval:adjudicator -- all / eval:host.
+- A walkthrough of the case from briefing through reveal works without
+  any Next/Previous click on the TV. Players pick suspects, AI host
+  drops forensic evidence at story-relevant moments, accusation opens
+  when the case is ready.
+- CLAUDE_HANDOFF.md cleanly hands off to whoever picks up Phase 2h.
+
+Commit message: 'Phase 2i.6 — Wrap: design.md + handoff updated; Phase 2i complete.'
+```
+
+### Open design questions for any sub-phase
+
+A few details I (the previous session) left open and the next agent should decide based on their judgment:
+
+- **Adjudicator vs host LLM model.** Today the adjudicator uses the same model as roleplay (gpt-4o-mini default). The host-judgment service is the natural place to use a cheaper structured-output model. Author 2i.1 should set this up with case.llm.hostJudgmentModelOverride for future flexibility.
+- **How aggressively the AI host drops evidence.** Better to be conservative on day one (under-drop) than over-eager (drop the second letter at minute 4). 2i.3's eval cases should bias the cue language toward 'wait'.
+- **What happens if the AI host service fails (LLM down, JSON parse error).** Should fall back to NOT firing the unlock — the case is still playable without forensic auto-drops; the human host can manually trigger via the (preserved) Open Accusation button.
 
 ### Recently Completed Reference — Phase 2g.2
 
@@ -661,7 +987,7 @@ Verify:
 - The session-scoped Realtime auth path does not leak rows from other sessions (test by joining two sessions in different tabs).
 - The Phase 2g host-fallback notification (which currently lands on the next 2.5s lobby poll) now appears instantly.
 
-### Phase 2i — Pause/Resume
+### Phase 2j — Pause/Resume
 
 - Pause/resume controls
 - Re-enter join code or URL to resume
