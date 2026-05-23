@@ -179,6 +179,7 @@ async function createSyntheticSession(args: {
       join_code: joinCode,
       mode: "multi",
       status: "in_progress",
+      phase: "interrogation",
       current_scene: "interview",
       current_chapter_id: args.initialChapterId,
     })

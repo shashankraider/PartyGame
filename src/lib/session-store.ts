@@ -1264,8 +1264,8 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
     }
   }
 
-  // Phase 2i.1 — AI host-judgment pass. Mirrors the adjudicator's per-turn
-  // cadence, but judges ONE thing: should `anonymous-letter-2` land now?
+  // Phase 2i.1/2i.3 — AI host-judgment pass. Mirrors the adjudicator's
+  // per-turn cadence, but judges one host pacing action at a time.
   // Treats failures (network, missing API key, malformed LLM response) as
   // non-fatal: the interview is still playable without the auto-drop. 2i.2
   // broadens this surface to phase transitions and other forensic events.
@@ -1287,7 +1287,6 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
 
     if (
       hostJudgment.action === "drop-evidence" &&
-      hostJudgment.evidenceId === hostJudgmentModule.HOST_JUDGMENT_TARGET_EVIDENCE_ID &&
       !workingSession.unlocked_evidence.includes(hostJudgment.evidenceId)
     ) {
       const evidence = caseData.evidence.find(

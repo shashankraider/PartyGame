@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-05-23
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation — shipped. **Next: Phase 2i.3 (`arrivesWhen` authoring) and Phase 2i.5 (TV host strip + Case Status panel) are unblocked and can land in parallel; 2i.4 remains independent.** Remaining order: (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
+**Current phase**: Phase 2i.3 — `arrivesWhen` authoring for round-3/4 forensic evidence — shipped. **Next: Phase 2i.5 (TV host strip + Case Status panel) remains unblocked; 2i.4 remains independent.** Remaining order: (2i.5 + 2i.4, either order) → 2i.6.
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -32,7 +32,7 @@ If you're a new agent (Cursor included) taking over this project:
 
 3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The round-2 free-choice suspect picker ships on top. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
 
-4. **Phase 2i is the active next slice.** 2i.1 and 2i.2 are shipped: the AI host service exists and the old round-2/3/4 chapter walk now collapses into one open Interrogation phase. Next useful work is 2i.3 (`arrivesWhen` authoring) and 2i.5 (TV host strip + Case Status panel), with 2i.4 round-robin interviewer independent. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
+4. **Phase 2i is the active next slice.** 2i.1, 2i.2, and 2i.3 are shipped: the AI host service exists, the old round-2/3/4 chapter walk now collapses into one open Interrogation phase, and the round-3/4 forensic evidence has authored `arrivesWhen` conditions plus host eval coverage. Next useful work is 2i.5 (TV host strip + Case Status panel), with 2i.4 round-robin interviewer independent. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
 
 5. **Local environment** required for Phase 2i work:
    - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
@@ -79,6 +79,7 @@ Current status:
 - Phase 2g.2 complete: authored unlockBehavior blocks for Rhea, Devraj, Bisht, Anya, and Kabir across their secrets and breaking points; added `cases/mussoorie/evals/{rhea,devraj,bisht,anya,kabir}.eval.json`; moved `vikram-voice-memo` from Round 1 to `r3-recap`; added a Round 3 printable voice-memo exhibit; updated the Mussoorie round-distribution pin test. `npm run eval:adjudicator -- all` passes 104/104 cases.
 - Naina canon correction complete: removed the stale freelance-design / wellness-brand cover story from `cases/mussoorie/case.json` and `cases/mussoorie/design.md`. Naina should answer "why were you in Mussoorie?" as a corporate investigator following up on confidential work Vikram requested about Rhea / Metropolis Media, with the personal layer that Vikram then went silent. Verification: `npm run validate-case mussoorie` and `npm run eval:adjudicator -- naina` (29/29).
 - Phase 2i.2 complete: added `sessions.phase` (`briefing | interrogation | accusation | reveal`) via `supabase/migrations/0005_session_phase.sql`; added optional `Evidence.arrivesWhen`; extended `HostJudgmentVerdict` with `transition-phase` + `targetPhase` using the existing host-judgment OpenRouter call and prose-fallback parser; made `advanceSessionChapter` a no-op during Interrogation while preserving explicit `setSessionScene(..., scene: "interview", chapterId)` for the free-choice picker. Verification: `supabase db reset --local`, phase default query, `npm run validate-cases`, `npm test`, `npm run eval:host`, `npm run lint`, `npm run build`.
+- Phase 2i.3 complete: authored `arrivesWhen` on all 14 round-3/4 host-paced forensic evidence items, including porting the 2i.1 second-letter trigger into `anonymous-letter-2`; generalized `src/lib/host-judgment.ts` so the host evaluates ordered candidate evidence from case data instead of hardcoding the second letter; extended `cases/mussoorie/evals/host.eval.json` to 60 cases. Verification: `npm run validate-cases`, `npm test`, `npm run eval:host` (60/60), `npm run lint`, `npm run build`; `npm run eval:adjudicator -- all` remains 103/104 with the documented Bisht rifle "challenges collector explanation" model flake.
 
 Run and verify:
 - npm run dev
@@ -90,7 +91,7 @@ Run and verify:
 
 Known expected warnings:
 - npm warns about unknown env config "devdir".
-- validate-cases emits 15 missing asset warnings for Mussoorie art. These are expected until Phase 4.
+- `npm run eval:adjudicator -- all` may still show the known Bisht `secret:the-rifle` "challenges collector explanation" model flake (103/104); this is unchanged from 2i.2.
 
 Environment:
 Use .env.example as the template. For Phase 2b+ lobby flows, Supabase must be configured:
@@ -100,7 +101,7 @@ Use .env.example as the template. For Phase 2b+ lobby flows, Supabase must be co
 - SUPABASE_SERVICE_ROLE_KEY
 
 Next task:
-Implement Phase 2h — Realtime infrastructure + token streaming.
+Implement Phase 2i.5 — TV host strip + Case Status panel, or Phase 2i.4 — round-robin interviewer rotation. Both remain unblocked; land them separately before 2i.6.
 
 ⚠️ **Previous attempt blocked by org usage cap.** Five parallel sub-agents were spawned via the Anthropic Agent tool to author one suspect each in isolated workdirs. All five failed within seconds with "You've hit your org's monthly usage limit." No case-data work was produced. The isolated workdirs are still in place at `/Users/shashankmendiratta/shire/PartyGame-2g2-{rhea,devraj,bisht,anya,kabir}/` and can be reused by Cursor or any other client that picks this up. Each is a copy of `cases/` plus symlinks for everything else; `.env.local` is already in each.
 
@@ -331,6 +332,34 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 ---
 
 ## Completed Work
+
+### Phase 2i.3 — `arrivesWhen` content + eval for round-3/4 forensic evidence
+
+Shipped: authored natural-language `arrivesWhen` conditions on all 14 host-paced round-3/4 forensic evidence items in `cases/mussoorie/case.json`: `anonymous-letter-2`, `old-newspaper-clipping`, `theft-fir-inventory`, `wall-mount-photo`, `office-rifle-photo`, `land-registry`, `bisht-family-history`, `anya-bus-ticket`, `bisht-devraj-call`, `devraj-jeep-cctv`, `lathi-postmortem`, `grey-shawl-fresh`, `anya-payments`, and `vikram-research-notes`. The second anonymous letter's 2i.1 trigger is now authored on the evidence row instead of only living in prompt code.
+
+The host-judgment service is now generic over authored evidence candidates: `src/lib/host-judgment.ts` enumerates not-yet-unlocked evidence with `arrivesWhen`, shows the host the ordered candidate list plus already-unlocked authored evidence, and validates that any `drop-evidence` verdict names one of those candidates. `src/lib/session-store.ts` now accepts any valid host evidence verdict instead of only `anonymous-letter-2`. The single-call verdict shape remains `{ action, evidenceId?, reason, confidence }` / phase transition as before.
+
+**Files shipped**:
+- `cases/mussoorie/case.json` — 14 `arrivesWhen` strings; legacy `unlockedAtChapter` values preserved as fallback.
+- `cases/mussoorie/evals/host.eval.json` — 60 host eval cases: positive, too-early, wrong-thread, and already-fired for each authored evidence item, plus four extra boundary cases.
+- `src/lib/host-judgment.ts` — generic candidate collection, prompt updates, candidate-id guard for model outputs.
+- `src/lib/session-store.ts` — host evidence unlock path now accepts any valid candidate evidence id.
+- `scripts/eval-host.ts` — eval snapshots run in `interrogation` phase so the 2i.3 forensic-drop path is exercised.
+- `tests/host-judgment.test.mjs` — prompt/candidate tests plus non-candidate verdict guard coverage.
+
+**Phase 2i.3 authoring notes**:
+- The trickiest clauses were the ones where the same nouns appear in adjacent threads. `land-registry` needed an explicit land/property/shell-company requirement so rifle-only Bisht pressure does not pull property evidence early.
+- `bisht-devraj-call` and `devraj-jeep-cctv` needed narrow present-day wording: old 2011 Devraj corruption is not enough; the players must pursue the 8:00 PM gap/call or present-night movement.
+- `vikram-research-notes` needed an explicit "do NOT fire for laptop deletion without Thakur research" clause, because Rhea's 5 AM deletion alone is a separate thread.
+- For all "already-fired" cases, the eval contract is that already-unlocked authored evidence is excluded from candidates; the host may not re-drop it or invent a non-candidate id.
+
+**Verification**:
+- `npm run validate-cases` passed.
+- `npm test` passed 98/98.
+- `npm run eval:host` passed 60/60.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run eval:adjudicator -- all` returned 103/104 with the known pre-existing Bisht `secret:the-rifle` "both rifle images and challenges collector explanation" model flake; unchanged from prior handoff notes.
 
 ### Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation
 
@@ -563,7 +592,7 @@ Both blocks live in the same section so a new agent finds the long context natur
 |---|---|---|
 | 2i.1 — AI host service ✅ | none | 2i.2, 2i.5 |
 | 2i.2 — Phase state machine ✅ | 2i.1 | 2i.3 |
-| 2i.3 — Author `arrivesWhen` on round-3/4 evidence | 2i.2 | 2i.6 |
+| 2i.3 — Author `arrivesWhen` on round-3/4 evidence ✅ | 2i.2 | 2i.6 |
 | 2i.4 — Round-robin interviewer | none | 2i.6 |
 | 2i.5 — TV host strip + case status panel | 2i.2 | 2i.6 |
 | 2i.6 — Verify + eval + handoff doc | all others | — |

@@ -1153,7 +1153,8 @@
       "description": "Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.'",
       "loreText": "A second anonymous letter received at the CBI Dehradun office, three weeks into the investigation. Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.' Different envelope, different printer than the first letter. Postmark from Bangalore. Sender unknown at this stage — the players will eventually learn this was Kabir.",
       "revealedInRound": 3,
-      "unlockedAtChapter": "r3-second-letter"
+      "unlockedAtChapter": "r3-second-letter",
+      "arrivesWhen": "Reveal this only after the host state lists Naina, Rhea, and Kabir as opened up to the players, and the Thakur family, Thakur estate, or 2011 Thakur murders have been mentioned at least twice across the interview transcripts by either players or suspects. Do NOT infer opened-up status from unlocked evidence. Do NOT fire if any of Naina, Rhea, or Kabir is still guarded. Do NOT fire from cooperation alone if the Thakur thread has not been raised."
     },
     {
       "id": "old-newspaper-clipping",
@@ -1164,6 +1165,7 @@
       "loreText": "Front-page clipping from the Doon Echo, dated December 2011. Headline: 'Tragic Robbery Claims Three Lives — Thakur Family Killed in Landour Home Invasion.' Reports the deaths of Brigadier Ranjit Thakur (retd.), his wife Meera, and his elderly mother during what police described as a botched burglary. Mentions stolen items: army medals, gold jewellery, a British-era rifle. Investigating officer named: Sub-Inspector Devraj Khanna.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the second anonymous letter is already in the case file and the players follow up by asking about the Thakur family, the Thakur estate, Thakur Cottage, the 2011 murders, or why Vikram cared about that old case. Do NOT fire merely because the letter arrived if the players have not pursued the Thakur thread. Do NOT fire for general questions about Vikram's modern suspects, channel money, plagiarism, or alibis.",
       "locationId": "thakur-cottage"
     },
     {
@@ -1175,6 +1177,7 @@
       "loreText": "The inventory of stolen items appended to the original 2011 FIR. Includes Brigadier Thakur's service medals (six), the wife's gold jewellery, several cash items, and most notably: 'British-era Enfield rifle, carved walnut stock, circa 1890. Family heirloom. Highly distinctive.' None of the items have ever surfaced through licensed dealers, pawn shops, or known collector channels in fifteen years.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the old Thakur newspaper clipping is already in the case file and the players ask what was stolen, what the 2011 FIR said, whether the robbery inventory mattered, or whether the missing British-era rifle is important. Do NOT fire from broad Thakur-family curiosity alone unless the robbery, stolen property, FIR, inventory, or rifle is part of the thread. Do NOT fire for present-day hotel or alibi questions.",
       "locationId": "thakur-cottage",
       "relatesToSuspectIds": ["bisht"]
     },
@@ -1187,6 +1190,7 @@
       "loreText": "Photograph from Vikram's research files. Taken inside the abandoned Thakur Cottage, in the Brigadier's study. Shows two empty wall hooks at the spacing of a rifle mount. The wallpaper around the hooks is visibly less faded than the surrounding paper — the outline of something long and rectangular is plainly visible. Rohan, Anya's son, accompanied Vikram on this visit and identified the spot: 'That's where the Brigadier's English rifle used to hang.'",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the theft FIR inventory is already in the case file and the players continue asking about the stolen rifle, where it was kept in Thakur Cottage, Vikram's visit to the cottage, or how he proved the rifle had been removed from the wall. Do NOT fire for questions about the Thakur murders that do not touch the rifle, the cottage study, or physical proof from Vikram's research. Do NOT fire for Bisht accusations before the cottage rifle trail is established.",
       "locationId": "thakur-cottage"
     },
     {
@@ -1198,6 +1202,7 @@
       "loreText": "Photograph from Vikram's phone, taken (discreetly, by his angle) during an interview visit to the Royal Pines Hotel six weeks before his death. Subject: a British-era Enfield rifle mounted on the wall of Bisht's private office. Distinctive carved walnut stock. The make, era, and stock detail match the rifle stolen from the Thakur estate in 2011.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the theft FIR inventory and the Thakur Cottage wall-mount photograph are already in the case file, and the players connect the missing distinctive rifle to Bisht, the Royal Pines, his office, collector pieces, or where the stolen rifle ended up. Do NOT fire if players are only asking about the old robbery, rifle history, or Thakur Cottage without connecting the rifle trail to Bisht or the Royal Pines.",
       "locationId": "royal-pines",
       "relatesToSuspectIds": ["bisht"]
     },
@@ -1210,6 +1215,7 @@
       "loreText": "Land-registry extract showing the ownership history of plots adjacent to the Thakur estate from 2012 to 2024. Acquirer in each case: 'Highland Properties LLP', through three layers of holding trusts and proxy buyers. CBI investigators have traced the chain of ownership through each layer to a final beneficial owner: a private trust controlled by Rajveer Bisht. The Royal Pines Hotel was built on three of these plots.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the Bisht family-history record is already in the case file and the players explicitly pursue who benefited from the Thakur estate, who bought the surrounding land, Highland Properties, shell companies, the Royal Pines plots, or whether Bisht profited from the old murders through property acquisition. Do NOT fire for rifle-only questions, general suspicion of Bisht, old family motive alone, or questions about his hotel that do not involve land ownership, estate benefit, shell ownership, or property acquisition.",
       "relatesToSuspectIds": ["bisht"]
     },
     {
@@ -1221,6 +1227,7 @@
       "loreText": "Archival records pulled from the district administration. In 2010, Harish Bisht — Rajveer's father — operated a small lodge near Landour Bazaar. A minor land-boundary dispute with the adjacent Thakur estate escalated when Brigadier Thakur used his army and district connections to have Harish's hotel licence revoked. Harish lost the lodge, his income, and his standing. He died six months later of a heart attack at age 52. Local opinion at the time was that 'he died of a broken heart'.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the old Thakur newspaper clipping is already in the case file and the players ask why Bisht would care about the Thakurs, whether his family had a grievance against Brigadier Thakur, what happened to Harish Bisht, or whether the old land dispute created a motive. Do NOT fire for generic questions about Bisht's business success, the Royal Pines, or modern corruption unless the Thakur family grievance, Harish, the licence revocation, or revenge motive is part of the thread.",
       "relatesToSuspectIds": ["bisht"]
     },
     {
@@ -1232,6 +1239,7 @@
       "loreText": "Carbon stub of Anya Devi's bus ticket from the night of the murder. Mussoorie bus stand, 9:15 PM departure, route to her village. The bus stand is a ten-minute walk from Vikram's cottage, and Anya claims to have left work at 7:30 PM. That leaves nearly two hours unaccounted for.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-thakur-research",
+      "arrivesWhen": "Reveal this after the Thakur thread is active and players start treating Anya as more than a housekeeper by asking about her timeline after leaving Vikram's cottage, where she went before leaving Mussoorie, whether she could have warned someone, or how her old connection to the Thakur house matters. Do NOT fire for generic questions about servants, buses, or alibis before the Thakur thread has surfaced. Do NOT fire for Bisht-only or Devraj-only Thakur questions that do not involve Anya's movements or old-household connection.",
       "locationId": "bus-stand",
       "relatesToSuspectIds": ["anya"]
     },
@@ -1246,6 +1254,7 @@
       "loreText": "Telecom records pulled under CBI warrant. Show a 47-second call from Rajveer Bisht's personal mobile to Inspector Devraj Khanna's personal mobile at exactly 8:00 PM on the night of the murder. Both phones are personal numbers, not the hotel or station landlines. The call's start time aligns precisely with the start of the unexplained 'maintenance gap' in the Royal Pines CCTV.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this once the Bisht motive trail is established through the family-history record and land-registry trail, and the players explicitly ask about Bisht and Devraj acting together on the murder night, the Royal Pines CCTV maintenance gap, why Devraj would protect Bisht now, or what happened around 8:00 PM. Do NOT fire for old Thakur-case questions alone, including questions about whether Bisht influenced Devraj in 2011. Do NOT fire for generic friendship, corruption, station activity, or hotel-security questions unless the present-day 8:00 PM gap or present-day Bisht-Devraj coordination is part of the thread.",
       "relatesToSuspectIds": ["bisht", "devraj"]
     },
     {
@@ -1257,6 +1266,7 @@
       "loreText": "Black-and-white still from a small grocer's CCTV camera mounted on the wall of his shop, positioned across from the Gun Hill end of Camel's Back Road. Timestamp 8:10 PM the night of the murder. A Mussoorie police jeep — registration plate clearly readable — is parked at the side of the road. Inspector Devraj Khanna is the registered driver of that jeep. His duty log claims he was at the station all evening.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this after the 8:00 PM Bisht-to-Devraj call is already in the case file and the players explicitly press Devraj's present-night whereabouts, his station alibi, whether he left in his police jeep, Camel's Back Road around 8:10 PM, or how he could have reached Vikram. Do NOT fire for the old Thakur investigation, Devraj's general corruption, station routine, paperwork, or Bisht's land motive unless the present-night movement, jeep, road, or station-alibi contradiction is being pursued.",
       "locationId": "camels-back-road",
       "relatesToSuspectIds": ["devraj"]
     },
@@ -1269,6 +1279,7 @@
       "loreText": "An independent post-mortem review commissioned by the CBI. The local autopsy report (which Inspector Devraj had received without comment) had listed cause of death as 'multiple blunt-force trauma consistent with a fall'. The independent review confirms most injuries are consistent with a fall — but isolates one specific injury at the base of the skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall'. The shape and dimensions are consistent with a service lathi.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this after Devraj's jeep CCTV is already in the case file and the players question whether Vikram's fall was staged, whether Devraj struck him, whether a police lathi caused the head injury, or whether the local autopsy hid a different cause of death. Do NOT fire for questions about the jeep or station alibi alone unless the injury, fall, lathi, autopsy, or cause of death is part of the thread. Do NOT fire for old Thakur-case violence without a present-day Vikram injury angle.",
       "relatesToSuspectIds": ["devraj"]
     },
     {
@@ -1280,6 +1291,7 @@
       "loreText": "From the CBI search of Anya Devi's home (with consent). Among her belongings: a thick grey wool shawl, freshly washed. The CBI investigator's note observes that wool is typically not washed in May in the foothills — too humid, takes too long to dry. The note further observes that the chai-shop owner's earlier statement mentioned 'a woman in a grey wool shawl' walking Camel's Back Road in the weeks before the murder.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this after Anya's 9:15 PM bus ticket is already in the case file and the players ask whether Anya was the Grey Lady, whether she followed Vikram on Camel's Back Road, what she was wearing that night, why a shawl matters, or how she might have tried to warn him. Do NOT fire for ghost-story curiosity alone before Anya's timeline gap is active. Do NOT fire for hostile accusations that call Anya a stalker without connecting the shawl, road sightings, or timeline gap.",
       "relatesToSuspectIds": ["anya"]
     },
     {
@@ -1291,6 +1303,7 @@
       "loreText": "Bank records pulled under CBI warrant. Show regular monthly transfers from an account controlled by Rajveer Bisht to a private education trust. Beneficiary: Rohan Devi, son of Anya Devi. The transfers began in early 2012 — within weeks of the Thakur murders — and have continued unbroken every month for fifteen years, currently funding Rohan's studies at the Dehradun Institute of Technology.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this after Anya's old Thakur-household connection and Bisht's Thakur motive are both active, and the players ask why Bisht would protect Anya, whether he supported her or Rohan, whether she was paid for silence, or why her son benefited after the 2011 murders. Do NOT fire for Anya's present-night timeline alone. Do NOT fire for Bisht land or rifle questions unless Anya, Rohan, payment, protection, silence, or the missing 2011 statement is part of the thread.",
       "relatesToSuspectIds": ["anya", "bisht"]
     },
     {
@@ -1302,6 +1315,7 @@
       "loreText": "Forensic recovery of files Rhea attempted to delete from Vikram's laptop at 5 AM. The deletion was incomplete. Recovered material includes scanned pages of the Thakur FIR, the land-registry research trail terminating at Bisht's trust, a list of stolen items including the rifle, and Vikram's running interview notes. One line, near the bottom: 'Anya Devi — housekeeper — possible witness. Approach gently.'",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
+      "arrivesWhen": "Reveal this late, after Rhea's 5 AM cottage entry is known and the Thakur evidence trail includes the FIR or land registry, when players ask what Vikram had in his files, what Rhea tried to delete, how Vikram connected Bisht to the Thakur material, or why Anya was named as a possible witness. Do NOT fire for laptop-deletion questions that do not involve the Thakur research. Do NOT fire for Thakur-history questions alone if Rhea's file deletion is not yet part of the case state.",
       "locationId": "vikrams-cottage",
       "relatesToSuspectIds": ["bisht", "anya", "rhea"]
     }

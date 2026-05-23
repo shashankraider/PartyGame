@@ -137,8 +137,10 @@ async function runOne(args: {
       caseData,
       session: {
         // Minimal session-row shape that the host-judgment service uses.
-        // The function only reads unlocked_evidence from session, so the
-        // other fields can be empty stubs cast through unknown.
+        // Host forensic drops are judged during Interrogation; setting this
+        // avoids the legacy anonymous-letter short-circuit used outside that
+        // phase while keeping the fixture shape small.
+        phase: "interrogation",
         unlocked_evidence: testCase.unlockedEvidence ?? [],
       } as unknown as Parameters<typeof judgeHostAction>[0]["session"],
       allTranscripts: testCase.transcripts,

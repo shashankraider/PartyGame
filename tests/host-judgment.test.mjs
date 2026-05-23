@@ -23,6 +23,7 @@ import {
   alreadyUnlockedVerdict,
   buildHostSystemPrompt,
   buildHostUserPrompt,
+  getHostEvidenceCandidates,
   judgeHostAction,
   parseHostJudgmentVerdict,
 } from "../src/lib/host-judgment.ts";
@@ -154,21 +155,32 @@ describe("host-judgment — alreadyUnlockedVerdict", () => {
 });
 
 describe("host-judgment — buildHostSystemPrompt / buildHostUserPrompt", () => {
-  test("system prompt names the target evidence id verbatim", () => {
+  test("system prompt describes generic authored evidence candidates", () => {
     const sys = buildHostSystemPrompt();
-    assert.match(sys, /anonymous-letter-2/);
-    // Sanity: mentions the trigger criteria the AI host must check.
-    assert.match(sys, /Naina/);
-    assert.match(sys, /Rhea/);
-    assert.match(sys, /Kabir/);
-    assert.match(sys, /Thakur/i);
+    assert.match(sys, /candidate forensic evidence/);
+    assert.match(sys, /arrivesWhen/);
+    assert.match(sys, /Check candidates in listed order/);
     assert.match(sys, /transition-phase/);
     assert.match(sys, /targetPhase/);
   });
 
   test("user prompt surfaces opened-up vs guarded suspects", () => {
     const input = {
-      caseData: { suspects: [], evidence: [] },
+      caseData: {
+        suspects: [],
+        evidence: [
+          {
+            id: "anonymous-letter-2",
+            title: "The Second Anonymous Letter",
+            category: "letter",
+            description: "test",
+            loreText: "test",
+            revealedInRound: 3,
+            unlockedAtChapter: "r3-second-letter",
+            arrivesWhen: "Naina, Rhea, and Kabir have opened up and the Thakur family has been mentioned twice. Do NOT fire if either condition is missing.",
+          },
+        ],
+      },
       session: { unlocked_evidence: ["police-report"] },
       allTranscripts: [
         {
@@ -195,17 +207,77 @@ describe("host-judgment — buildHostSystemPrompt / buildHostUserPrompt", () => 
     assert.match(user, /Rhea Bhatia/);
     assert.match(user, /still guarded/);
     assert.match(user, /police-report/);
+    assert.match(user, /anonymous-letter-2/);
+    assert.match(user, /arrivesWhen/);
   });
 
-  test("user prompt names the target evidence so the LLM doesn't get confused", () => {
+  test("user prompt omits already-unlocked authored evidence from candidates", () => {
     const input = {
-      caseData: { suspects: [], evidence: [] },
-      session: { unlocked_evidence: [] },
+      caseData: {
+        suspects: [],
+        evidence: [
+          {
+            id: HOST_JUDGMENT_TARGET_EVIDENCE_ID,
+            title: "The Second Anonymous Letter",
+            category: "letter",
+            description: "test",
+            loreText: "test",
+            revealedInRound: 3,
+            unlockedAtChapter: "r3-second-letter",
+            arrivesWhen: "Fire on the old 2i.1 trigger.",
+          },
+        ],
+      },
+      session: { unlocked_evidence: [HOST_JUDGMENT_TARGET_EVIDENCE_ID] },
       allTranscripts: [],
-      unlockedEvidence: [],
+      unlockedEvidence: [HOST_JUDGMENT_TARGET_EVIDENCE_ID],
     };
     const user = buildHostUserPrompt(input);
-    assert.match(user, new RegExp(HOST_JUDGMENT_TARGET_EVIDENCE_ID));
+    assert.match(user, /no candidate evidence/);
+    assert.doesNotMatch(user, /Fire on the old 2i\.1 trigger/);
+  });
+});
+
+describe("host-judgment — getHostEvidenceCandidates", () => {
+  test("returns authored, not-yet-unlocked evidence in case order", () => {
+    const caseData = {
+      suspects: [],
+      evidence: [
+        {
+          id: "first",
+          title: "First",
+          category: "document",
+          description: "test",
+          loreText: "test",
+          revealedInRound: 3,
+          unlockedAtChapter: "r3-a",
+          arrivesWhen: "Ready first.",
+        },
+        {
+          id: "second",
+          title: "Second",
+          category: "document",
+          description: "test",
+          loreText: "test",
+          revealedInRound: 3,
+          unlockedAtChapter: "r3-b",
+          arrivesWhen: "Ready second.",
+        },
+        {
+          id: "third",
+          title: "Third",
+          category: "document",
+          description: "test",
+          loreText: "test",
+          revealedInRound: 3,
+          unlockedAtChapter: "r3-c",
+        },
+      ],
+    };
+    assert.deepEqual(
+      getHostEvidenceCandidates(caseData, ["first"]).map((candidate) => candidate.id),
+      ["second"],
+    );
   });
 });
 
@@ -251,6 +323,63 @@ describe("host-judgment — judgeHostAction (network not exercised)", () => {
         delete process.env.OPENROUTER_API_KEY;
       } else {
         process.env.OPENROUTER_API_KEY = original;
+      }
+    }
+  });
+
+  test("coerces drop-evidence verdicts for non-candidate evidence to do-nothing", async () => {
+    const originalKey = process.env.OPENROUTER_API_KEY;
+    const originalFetch = globalThis.fetch;
+    process.env.OPENROUTER_API_KEY = "fake-key-used-by-mock";
+    globalThis.fetch = async () =>
+      new Response(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify({
+                  action: "drop-evidence",
+                  evidenceId: "anonymous-letter-1",
+                  reason: "Not a candidate.",
+                  confidence: 0.9,
+                }),
+              },
+            },
+          ],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+
+    try {
+      const v = await judgeHostAction({
+        caseData: {
+          suspects: [],
+          evidence: [
+            {
+              id: "anonymous-letter-2",
+              title: "The Second Anonymous Letter",
+              category: "letter",
+              description: "test",
+              loreText: "test",
+              revealedInRound: 3,
+              unlockedAtChapter: "r3-second-letter",
+              arrivesWhen: "Fire when the old trigger is met.",
+            },
+          ],
+          llm: undefined,
+        },
+        session: { phase: "interrogation", unlocked_evidence: [] },
+        allTranscripts: [],
+        unlockedEvidence: [],
+      });
+      assert.equal(v.action, "do-nothing");
+      assert.match(v.reason, /not an available host evidence candidate/);
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalKey === undefined) {
+        delete process.env.OPENROUTER_API_KEY;
+      } else {
+        process.env.OPENROUTER_API_KEY = originalKey;
       }
     }
   });

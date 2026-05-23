@@ -1,4 +1,5 @@
 import type { Case } from "@/engine/types";
+import type { Evidence } from "@/engine/types";
 import type { MessageRow, SessionPhase, SessionRow } from "@/lib/supabase";
 import {
   addUnlockedEvidence,
@@ -90,6 +91,11 @@ export class HostJudgmentError extends Error {
 const HOST_JUDGMENT_ACTIONS = ["do-nothing", "drop-evidence", "transition-phase"] as const;
 const HOST_JUDGMENT_PHASES = ["briefing", "interrogation", "accusation", "reveal"] as const;
 
+type HostEvidenceCandidate = Pick<
+  Evidence,
+  "id" | "title" | "category" | "revealedInRound" | "arrivesWhen"
+>;
+
 // ---------------------------------------------------------------------------
 // Pure helpers (covered by tests/host-judgment.test.mjs).
 // ---------------------------------------------------------------------------
@@ -110,6 +116,22 @@ export function alreadyUnlockedVerdict(
     };
   }
   return null;
+}
+
+export function getHostEvidenceCandidates(
+  caseData: Case,
+  unlockedEvidence: string[],
+): HostEvidenceCandidate[] {
+  const unlocked = new Set(unlockedEvidence);
+  return caseData.evidence
+    .filter((evidence) => evidence.arrivesWhen && !unlocked.has(evidence.id))
+    .map((evidence) => ({
+      id: evidence.id,
+      title: evidence.title,
+      category: evidence.category,
+      revealedInRound: evidence.revealedInRound,
+      arrivesWhen: evidence.arrivesWhen,
+    }));
 }
 
 /**
@@ -198,13 +220,19 @@ export function buildHostSystemPrompt(): string {
     "Your job: judge whether the case is ready for a forensic-evidence event or phase transition.",
     "",
     "In this call you may judge two kinds of pacing action:",
-    "1. Should the second anonymous letter (evidence id `anonymous-letter-2`) be revealed to the players right now?",
+    "1. Should exactly one candidate forensic evidence item be revealed to the players right now?",
     "2. Should the session move to the next phase?",
     "",
     "Evidence trigger criteria (be conservative; err toward 'wait'):",
-    "- At least Naina, Rhea, and Kabir have each opened up to the players (their cooperation cues have fired).",
-    "- AND the Thakur family (or the Thakurs, or the 2011 Thakur murders) has been mentioned at least twice across all suspect transcripts, by either an interviewer or a suspect.",
-    "- Both must hold. If either is missing, return 'do-nothing'.",
+    "- The user prompt lists candidate evidence items that are not yet unlocked.",
+    "- The user prompt also lists already-unlocked evidence. Treat those items as already present in the case file.",
+    "- Suspects listed as opened up have satisfied their cooperation cues. Suspects listed as still guarded have NOT opened up; do not infer otherwise from unlocked evidence or candidate text.",
+    "- If an `arrivesWhen` condition asks for prior evidence to be in the case file, satisfy that part from the already-unlocked evidence list; the transcript does not need to repeat it.",
+    "- Each candidate has an `arrivesWhen` condition. Read it literally and require its positive conditions.",
+    "- When a condition asks whether a topic was mentioned or asked about, count only the TRANSCRIPTS and already-unlocked evidence/state, not the candidate descriptions themselves.",
+    "- Respect every 'do NOT fire' clause in the condition. If a clause applies, return 'do-nothing'.",
+    "- Check candidates in listed order. If candidate 1 is ready, drop candidate 1. Otherwise check candidate 2, and so on.",
+    "- Never invent an evidence id. Drop only one of the listed candidates.",
     "",
     "Phase transition criteria (be even more conservative):",
     "- briefing -> interrogation only after the suspect-board briefing is complete.",
@@ -217,8 +245,8 @@ export function buildHostSystemPrompt(): string {
     '{ "action": "do-nothing" | "drop-evidence" | "transition-phase", "evidenceId": "<id>", "targetPhase": "briefing" | "interrogation" | "accusation" | "reveal", "reason": "<one short sentence>", "confidence": <number 0..1> }',
     "",
     "Rules:",
-    '- `action` is "drop-evidence" only when the trigger criteria above are met AND the target evidence is not already in unlocked_evidence.',
-    '- When `action` is "drop-evidence", `evidenceId` must be exactly "anonymous-letter-2".',
+    '- `action` is "drop-evidence" only when a listed candidate evidence item is ready AND that evidence is not already in unlocked_evidence.',
+    '- When `action` is "drop-evidence", `evidenceId` must be exactly one of the candidate ids listed in the user prompt.',
     '- When `action` is "transition-phase", `targetPhase` must be exactly the next valid phase.',
     '- When `action` is "do-nothing", omit `evidenceId` or set it to null.',
     "- `reason` is a one-sentence justification (max 30 words).",
@@ -230,7 +258,7 @@ export function buildHostSystemPrompt(): string {
 }
 
 export function buildHostUserPrompt(input: HostJudgmentInput): string {
-  const { allTranscripts, session, unlockedEvidence } = input;
+  const { allTranscripts, caseData, session, unlockedEvidence } = input;
 
   const openedUp = allTranscripts.filter((t) => t.hasOpenedUp).map((t) => t.suspectName);
   const notOpenedYet = allTranscripts
@@ -256,18 +284,42 @@ export function buildHostUserPrompt(input: HostJudgmentInput): string {
     })
     .join("\n\n");
 
+  const candidates = getHostEvidenceCandidates(caseData, unlockedEvidence);
+  const unlocked = new Set(unlockedEvidence);
+  const unlockedAuthoredEvidence = caseData.evidence
+    .filter((evidence) => evidence.arrivesWhen && unlocked.has(evidence.id))
+    .map((evidence) => `${evidence.id} — ${evidence.title}`)
+    .join("\n");
+  const candidateBlocks = candidates
+    .map(
+      (candidate, index) =>
+        `${index + 1}. ${candidate.id} — ${candidate.title} (${candidate.category}, round ${candidate.revealedInRound})\narrivesWhen: ${candidate.arrivesWhen}`,
+    )
+    .join("\n\n");
+
   return [
-    `TARGET EVIDENCE: ${HOST_JUDGMENT_TARGET_EVIDENCE_ID} ("The Second Anonymous Letter").`,
     `Current phase: ${session.phase ?? "briefing"}.`,
     `Current chapter id: ${session.current_chapter_id ?? "(none)"}.`,
     `Already-unlocked evidence in this session: ${unlockedEvidence.length > 0 ? unlockedEvidence.join(", ") : "(none)"}`,
+    "Already-unlocked authored host evidence (already in the case file):",
+    unlockedAuthoredEvidence || "(none)",
     `Suspects who have opened up so far: ${openedUp.length > 0 ? openedUp.join(", ") : "(none)"}`,
     `Suspects still guarded: ${notOpenedYet.length > 0 ? notOpenedYet.join(", ") : "(none)"}`,
+    "",
+    "CANDIDATE EVIDENCE, IN CASE ORDER:",
+    candidateBlocks || "(no candidate evidence has an authored arrivesWhen condition remaining)",
+    "",
+    "READING INSTRUCTIONS:",
+    "- INTERVIEWER lines are player behavior. Use them to decide whether the players asked about a required topic.",
+    "- Suspect-name lines are suspect behavior. Use them when an arrivesWhen condition allows mentions by suspects.",
+    "- Do not count words inside CANDIDATE EVIDENCE as transcript mentions.",
+    "- Do not wait for a suspect confession or for evidence presentation inside a single transcript when the prerequisite evidence is already listed as unlocked.",
+    "- In Interrogation, a clear evidence match should be returned as drop-evidence before considering phase transitions.",
     "",
     "TRANSCRIPTS:",
     transcriptBlocks || "(no interviews have produced any messages yet)",
     "",
-    "Should the second anonymous letter be revealed now? Reply with strict JSON only.",
+    "Should one candidate evidence item be revealed now, or should the host do nothing / transition phase? Reply with strict JSON only.",
   ].join("\n");
 }
 
@@ -340,7 +392,24 @@ export async function judgeHostAction(
     );
   }
 
-  return parseHostJudgmentVerdict(content);
+  const verdict = parseHostJudgmentVerdict(content);
+  if (verdict.action === "drop-evidence") {
+    const validCandidateIds = new Set(
+      getHostEvidenceCandidates(input.caseData, input.unlockedEvidence).map(
+        (candidate) => candidate.id,
+      ),
+    );
+    if (!validCandidateIds.has(verdict.evidenceId)) {
+      return {
+        action: "do-nothing",
+        reason: `${verdict.evidenceId} is not an available host evidence candidate.`,
+        confidence: 1,
+        raw: verdict.raw,
+      };
+    }
+  }
+
+  return verdict;
 }
 
 // ---------------------------------------------------------------------------
