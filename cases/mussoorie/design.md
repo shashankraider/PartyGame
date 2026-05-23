@@ -284,6 +284,68 @@ Anya's confession completes the picture: the fifteen years of silence, the blood
 
 ---
 
+## 9b. Round 2 scenario playbook (host reference)
+
+Round 2 introduces the free-choice suspect picker on the TV. The host (or any player holding interviewer control) can interview any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine.
+
+This playbook lists which handoffs actually *fire engine cues* in round 2 (vs. which are deliberately stonewalled until round 3+). Use it to set host expectations.
+
+### Cues that fire with the round-2 evidence drop
+
+By the time the host advances past `r2-evidence-drop`, the locker contains: the round-1 set (Vikram's wall, voice memo, Instagram, YouTube channel, anonymous letter #1, police report, crime-scene summary) plus seven round-2 items: `chai-shop-receipt`, `naina-phone-records`, `shopkeeper-statement-naina`, `building-cctv-rhea`, `rhea-draft-email`, `bisht-hotel-cctv-log`, `pawn-shop-receipt`.
+
+Five conditions can fire in round 2:
+
+| Suspect | Condition | Tier | Required to fire |
+|---|---|---|---|
+| Naina | `secret:points-to-rhea` | cooperation | A reasonable professional question about her work, Vikram, Rhea, Metropolis, or Mussoorie this week. No evidence needed. |
+| Naina | `secret:obsessive-calls` | cooperation | Asking about the calls; presenting `naina-phone-records` is the natural way. |
+| Naina | `secret:heard-the-sound` + BP `shopkeeper-and-phone` | compound | Present `naina-phone-records` AND `shopkeeper-statement-naina`, then ask about Camel's Back Road / the timeline / what she heard. |
+| Rhea | `secret:embezzlement` + BP `morning-cctv` | compound | Present `building-cctv-rhea` or `rhea-draft-email`, then ask about the channel sale, the 5 AM cottage visit, or Metropolis specifically. |
+| Kabir | `secret:plagiarism` + BP `chai-and-pawn` | compound | Present `pawn-shop-receipt` (and ideally `chai-shop-receipt`), then ask politely about his PhD / college days / the chai-shop argument. No threats. |
+
+### The canonical cooperation→evidence handoff
+
+**Naina → Rhea (channel sale).** This is the chain you can build the round-2 experience around.
+
+1. Players pick Naina. Ask any reasonable professional question — *"What do you do?"*, *"What brings you to Mussoorie?"*, *"Were you doing work for Vikram?"* — and `points-to-rhea` fires.
+2. Naina names **Metropolis Media** and her **two-page memo** on Rhea. The corporate memo + WhatsApp thread land in the evidence locker.
+3. Players switch to Rhea via the picker.
+4. Players present `rhea-draft-email` (already in locker from r2-evidence-drop) and ask about the sale or Metropolis specifically.
+5. Rhea's `embezzlement` fires: she admits selling the channel, taking a cut for a year.
+6. Optional: present `building-cctv-rhea` and her `morning-cctv` BP fires — she admits the 5 AM cottage entry.
+
+This is the design's flagship round-2 chain. Other handoffs in round 2 are softer (narrative context, not mechanical cue chains).
+
+### Suspects who deliberately stonewall in round 2
+
+Three suspects are *designed* to give nothing crackable in round 2. Players will hit deflections in their persona voice but no `unlockBehavior` will fire. This is correct — these reveals are paced for round 3+:
+
+- **Devraj** — every secret and breakingPoint requires round-3 (`bisht-family-history`, `land-registry`) or round-4 (`devraj-jeep-cctv`, `lathi-postmortem`) evidence. Round 2 Devraj is a wall.
+- **Bisht** — every condition requires round-3 (`wall-mount-photo`, `office-rifle-photo`, `land-registry`, `bisht-family-history`) or round-4 (`bisht-devraj-call`, `anya-payments`) evidence. Even with all of those, his `pressureThreshold: 4+` means he typically reframes rather than confesses; the endgame handles his unmasking.
+- **Anya** — every condition requires round-3 (`anya-bus-ticket`) or round-4 (`anya-payments`, `grey-shawl-fresh`) evidence. Round 2 Anya looks at the floor.
+
+Host tip: if players seem stuck on these three in round 2, that's the case telling them they don't yet have what they need. Direct them back to Naina/Rhea/Kabir or forward to the round-3 reveal.
+
+### Soft handoffs (narrative context, no new cue fires)
+
+Even when no new cue fires on re-entry, the engine preserves prior transcripts. These soft handoffs add context to subsequent interviews:
+
+- **Kabir → Vikram-was-investigating-everyone framing.** Kabir's plagiarism reveal explicitly mentions Vikram's exposé. Players who interview Kabir before Naina/Rhea now have a concrete signal that Vikram was investigating multiple people, not just the Thakurs.
+- **Naina → Rhea → Naina (return visit).** After Rhea confirms the channel sale, players can come back to Naina to ask follow-up questions ("did Vikram mention pulling Stripe statements?"). No new cue fires, but Naina has the full prior transcript and can layer in detail.
+- **Any suspect asked about the Thakurs.** Deflections in round 2, but the deflection itself signals to attentive players that the Thakur thread matters. Primes round 3.
+
+### Host fallback availability in round 2
+
+`hostFallbackAfterTurns` thresholds are tuned per suspect:
+
+- **Naina**: 4–5 turns. Easy to crack; host rarely needs to step in.
+- **Rhea**: 8–10 turns. Players are supposed to work for this; only intervene if they're genuinely stuck.
+- **Kabir**: 4–5 turns. He wants to talk.
+- **Devraj, Bisht, Anya**: 999 in round 2 (effectively never, because their conditions need round-3/4 evidence anyway — the host-fallback prompt won't appear).
+
+---
+
 ## 10. The guilt map
 
 One of the game's strengths is that "who is guilty?" isn't a simple binary. Every suspect carries a different kind of guilt:
