@@ -123,8 +123,12 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   const currentChapterIndex = currentChapter
     ? caseData.chapters.findIndex((chapter) => chapter.id === currentChapter.id)
     : -1;
-  const hasPrevious = currentChapterIndex > 0;
-  const hasNext = currentChapterIndex !== -1 && currentChapterIndex < caseData.chapters.length - 1;
+  const isInterrogationPhase = lobby.session.phase === "interrogation";
+  const hasPrevious = !isInterrogationPhase && currentChapterIndex > 0;
+  const hasNext =
+    !isInterrogationPhase &&
+    currentChapterIndex !== -1 &&
+    currentChapterIndex < caseData.chapters.length - 1;
 
   return (
     <section className="py-10">
@@ -180,12 +184,22 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
         <BriefScene caseData={caseData} detectives={detectives.length} />
       ) : null}
       {lobby.session.current_scene === "case_board" ? (
-        <CaseBoardScene
-          key={currentChapter?.id ?? "case-board"}
-          caseData={caseData}
-          chapter={currentChapter}
-          unlockedEvidence={lobby.session.unlocked_evidence}
-        />
+        <>
+          {isInterrogationPhase ? (
+            <Round2InterviewPicker
+              sessionId={lobby.session.id}
+              caseData={caseData}
+              currentChapterId={currentChapter?.id ?? ""}
+              onError={setError}
+            />
+          ) : null}
+          <CaseBoardScene
+            key={currentChapter?.id ?? "case-board"}
+            caseData={caseData}
+            chapter={currentChapter}
+            unlockedEvidence={lobby.session.unlocked_evidence}
+          />
+        </>
       ) : null}
       {lobby.session.current_scene === "interview" ? (
         <>

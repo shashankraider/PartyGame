@@ -8,6 +8,7 @@ import {
   type AccusationVoteRow,
   type MessageRow,
   type PlayerRow,
+  type SessionPhase,
   type SessionScene,
   type SessionRow,
 } from "@/lib/supabase";
@@ -85,12 +86,60 @@ function getChapterScene(chapter: Chapter): SessionScene {
   }
 }
 
+const SESSION_PHASES: SessionPhase[] = ["briefing", "interrogation", "accusation", "reveal"];
+
+export function isValidSessionPhaseTransition(from: SessionPhase, to: SessionPhase) {
+  return SESSION_PHASES.indexOf(to) === SESSION_PHASES.indexOf(from) + 1;
+}
+
+export function assertValidSessionPhaseTransition(from: SessionPhase, to: SessionPhase) {
+  if (!isValidSessionPhaseTransition(from, to)) {
+    throw new SessionStoreError(
+      "invalid_request",
+      `Invalid phase transition: ${from} -> ${to}`,
+      400,
+    );
+  }
+}
+
+export function getChapterPhase(chapter: Chapter): SessionPhase {
+  if (chapter.type === "accusation") return "accusation";
+  if (chapter.type === "reveal") return "reveal";
+  if (chapter.roundNumber >= 2) return "interrogation";
+  return "briefing";
+}
+
+export function isInterrogationChapter(chapter: Chapter) {
+  return getChapterPhase(chapter) === "interrogation";
+}
+
 function getChapterIndex(caseData: Case, chapterId: string | null) {
   if (!chapterId) {
     return -1;
   }
 
   return caseData.chapters.findIndex((chapter) => chapter.id === chapterId);
+}
+
+export function getSessionPhase(session: Pick<SessionRow, "phase">): SessionPhase {
+  return session.phase ?? "briefing";
+}
+
+export function shouldNoopChapterAdvance(session: Pick<SessionRow, "phase">) {
+  return getSessionPhase(session) === "interrogation";
+}
+
+export function getInterrogationEntryChapter(caseData: Case) {
+  return (
+    caseData.chapters.find(
+      (chapter) => chapter.type === "evidence-reveal" && isInterrogationChapter(chapter),
+    ) ??
+    caseData.chapters.find(
+      (chapter) => chapter.type === "interview" && isInterrogationChapter(chapter),
+    ) ??
+    caseData.chapters.find(isInterrogationChapter) ??
+    null
+  );
 }
 
 export function isChapterUnlocked(caseData: Case, chapter: Chapter, currentChapterId: string | null) {
@@ -365,6 +414,7 @@ export async function startSession(sessionId: string) {
     .from("sessions")
     .update({
       status: "in_progress",
+      phase: "briefing",
       current_scene: "brief",
       current_chapter_id: firstChapterId,
       unlocked_evidence: unlockedEvidence,
@@ -382,6 +432,82 @@ export async function startSession(sessionId: string) {
     session_id: session.id,
     type: "session.started",
     payload: { currentScene: "brief", currentChapterId: data.current_chapter_id },
+  });
+
+  return data;
+}
+
+export async function transitionSessionPhase(input: {
+  sessionId: string;
+  targetPhase: SessionPhase;
+  chapterId?: string | null;
+}) {
+  assertSupabaseConfigured();
+
+  const { session } = await getLobbyState(input.sessionId);
+  const caseData = await loadCase(session.case_id).catch(() => null);
+
+  if (!caseData) {
+    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
+  }
+
+  const currentPhase = getSessionPhase(session);
+  assertValidSessionPhaseTransition(currentPhase, input.targetPhase);
+
+  const chapter =
+    input.chapterId === undefined
+      ? input.targetPhase === "interrogation"
+        ? getInterrogationEntryChapter(caseData)
+        : caseData.chapters.find((item) => getChapterPhase(item) === input.targetPhase) ?? null
+      : input.chapterId
+        ? caseData.chapters.find((item) => item.id === input.chapterId) ?? null
+        : null;
+
+  if (input.chapterId && !chapter) {
+    throw new SessionStoreError("invalid_request", `Unknown chapter id: ${input.chapterId}`, 400);
+  }
+
+  if (chapter && getChapterPhase(chapter) !== input.targetPhase) {
+    throw new SessionStoreError(
+      "invalid_request",
+      `Chapter "${chapter.id}" does not belong to phase "${input.targetPhase}".`,
+      400,
+    );
+  }
+
+  const unlockedEvidence = chapter
+    ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
+    : session.unlocked_evidence;
+  const scene = chapter ? getChapterScene(chapter) : session.current_scene;
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({
+      status: "in_progress",
+      phase: input.targetPhase,
+      current_scene: scene,
+      current_chapter_id: chapter?.id ?? session.current_chapter_id,
+      current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
+      unlocked_evidence: unlockedEvidence,
+      last_activity_at: new Date().toISOString(),
+    })
+    .eq("id", session.id)
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new SessionStoreError("database_error", "Could not transition session phase", 500, error);
+  }
+
+  await supabase.from("events").insert({
+    session_id: session.id,
+    type: "session.phase_transitioned",
+    payload: {
+      fromPhase: currentPhase,
+      toPhase: data.phase,
+      currentScene: data.current_scene,
+      currentChapterId: data.current_chapter_id,
+    },
   });
 
   return data;
@@ -409,6 +535,12 @@ export async function setSessionScene(input: {
     throw new SessionStoreError("invalid_request", `Unknown chapter id: ${input.chapterId}`, 400);
   }
 
+  const currentPhase = getSessionPhase(session);
+  const targetPhase = chapter ? getChapterPhase(chapter) : currentPhase;
+  if (targetPhase !== currentPhase) {
+    assertValidSessionPhaseTransition(currentPhase, targetPhase);
+  }
+
   const supabase = createSupabaseServerClient();
   const unlockedEvidence = chapter
     ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
@@ -417,6 +549,7 @@ export async function setSessionScene(input: {
     .from("sessions")
     .update({
       status: input.scene === "lobby" ? "lobby" : "in_progress",
+      phase: targetPhase,
       current_scene: input.scene,
       current_chapter_id: input.chapterId ?? session.current_chapter_id,
       current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
@@ -566,6 +699,11 @@ export async function advanceSessionChapter(sessionId: string, direction: "next"
     throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
   }
 
+  const currentPhase = getSessionPhase(session);
+  if (shouldNoopChapterAdvance(session)) {
+    return session;
+  }
+
   const currentIndex = getChapterIndex(caseData, session.current_chapter_id);
   const nextIndex =
     direction === "next"
@@ -582,6 +720,22 @@ export async function advanceSessionChapter(sessionId: string, direction: "next"
       `Chapter "${nextChapter.id}" is gated by prerequisites that have not been visited.`,
       400,
     );
+  }
+
+  const nextPhase = getChapterPhase(nextChapter);
+  if (nextPhase !== currentPhase) {
+    if (direction !== "next") {
+      throw new SessionStoreError(
+        "invalid_request",
+        `Cannot move backward from ${currentPhase} to ${nextPhase}.`,
+        400,
+      );
+    }
+    return transitionSessionPhase({
+      sessionId,
+      targetPhase: nextPhase,
+      chapterId: nextPhase === "interrogation" ? getInterrogationEntryChapter(caseData)?.id : nextChapter.id,
+    });
   }
 
   return setSessionScene({
@@ -1157,6 +1311,25 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
         type: "interview.host_judgment_fired",
         payload: {
           evidenceId: hostJudgment.evidenceId,
+          reason: hostJudgment.reason,
+          confidence: hostJudgment.confidence,
+          interviewedSuspectId: suspect.id,
+        },
+      });
+    } else if (hostJudgment.action === "transition-phase") {
+      const currentPhase = getSessionPhase(workingSession);
+      assertValidSessionPhaseTransition(currentPhase, hostJudgment.targetPhase);
+      workingSession = await transitionSessionPhase({
+        sessionId: session.id,
+        targetPhase: hostJudgment.targetPhase,
+      });
+
+      await supabase.from("events").insert({
+        session_id: session.id,
+        type: "interview.host_phase_transitioned",
+        payload: {
+          fromPhase: currentPhase,
+          toPhase: hostJudgment.targetPhase,
           reason: hostJudgment.reason,
           confidence: hostJudgment.confidence,
           interviewedSuspectId: suspect.id,

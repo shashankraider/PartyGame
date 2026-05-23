@@ -1,5 +1,5 @@
 import type { Case } from "@/engine/types";
-import type { MessageRow, SessionRow } from "@/lib/supabase";
+import type { MessageRow, SessionPhase, SessionRow } from "@/lib/supabase";
 import {
   addUnlockedEvidence,
   insertSystemMessage,
@@ -51,10 +51,7 @@ export type HostJudgmentInput = {
   modelOverride?: string;
 };
 
-export type HostJudgmentVerdict = {
-  action: "do-nothing" | "drop-evidence";
-  /** Set when action === "drop-evidence". */
-  evidenceId?: string;
+type HostJudgmentVerdictBase = {
   /** One short sentence explaining the verdict. */
   reason: string;
   /** Confidence 0..1; mostly informational. */
@@ -62,6 +59,23 @@ export type HostJudgmentVerdict = {
   /** Raw LLM payload for debugging. */
   raw?: string;
 };
+
+export type HostJudgmentVerdict =
+  | (HostJudgmentVerdictBase & {
+      action: "do-nothing";
+      evidenceId?: undefined;
+      targetPhase?: undefined;
+    })
+  | (HostJudgmentVerdictBase & {
+      action: "drop-evidence";
+      evidenceId: string;
+      targetPhase?: undefined;
+    })
+  | (HostJudgmentVerdictBase & {
+      action: "transition-phase";
+      targetPhase: SessionPhase;
+      evidenceId?: undefined;
+    });
 
 export class HostJudgmentError extends Error {
   constructor(
@@ -72,6 +86,9 @@ export class HostJudgmentError extends Error {
     super(message);
   }
 }
+
+const HOST_JUDGMENT_ACTIONS = ["do-nothing", "drop-evidence", "transition-phase"] as const;
+const HOST_JUDGMENT_PHASES = ["briefing", "interrogation", "accusation", "reveal"] as const;
 
 // ---------------------------------------------------------------------------
 // Pure helpers (covered by tests/host-judgment.test.mjs).
@@ -105,30 +122,51 @@ export function parseHostJudgmentVerdict(raw: string): HostJudgmentVerdict {
 
   const tryParse = (text: string): HostJudgmentVerdict | null => {
     try {
-      const parsed = JSON.parse(text) as Partial<HostJudgmentVerdict>;
+      const parsed = JSON.parse(text) as {
+        action?: unknown;
+        evidenceId?: unknown;
+        targetPhase?: unknown;
+        reason?: unknown;
+        confidence?: unknown;
+      };
       if (
-        (parsed.action === "do-nothing" || parsed.action === "drop-evidence") &&
+        typeof parsed.action === "string" &&
+        HOST_JUDGMENT_ACTIONS.includes(parsed.action as (typeof HOST_JUDGMENT_ACTIONS)[number]) &&
         typeof parsed.reason === "string" &&
         (parsed.confidence === undefined || typeof parsed.confidence === "number")
       ) {
-        const verdict: HostJudgmentVerdict = {
-          action: parsed.action,
+        const base = {
           reason: parsed.reason.slice(0, 240),
           confidence:
             typeof parsed.confidence === "number"
               ? Math.max(0, Math.min(1, parsed.confidence))
               : parsed.action === "drop-evidence"
                 ? 0.7
-                : 0.5,
+                : parsed.action === "transition-phase"
+                  ? 0.7
+                  : 0.5,
           raw: trimmed,
         };
         if (parsed.action === "drop-evidence") {
           if (typeof parsed.evidenceId !== "string" || !parsed.evidenceId) {
             return null;
           }
-          verdict.evidenceId = parsed.evidenceId;
+          return { ...base, action: parsed.action, evidenceId: parsed.evidenceId };
         }
-        return verdict;
+        if (parsed.action === "transition-phase") {
+          if (
+            typeof parsed.targetPhase !== "string" ||
+            !HOST_JUDGMENT_PHASES.includes(
+              parsed.targetPhase as (typeof HOST_JUDGMENT_PHASES)[number],
+            )
+          ) {
+            return null;
+          }
+          return { ...base, action: parsed.action, targetPhase: parsed.targetPhase as SessionPhase };
+        }
+        if (parsed.action === "do-nothing") {
+          return { ...base, action: parsed.action };
+        }
       }
     } catch {
       // fall through
@@ -157,21 +195,31 @@ export function parseHostJudgmentVerdict(raw: string): HostJudgmentVerdict {
 export function buildHostSystemPrompt(): string {
   return [
     "You are the AI host for a cooperative detective mystery game (Mystery Engine).",
-    "Your job: judge whether the case is ready for a specific forensic-evidence event to arrive.",
+    "Your job: judge whether the case is ready for a forensic-evidence event or phase transition.",
     "",
-    "In this call you are judging ONE thing: should the second anonymous letter (evidence id `anonymous-letter-2`) be revealed to the players right now?",
+    "In this call you may judge two kinds of pacing action:",
+    "1. Should the second anonymous letter (evidence id `anonymous-letter-2`) be revealed to the players right now?",
+    "2. Should the session move to the next phase?",
     "",
-    "Trigger criteria (be conservative; err toward 'wait'):",
+    "Evidence trigger criteria (be conservative; err toward 'wait'):",
     "- At least Naina, Rhea, and Kabir have each opened up to the players (their cooperation cues have fired).",
     "- AND the Thakur family (or the Thakurs, or the 2011 Thakur murders) has been mentioned at least twice across all suspect transcripts, by either an interviewer or a suspect.",
     "- Both must hold. If either is missing, return 'do-nothing'.",
     "",
+    "Phase transition criteria (be even more conservative):",
+    "- briefing -> interrogation only after the suspect-board briefing is complete.",
+    "- interrogation -> accusation only when the players have enough revealed evidence and admissions to make a fair accusation.",
+    "- accusation -> reveal only after accusation voting is complete.",
+    "- Never skip a phase or move backward.",
+    "- If evidence and a phase transition both seem ready, prefer the evidence drop first unless the current phase is no longer playable.",
+    "",
     "Output a single JSON object:",
-    '{ "action": "do-nothing" | "drop-evidence", "evidenceId": "<id>", "reason": "<one short sentence>", "confidence": <number 0..1> }',
+    '{ "action": "do-nothing" | "drop-evidence" | "transition-phase", "evidenceId": "<id>", "targetPhase": "briefing" | "interrogation" | "accusation" | "reveal", "reason": "<one short sentence>", "confidence": <number 0..1> }',
     "",
     "Rules:",
     '- `action` is "drop-evidence" only when the trigger criteria above are met AND the target evidence is not already in unlocked_evidence.',
     '- When `action` is "drop-evidence", `evidenceId` must be exactly "anonymous-letter-2".',
+    '- When `action` is "transition-phase", `targetPhase` must be exactly the next valid phase.',
     '- When `action` is "do-nothing", omit `evidenceId` or set it to null.',
     "- `reason` is a one-sentence justification (max 30 words).",
     "- `confidence` is your certainty, 0 = no signal, 1 = unambiguous.",
@@ -182,7 +230,7 @@ export function buildHostSystemPrompt(): string {
 }
 
 export function buildHostUserPrompt(input: HostJudgmentInput): string {
-  const { allTranscripts, unlockedEvidence } = input;
+  const { allTranscripts, session, unlockedEvidence } = input;
 
   const openedUp = allTranscripts.filter((t) => t.hasOpenedUp).map((t) => t.suspectName);
   const notOpenedYet = allTranscripts
@@ -210,6 +258,8 @@ export function buildHostUserPrompt(input: HostJudgmentInput): string {
 
   return [
     `TARGET EVIDENCE: ${HOST_JUDGMENT_TARGET_EVIDENCE_ID} ("The Second Anonymous Letter").`,
+    `Current phase: ${session.phase ?? "briefing"}.`,
+    `Current chapter id: ${session.current_chapter_id ?? "(none)"}.`,
     `Already-unlocked evidence in this session: ${unlockedEvidence.length > 0 ? unlockedEvidence.join(", ") : "(none)"}`,
     `Suspects who have opened up so far: ${openedUp.length > 0 ? openedUp.join(", ") : "(none)"}`,
     `Suspects still guarded: ${notOpenedYet.length > 0 ? notOpenedYet.join(", ") : "(none)"}`,
@@ -236,12 +286,13 @@ export async function judgeHostAction(
     );
   }
 
-  // Short-circuit: already unlocked → no LLM call.
+  // Short-circuit the legacy 2i.1 evidence-only case. During Interrogation we
+  // still call the host because it may now choose a phase transition.
   const shortCircuit = alreadyUnlockedVerdict(
     HOST_JUDGMENT_TARGET_EVIDENCE_ID,
     input.unlockedEvidence,
   );
-  if (shortCircuit) return shortCircuit;
+  if (shortCircuit && input.session.phase !== "interrogation") return shortCircuit;
 
   const model =
     input.modelOverride ??

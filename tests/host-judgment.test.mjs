@@ -64,6 +64,20 @@ describe("host-judgment — parseHostJudgmentVerdict", () => {
     assert.equal(v.confidence, 0.3);
   });
 
+  test("parses a phase-transition verdict with targetPhase", () => {
+    const raw = JSON.stringify({
+      action: "transition-phase",
+      targetPhase: "accusation",
+      reason: "The case is now solvable from revealed evidence.",
+      confidence: 0.82,
+    });
+    const v = parseHostJudgmentVerdict(raw);
+    assert.equal(v.action, "transition-phase");
+    assert.equal(v.targetPhase, "accusation");
+    assert.equal(v.reason, "The case is now solvable from revealed evidence.");
+    assert.equal(v.confidence, 0.82);
+  });
+
   test("clamps out-of-range confidence to [0, 1]", () => {
     const tooHigh = JSON.stringify({ action: "do-nothing", reason: "ok", confidence: 5 });
     assert.equal(parseHostJudgmentVerdict(tooHigh).confidence, 1);
@@ -79,6 +93,15 @@ describe("host-judgment — parseHostJudgmentVerdict", () => {
 
   test("rejects drop-evidence verdict without evidenceId", () => {
     const raw = JSON.stringify({ action: "drop-evidence", reason: "fire" });
+    assert.throws(
+      () => parseHostJudgmentVerdict(raw),
+      (err) =>
+        err instanceof HostJudgmentError && err.code === "invalid_response",
+    );
+  });
+
+  test("rejects transition-phase verdict without targetPhase", () => {
+    const raw = JSON.stringify({ action: "transition-phase", reason: "advance" });
     assert.throws(
       () => parseHostJudgmentVerdict(raw),
       (err) =>
@@ -139,6 +162,8 @@ describe("host-judgment — buildHostSystemPrompt / buildHostUserPrompt", () => 
     assert.match(sys, /Rhea/);
     assert.match(sys, /Kabir/);
     assert.match(sys, /Thakur/i);
+    assert.match(sys, /transition-phase/);
+    assert.match(sys, /targetPhase/);
   });
 
   test("user prompt surfaces opened-up vs guarded suspects", () => {

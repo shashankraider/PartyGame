@@ -398,6 +398,10 @@ export interface Evidence {
    */
   unlockedAtChapter: string;
   /**
+   * Optional natural-language condition the AI host uses to decide when this evidence should arrive during Interrogation.
+   */
+  arrivesWhen?: string;
+  /**
    * Kebab-case identifier: lowercase letters, digits, and single hyphens.
    */
   locationId?: string;

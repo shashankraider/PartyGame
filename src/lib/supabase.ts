@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 export type SessionStatus = "lobby" | "in_progress" | "paused" | "finished";
+export type SessionPhase = "briefing" | "interrogation" | "accusation" | "reveal";
 export type SessionScene =
   | "lobby"
   | "brief"
@@ -17,6 +18,7 @@ export type SessionRow = {
   join_code: string;
   mode: "solo" | "multi";
   status: SessionStatus;
+  phase: SessionPhase;
   current_scene: SessionScene;
   current_chapter_id: string | null;
   current_interviewer_player_id: string | null;

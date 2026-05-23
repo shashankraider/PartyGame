@@ -387,6 +387,11 @@
         "loreText": { "type": "string", "description": "Longer description fed to the LLM when this evidence is presented in an interview." },
         "revealedInRound": { "type": "integer", "minimum": 1, "description": "Round in which this evidence becomes available." },
         "unlockedAtChapter": { "$ref": "#/$defs/SlugId", "description": "Chapter id whose completion unlocks this evidence in the locker." },
+        "arrivesWhen": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional natural-language condition the AI host uses to decide when this evidence should arrive during Interrogation."
+        },
         "locationId": { "$ref": "#/$defs/SlugId", "description": "Optional. The location this evidence is associated with." },
         "relatesToSuspectIds": {
           "type": "array",

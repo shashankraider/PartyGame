@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-05-23
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2i.1 — AI host-judgment service for the second letter — shipped. **Next: Phase 2i.2 — Phase state machine** (collapse rounds 2/3/4 into one Interrogation phase). Sub-phase briefs live in the **Next Recommended Phase** section below — copy-paste 2i.2 into a fresh session and run it in a worktree. Remaining order: 2i.2 → (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
+**Current phase**: Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation — shipped. **Next: Phase 2i.3 (`arrivesWhen` authoring) and Phase 2i.5 (TV host strip + Case Status panel) are unblocked and can land in parallel; 2i.4 remains independent.** Remaining order: (2i.3 + 2i.5 in parallel, 2i.4 independent) → 2i.6.
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -30,9 +30,9 @@ If you're a new agent (Cursor included) taking over this project:
    - "Completed Work" — every shipped phase with its concrete artifacts.
    - "Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)" — the locked design language for the unlock-tier system you'll be extending in 2i.
 
-3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The round-2 free-choice suspect picker ships on top. The persona-prompt fix scopes the cover-story alibi to whereabouts questions only. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
+3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The round-2 free-choice suspect picker ships on top. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
 
-4. **Phase 2i is the active next slice.** It removes story-judgment from the human host (an AI host service makes those calls instead), collapses round-2/3/4 chapter walls into one open Interrogation phase, and adds a round-robin interviewer for participation. Six sub-phases with explicit dependency graph in "Next Recommended Phase" below. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
+4. **Phase 2i is the active next slice.** 2i.1 and 2i.2 are shipped: the AI host service exists and the old round-2/3/4 chapter walk now collapses into one open Interrogation phase. Next useful work is 2i.3 (`arrivesWhen` authoring) and 2i.5 (TV host strip + Case Status panel), with 2i.4 round-robin interviewer independent. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
 
 5. **Local environment** required for Phase 2i work:
    - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
@@ -77,6 +77,8 @@ Current status:
 - Phase 2f-stub complete: session-aware interview route POST/GET, OpenRouter non-streaming chat with phase-gated minimal prompt (publicAlibi + voice + neverReveal), full message persistence to messages table, "Ask suspect" button wired on phone, transcript polled and rendered on TV + non-interviewer phones at ~1.5s cadence. No token streaming and no adjudicator (deferred to Phase 2g for the adjudicator, Phase 2h for Realtime + true token streaming).
 - Phase 2g.1 complete (Naina-only proof-of-concept): unlockBehavior schema extension on Secret/BreakingPoint/Evidence with tier (cooperation/evidence/pressure/compound), 0003/0004 migrations adding 'system' role and interview_unlock_state table, adjudicator helper (`src/lib/adjudicator.ts`) doing per-condition JSON-output LLM calls with evidence-gate short-circuit and structured verdicts, unlock-evaluation pipeline (`src/lib/interview-unlocks.ts`) firing system messages and updating session.unlocked_evidence on met turns, two-pass roleplay in askSuspect that re-prompts with revealed text when an unlock fires so the suspect speaks the revelation in a single visible turn, host-fallback (`GET`/`POST /api/sessions/[id]/interview/host-unlock`) with TV banner when players are stuck (attempts > threshold AND max_adjacency < 0.4), in-interview evidence panels on phone + TV with NEW badges for items unlocked since the panel mounted, system messages styled distinctly in both transcripts, and the engine fix preventing the legacy chapter-mechanism from racing with dynamic unlocks (`getUnlockedEvidenceForChapter` skips evidence with unlockBehavior). Naina's four conditions authored with cooperation/compound tiers. Eval harness (`scripts/eval-adjudicator.ts` + `cases/mussoorie/evals/naina.eval.json`) gives a regression test for cue text.
 - Phase 2g.2 complete: authored unlockBehavior blocks for Rhea, Devraj, Bisht, Anya, and Kabir across their secrets and breaking points; added `cases/mussoorie/evals/{rhea,devraj,bisht,anya,kabir}.eval.json`; moved `vikram-voice-memo` from Round 1 to `r3-recap`; added a Round 3 printable voice-memo exhibit; updated the Mussoorie round-distribution pin test. `npm run eval:adjudicator -- all` passes 104/104 cases.
+- Naina canon correction complete: removed the stale freelance-design / wellness-brand cover story from `cases/mussoorie/case.json` and `cases/mussoorie/design.md`. Naina should answer "why were you in Mussoorie?" as a corporate investigator following up on confidential work Vikram requested about Rhea / Metropolis Media, with the personal layer that Vikram then went silent. Verification: `npm run validate-case mussoorie` and `npm run eval:adjudicator -- naina` (29/29).
+- Phase 2i.2 complete: added `sessions.phase` (`briefing | interrogation | accusation | reveal`) via `supabase/migrations/0005_session_phase.sql`; added optional `Evidence.arrivesWhen`; extended `HostJudgmentVerdict` with `transition-phase` + `targetPhase` using the existing host-judgment OpenRouter call and prose-fallback parser; made `advanceSessionChapter` a no-op during Interrogation while preserving explicit `setSessionScene(..., scene: "interview", chapterId)` for the free-choice picker. Verification: `supabase db reset --local`, phase default query, `npm run validate-cases`, `npm test`, `npm run eval:host`, `npm run lint`, `npm run build`.
 
 Run and verify:
 - npm run dev
@@ -296,6 +298,7 @@ src/
     types.ts
     validator.mjs
   lib/
+    host-judgment.ts         # AI host pacing verdicts (evidence drops + phase transitions)
     printables.ts            # resolve printable path + URL helper
     session-codes.ts
     session-store.ts
@@ -307,8 +310,10 @@ supabase/
     0002_accusation_votes.sql
     0003_message_role_system.sql       # adds 'system' to message_role enum
     0004_interview_unlock_state.sql    # Phase 2g per-condition state
+    0005_session_phase.sql             # Phase 2i.2 briefing/interrogation/accusation/reveal phase
 
 tests/
+  phase-machine.test.mjs
 ```
 
 ### Sibling workdirs (Phase 2g.2 in-progress)
@@ -326,6 +331,44 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 ---
 
 ## Completed Work
+
+### Phase 2i.2 — Phase state machine; collapse rounds 2/3/4 into Interrogation
+
+Shipped: a coarse session phase state machine that separates the player-facing investigation phase from the legacy chapter pointer. Sessions now have `phase: "briefing" | "interrogation" | "accusation" | "reveal"` with DB default `"briefing"`. Briefing still uses the existing round-1 chapter walk. Entering Interrogation lands on the round-2 evidence-drop / picker surface; after that, `advanceSessionChapter()` is intentionally a no-op while `setSessionScene({ scene: "interview", chapterId })` still allows the free-choice suspect picker to jump to any round-2 interview chapter.
+
+The existing `src/lib/host-judgment.ts` service was extended rather than replaced: `HostJudgmentVerdict` now includes `action: "transition-phase"` with `targetPhase`, and the same OpenRouter JSON call plus prose-wrapped JSON fallback parser handles evidence-drop and phase-transition verdicts. In `askSuspect()`, a valid `transition-phase` verdict is applied through the same phase-transition helper and logged as `interview.host_phase_transitioned`.
+
+**Files shipped**:
+- `supabase/migrations/0005_session_phase.sql` — `session_phase` enum + `sessions.phase` column defaulting to `'briefing'`.
+- `src/lib/supabase.ts` — `SessionPhase` and `SessionRow.phase`.
+- `src/lib/session-store.ts` — phase helpers, valid-transition guard, `transitionSessionPhase()`, Interrogation no-op advance, and host-driven phase transitions.
+- `src/lib/host-judgment.ts` — verdict union extension (`transition-phase`, `targetPhase`), prompt updates, parser coverage.
+- `src/engine/schema/case.schema.json` + `src/engine/types.ts` — optional `Evidence.arrivesWhen` for 2i.3 authoring.
+- `src/components/HostLobbyView.tsx` — disables chapter Previous/Next during Interrogation and keeps the suspect picker available from the case board.
+- `tests/phase-machine.test.mjs`, `tests/host-judgment.test.mjs`, `tests/mussoorie.test.mjs` — phase-transition, parser, no-op, picker, migration-default, and schema-pin coverage.
+
+**Verification**:
+- `supabase db reset --local` applied migrations through `0005_session_phase.sql`.
+- `supabase db query "select column_name, column_default from information_schema.columns where table_name='sessions' and column_name='phase';"` returned `'briefing'::session_phase`.
+- `npm run validate-cases` passed.
+- `npm test` passed 96/96.
+- `npm run eval:host` passed 5/5.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run eval:adjudicator -- all` still has the known pre-existing Bisht `secret:the-rifle` "both rifle images and challenges collector explanation" miss (1/104) with the current model; this path is unrelated to 2i.2.
+
+### Content correction — Naina Kapoor canon
+
+Shipped: removed the stale "freelance design job / wellness brand" cover story from Naina's live case data and canonical design notes. Naina Kapoor is now consistently authored as a Delhi-based corporate-investigations journalist. Her reason for being in Mussoorie is that Vikram asked her to quietly investigate Rhea / Metropolis Media, then stopped replying; the personal layer is the unanswered calls and unresolved breakup, not a design side job.
+
+**Files updated**:
+- `cases/mussoorie/case.json` — Naina `persona`, `knownFacts`, `publicAlibi`, and `vikram-naina-whatsapp.loreText`.
+- `cases/mussoorie/design.md` — Naina character sheet day-job and public-story bullets.
+
+**Verification**:
+- `rg "freelance design|wellness brand|design contract|just designing|design feedback" cases/mussoorie/case.json cases/mussoorie/design.md cases/mussoorie/evals src tests` returns no matches.
+- `npm run validate-case mussoorie` passes.
+- `npm run eval:adjudicator -- naina` passes 29/29.
 
 ### Phase 2i.1 — AI host-judgment service for the second letter
 
@@ -519,7 +562,7 @@ Both blocks live in the same section so a new agent finds the long context natur
 | Sub-phase | Depends on | Blocks |
 |---|---|---|
 | 2i.1 — AI host service ✅ | none | 2i.2, 2i.5 |
-| 2i.2 — Phase state machine | 2i.1 | 2i.3 |
+| 2i.2 — Phase state machine ✅ | 2i.1 | 2i.3 |
 | 2i.3 — Author `arrivesWhen` on round-3/4 evidence | 2i.2 | 2i.6 |
 | 2i.4 — Round-robin interviewer | none | 2i.6 |
 | 2i.5 — TV host strip + case status panel | 2i.2 | 2i.6 |
@@ -1405,4 +1448,3 @@ Without Supabase configured:
 
 - Case picker/detail/solo pages should still build and run.
 - Multiplayer create lobby should show a clear missing Supabase env error.
-

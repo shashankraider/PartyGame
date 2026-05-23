@@ -206,9 +206,9 @@ The CBI now has two anonymous helpers — neither knows about the other. Both ar
 
 ### 3. Naina Kapoor — the ex-fiancée and the corporate investigator
 
-- **Day job**: Delhi-based corporate-investigations journalist who takes freelance design contracts on the side. The hybrid is a real thing in Delhi media circles. The design work pays the rent; the investigations work is what she's actually good at.
+- **Day job**: Delhi-based corporate-investigations journalist. She writes sourced, off-the-record memos for clients and contacts who need discreet diligence.
 - **Relationship to Vikram**: They'd been engaged for two years; *he* broke it off four months ago. They had been trying to stay friends, and it had been working. About three weeks before his death, Vikram asked her — off the record, friend to friend — to dig quietly into his business partner Rhea and a Delhi acquirer called Metropolis Media. She delivered a sourced two-page memo nine days before he died. He read it. He did not reply. Then he did not reply to anything else either.
-- **Public story**: "We broke up months ago — amicably, mostly. I was in town for a freelance design job. I was at my hotel that evening. I wasn't anywhere near Camel's Back Road."
+- **Public story**: "We broke up months ago — amicably, mostly. I was in town because Vikram had asked me to look into a corporate lead for him, and then he went silent. I was at my hotel that evening. I wasn't anywhere near Camel's Back Road."
 - **Secret**: She was the friend who had just done him a serious favour and watched him go silent. The 23 calls in 48 hours are a collapse of two things into one — a professional follow-up that wasn't being answered and a friendship that wasn't either, until she could no longer separate them. She came up to Mussoorie that week to find out why and to try to make it not be the last thing between them. She walked Camel's Back Road that evening hoping to engineer an "accidental" encounter.
 - **What she did that night**: She was on Camel's Back Road at approximately 8:20 PM. She heard something — a metallic sound, perhaps a cry. She did not investigate. She walked away.
 - **Breaking point**: Phone records showing 23 calls to Vikram. A shopkeeper's statement placing her at the Kulri Bazaar end of Camel's Back Road at 8:15 PM. Both together force her to admit the road *and* the sound.

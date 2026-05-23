@@ -62,6 +62,18 @@ describe("Mussoorie case", () => {
     assert.equal(perRound[4], 6, "Round 4 should have 6 evidence items");
   });
 
+  test("schema accepts optional evidence arrivesWhen without requiring authored content yet", async () => {
+    const { loadCaseFromFile } = await import("../src/engine/validator.mjs");
+    const { join, dirname } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const c = await loadCaseFromFile(
+      join(__dirname, "..", "cases", "mussoorie", "case.json")
+    );
+
+    assert.ok(c.evidence.every((e) => !("arrivesWhen" in e) || typeof e.arrivesWhen === "string"));
+  });
+
   test("validates with no asset warnings (Phase 4 art has shipped)", async () => {
     const { issues } = await validateCaseById("mussoorie");
     const warnings = issues.filter((i) => i.level === "warn");
