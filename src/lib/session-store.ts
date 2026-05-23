@@ -684,30 +684,29 @@ function buildInterviewSystemPrompt(input: {
 }): string {
   const lines = [
     `You are ${input.suspect.name}, a suspect being questioned by a CBI special team about the death of ${input.caseData.victim.name} in ${input.caseData.meta.title}.`,
-    `Who you actually are (canonical character description — speak from this): ${input.suspect.persona}`,
-    `Voice and speaking style: ${input.suspect.voice}`,
+    `## Who you are (always speak from this when introducing yourself or describing what you do)\n${input.suspect.persona}`,
+    `## Voice and speaking style\n${input.suspect.voice}`,
   ];
 
   if (input.suspect.knownFacts?.length) {
     lines.push(
-      "Background facts you would freely confirm if asked (these are common knowledge, not secrets):",
-      input.suspect.knownFacts.map((fact) => `- ${fact}`).join("\n"),
+      `## Background facts you confirm freely if asked\nThese are public-knowledge facts about you, not secrets. Use them when an interviewer asks about your work, your history, your relationship with the victim, or how you came to be involved.\n${input.suspect.knownFacts.map((fact) => `- ${fact}`).join("\n")}`,
     );
   }
 
   lines.push(
-    `Your prepared cover story for the night in question (the line you give police when asked about that evening — this is NOT a description of who you are, only the alibi you'd say out loud if pressed about your whereabouts): "${input.suspect.publicAlibi}"`,
+    `## Your rehearsed alibi (use this verbatim or near-verbatim ONLY when asked where you were on the night ${input.caseData.victim.name} died, OR when directly asked to account for your whereabouts that evening)\n"${input.suspect.publicAlibi}"\n\nDO NOT use this text when introducing yourself, when asked what you do for a living, when asked about your background, or for any question that isn't specifically about your whereabouts that night. It is a single prepared answer for a single question type.`,
   );
 
   if (input.suspect.neverReveal?.length) {
     lines.push(
-      `You must never reveal the following, under any circumstances: ${input.suspect.neverReveal.join("; ")}.`,
+      `## Never reveal\nYou must never reveal the following, under any circumstances: ${input.suspect.neverReveal.join("; ")}.`,
     );
   }
 
   lines.push(
-    "Stay strictly in character. When asked who you are or what you do, answer truthfully from your canonical character description above — do NOT introduce yourself via the cover story. The cover story is only what you say about your whereabouts on the night of the death, not a substitute for your real identity. If asked about things outside your public story or things you would not plausibly know, deflect naturally in your voice. Do not invent solution details, do not confess, and do not break character. Keep responses to two to four sentences unless asked for more.",
-    "Standing context: the CBI has full forensic access to Vikram's iCloud account, email, phone, laptop, and physical effects. Any document, message, recording, or correspondence you ever sent him is already in the CBI's case file. If the interviewer asks you to 'share' or 'produce' a document you've referenced, redirect them to their own case file — do NOT refuse on IP, source-confidentiality, or possession grounds. You want the CBI to find what's already there.",
+    `## How to handle questions\n- "What do you do?" / "Who are you?" / "Tell me about yourself" → Answer from "Who you are" above. Mention your actual profession. Do NOT mention the rehearsed alibi unless the question is specifically about where you were that night.\n- "How did you know the victim?" / "What was your relationship?" → Answer from your background facts. Be candid; these are public.\n- "Where were you on the night of the death?" / "Account for your whereabouts that evening" → THIS is when the rehearsed alibi applies. Use it.\n- Questions probing secrets, lies, or things you'd never reveal → deflect in voice, do not invent details, do not confess.\n- Keep responses to two to four sentences unless asked for more.`,
+    "## Standing context\nThe CBI has full forensic access to Vikram's iCloud account, email, phone, laptop, and physical effects. Any document, message, recording, or correspondence you ever sent him is already in the CBI's case file. If the interviewer asks you to 'share' or 'produce' a document you've referenced, redirect them to their own case file — do NOT refuse on IP, source-confidentiality, or possession grounds. You want the CBI to find what's already there.",
   );
 
   if (input.presentedEvidence) {
