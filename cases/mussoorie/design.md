@@ -176,7 +176,7 @@ The CBI dispatches a special investigation team. **The players are that team.**
 
 ### The second anonymous letter (midgame)
 
-During the investigation (Round 3), the CBI team receives a second anonymous letter:
+Partway through the Interrogation phase, once the team has begun to crack the more cooperative suspects (Naina, Rhea, Kabir) and the Thakur name has surfaced more than once across the transcripts, the CBI team receives a second anonymous letter — landed automatically by the AI host:
 
 > "You're looking at the wrong suspects. Ask who benefits from the Thakur estate."
 
@@ -284,17 +284,17 @@ Anya's confession completes the picture: the fifteen years of silence, the blood
 
 ---
 
-## 9b. Round 2 scenario playbook (host reference)
+## 9b. Interrogation scenario playbook (host reference)
 
-Round 2 introduces the free-choice suspect picker on the TV. The host (or any player holding interviewer control) can interview any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine.
+After Briefing, the case opens into the **Interrogation phase**. The free-choice suspect picker is on the TV at all times. The current interviewer (mic auto-rotates every three questions, default; manual claim/pass still works) can pick any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine. No human host advances the case — an AI host watches every transcript and decides when forensic evidence arrives.
 
-This playbook lists which handoffs actually *fire engine cues* in round 2 (vs. which are deliberately stonewalled until round 3+). Use it to set host expectations.
+This playbook lists which handoffs actually *fire engine cues* in the early Interrogation arc (with only the opening evidence set in the locker), vs. which are deliberately stonewalled until the AI host has dropped the deeper forensic evidence later in the phase. Use it to set table expectations.
 
-### Cues that fire with the round-2 evidence drop
+### Cues that fire with only the opening Interrogation evidence
 
-By the time the host advances past `r2-evidence-drop`, the locker contains: the round-1 set (Vikram's wall, voice memo, Instagram, YouTube channel, anonymous letter #1, police report, crime-scene summary) plus seven round-2 items: `chai-shop-receipt`, `naina-phone-records`, `shopkeeper-statement-naina`, `building-cctv-rhea`, `rhea-draft-email`, `bisht-hotel-cctv-log`, `pawn-shop-receipt`.
+When Interrogation opens, the locker contains: the Briefing set (Vikram's wall, Instagram, YouTube channel, anonymous letter #1, police report, crime-scene summary) plus the seven baseline Interrogation items dropped at the start of the phase: `chai-shop-receipt`, `naina-phone-records`, `shopkeeper-statement-naina`, `building-cctv-rhea`, `rhea-draft-email`, `bisht-hotel-cctv-log`, `pawn-shop-receipt`. Naina's voice memo arrives later, when the Thakur thread is active (see below).
 
-Five conditions can fire in round 2:
+Five conditions can fire with just this opening evidence set:
 
 | Suspect | Condition | Tier | Required to fire |
 |---|---|---|---|
@@ -306,26 +306,26 @@ Five conditions can fire in round 2:
 
 ### The canonical cooperation→evidence handoff
 
-**Naina → Rhea (channel sale).** This is the chain you can build the round-2 experience around.
+**Naina → Rhea (channel sale).** This is the chain the early Interrogation arc is built around.
 
 1. Players pick Naina. Ask any reasonable professional question — *"What do you do?"*, *"What brings you to Mussoorie?"*, *"Were you doing work for Vikram?"* — and `points-to-rhea` fires.
 2. Naina names **Metropolis Media** and her **two-page memo** on Rhea. The corporate memo + WhatsApp thread land in the evidence locker.
 3. Players switch to Rhea via the picker.
-4. Players present `rhea-draft-email` (already in locker from r2-evidence-drop) and ask about the sale or Metropolis specifically.
+4. Players present `rhea-draft-email` (already in locker from the opening evidence drop) and ask about the sale or Metropolis specifically.
 5. Rhea's `embezzlement` fires: she admits selling the channel, taking a cut for a year.
 6. Optional: present `building-cctv-rhea` and her `morning-cctv` BP fires — she admits the 5 AM cottage entry.
 
-This is the design's flagship round-2 chain. Other handoffs in round 2 are softer (narrative context, not mechanical cue chains).
+This is the design's flagship early-Interrogation chain. Other handoffs at this stage are softer (narrative context, not mechanical cue chains).
 
-### Suspects who deliberately stonewall in round 2
+### Suspects who deliberately stonewall until the AI host drops the Thakur evidence
 
-Three suspects are *designed* to give nothing crackable in round 2. Players will hit deflections in their persona voice but no `unlockBehavior` will fire. This is correct — these reveals are paced for round 3+:
+Three suspects are *designed* to give nothing crackable until the AI host has surfaced the second anonymous letter and the subsequent Thakur-pivot evidence. Players will hit deflections in their persona voice but no `unlockBehavior` will fire. This is correct — these reveals are paced for the mid-to-late Interrogation arc:
 
-- **Devraj** — every secret and breakingPoint requires round-3 (`bisht-family-history`, `land-registry`) or round-4 (`devraj-jeep-cctv`, `lathi-postmortem`) evidence. Round 2 Devraj is a wall.
-- **Bisht** — every condition requires round-3 (`wall-mount-photo`, `office-rifle-photo`, `land-registry`, `bisht-family-history`) or round-4 (`bisht-devraj-call`, `anya-payments`) evidence. Even with all of those, his `pressureThreshold: 4+` means he typically reframes rather than confesses; the endgame handles his unmasking.
-- **Anya** — every condition requires round-3 (`anya-bus-ticket`) or round-4 (`anya-payments`, `grey-shawl-fresh`) evidence. Round 2 Anya looks at the floor.
+- **Devraj** — every secret and breakingPoint requires Thakur-pivot evidence (`bisht-family-history`, `land-registry`) or late-Interrogation forensics (`devraj-jeep-cctv`, `lathi-postmortem`). Early-Interrogation Devraj is a wall.
+- **Bisht** — every condition requires Thakur-pivot evidence (`wall-mount-photo`, `office-rifle-photo`, `land-registry`, `bisht-family-history`) or late-Interrogation forensics (`bisht-devraj-call`, `anya-payments`). Even with all of those, his `pressureThreshold: 4+` means he typically reframes rather than confesses; the endgame handles his unmasking.
+- **Anya** — every condition requires Thakur-pivot evidence (`anya-bus-ticket`) or late-Interrogation forensics (`anya-payments`, `grey-shawl-fresh`). Early-Interrogation Anya looks at the floor.
 
-Host tip: if players seem stuck on these three in round 2, that's the case telling them they don't yet have what they need. Direct them back to Naina/Rhea/Kabir or forward to the round-3 reveal.
+These three open up only after the AI host fires the second anonymous letter and then begins dropping the Thakur-pivot forensic set in response to sustained Thakur-themed questioning across the transcripts. The host enumerates the not-yet-unlocked authored evidence each turn and picks at most one to drop based on its `arrivesWhen` clause; the conservative bias is toward "wait."
 
 ### Soft handoffs (narrative context, no new cue fires)
 
@@ -333,16 +333,20 @@ Even when no new cue fires on re-entry, the engine preserves prior transcripts. 
 
 - **Kabir → Vikram-was-investigating-everyone framing.** Kabir's plagiarism reveal explicitly mentions Vikram's exposé. Players who interview Kabir before Naina/Rhea now have a concrete signal that Vikram was investigating multiple people, not just the Thakurs.
 - **Naina → Rhea → Naina (return visit).** After Rhea confirms the channel sale, players can come back to Naina to ask follow-up questions ("did Vikram mention pulling Stripe statements?"). No new cue fires, but Naina has the full prior transcript and can layer in detail.
-- **Any suspect asked about the Thakurs.** Deflections in round 2, but the deflection itself signals to attentive players that the Thakur thread matters. Primes round 3.
+- **Any suspect asked about the Thakurs.** Deflections at first, but every Thakur mention across transcripts is read by the AI host. Two qualifying mentions plus the three opening cooperation cues are the threshold for the second anonymous letter to land automatically.
 
-### Host fallback availability in round 2
+### Host fallback availability during early Interrogation
 
 `hostFallbackAfterTurns` thresholds are tuned per suspect:
 
 - **Naina**: 4–5 turns. Easy to crack; host rarely needs to step in.
 - **Rhea**: 8–10 turns. Players are supposed to work for this; only intervene if they're genuinely stuck.
 - **Kabir**: 4–5 turns. He wants to talk.
-- **Devraj, Bisht, Anya**: 999 in round 2 (effectively never, because their conditions need round-3/4 evidence anyway — the host-fallback prompt won't appear).
+- **Devraj, Bisht, Anya**: 999 in this stage (effectively never, because their conditions need Thakur-pivot or late-Interrogation evidence anyway — the host-fallback prompt won't appear until the AI host has surfaced that evidence).
+
+### Phase transitions in and out of Interrogation
+
+The phase machine is: **Briefing → Interrogation → Accusation → Reveal.** Briefing still walks the opening cinematic chapters as a guided sequence. Interrogation is open-ended; the only "advance" the human host can do here is the social-fabric **Pause / Open accusation / End session** buttons on the TV strip. The AI host can also fire `transition-phase` verdicts itself when it judges the case is solvable, opening Accusation automatically. Once players vote and submit, the engine moves the session to Reveal, which renders the killer summary and the closing question.
 
 ---
 
