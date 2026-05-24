@@ -97,7 +97,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   }
 
   async function hostControlAction(
-    action: "pause" | "resume" | "open-accusation" | "end-session",
+    action: "pause" | "resume" | "open-accusation" | "end-session" | "next",
   ) {
     setIsHostActionBusy(true);
     setError(null);
@@ -130,8 +130,20 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   const isPaused = lobby.session.status === "paused";
   const isFinished = lobby.session.status === "finished";
   const currentChapter = getCurrentChapter(caseData, lobby.session.current_chapter_id);
+  const isBriefingPhase = (lobby.session.phase ?? "briefing") === "briefing";
   const isInterrogationPhase = lobby.session.phase === "interrogation";
   const canOpenAccusation = hasStarted && !isFinished && isInterrogationPhase;
+  // Continue advances Briefing chapters one-by-one (r1-arrival → ... → r1-suspect-board)
+  // and the final click crosses into Interrogation. Belt-and-suspenders: also require the
+  // current chapter to be a Briefing chapter (roundNumber 1, narrative/evidence-reveal type)
+  // so we don't accidentally render Continue if session.phase and current_chapter_id drift
+  // out of sync — the moment we land on r2-evidence-drop, the suspect picker owns the screen.
+  const isBriefingChapter =
+    currentChapter !== null &&
+    currentChapter.roundNumber === 1 &&
+    (currentChapter.type === "narrative" || currentChapter.type === "evidence-reveal");
+  const canAdvanceBriefing =
+    hasStarted && !isPaused && !isFinished && isBriefingPhase && isBriefingChapter;
 
   return (
     <section className="py-10">
@@ -149,6 +161,16 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
           >
             {hasStarted ? "Started" : isStarting ? "Starting..." : "Start game"}
           </button>
+          {canAdvanceBriefing ? (
+            <button
+              type="button"
+              onClick={() => hostControlAction("next")}
+              disabled={isHostActionBusy}
+              className="rounded-full bg-[#c8a46a] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isHostActionBusy ? "Advancing..." : "Continue"}
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => hostControlAction(isPaused ? "resume" : "pause")}
