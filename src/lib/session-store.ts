@@ -1,5 +1,9 @@
 import { loadCase } from "@/engine/case-loader";
 import type { Case, Chapter, Evidence, Suspect } from "@/engine/types";
+import {
+  MAX_SESSION_EVENTS,
+  type SessionEventRow,
+} from "@/lib/session-events";
 import { createJoinCode, normalizeJoinCode } from "@/lib/session-codes";
 import {
   createSupabaseServerClient,
@@ -284,6 +288,156 @@ export async function getLobbyState(sessionId: string): Promise<LobbyState> {
     players: players ?? [],
     accusationVotes: accusationVotes ?? [],
   };
+}
+
+export async function getSessionEvents(
+  sessionId: string,
+  options: { type?: string; limit?: number } = {},
+): Promise<SessionEventRow[]> {
+  assertSupabaseConfigured();
+
+  const limit = options.limit ?? MAX_SESSION_EVENTS;
+  const supabase = createSupabaseServerClient();
+
+  const { data: session, error: sessionError } = await supabase
+    .from("sessions")
+    .select("id")
+    .eq("id", sessionId)
+    .single();
+
+  if (sessionError || !session) {
+    throw new SessionStoreError("session_not_found", "Session not found", 404, sessionError);
+  }
+
+  let query = supabase
+    .from("events")
+    .select("*")
+    .eq("session_id", sessionId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (options.type) {
+    query = query.eq("type", options.type);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new SessionStoreError("database_error", "Could not load events", 500, error);
+  }
+
+  return (data ?? []) as SessionEventRow[];
+}
+
+export async function pauseSession(sessionId: string): Promise<SessionRow> {
+  assertSupabaseConfigured();
+
+  const { session } = await getLobbyState(sessionId);
+
+  if (session.status === "finished") {
+    throw new SessionStoreError("invalid_request", "Session has already ended", 400);
+  }
+
+  if (session.status === "lobby") {
+    throw new SessionStoreError("invalid_request", "Game has not started yet", 400);
+  }
+
+  if (session.status === "paused") {
+    return session;
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({
+      status: "paused",
+      last_activity_at: new Date().toISOString(),
+    })
+    .eq("id", session.id)
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new SessionStoreError("database_error", "Could not pause session", 500, error);
+  }
+
+  await supabase.from("events").insert({
+    session_id: session.id,
+    type: "session.paused",
+    payload: {},
+  });
+
+  return data;
+}
+
+export async function resumeSession(sessionId: string): Promise<SessionRow> {
+  assertSupabaseConfigured();
+
+  const { session } = await getLobbyState(sessionId);
+
+  if (session.status === "finished") {
+    throw new SessionStoreError("invalid_request", "Session has already ended", 400);
+  }
+
+  if (session.status !== "paused") {
+    return session;
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({
+      status: "in_progress",
+      last_activity_at: new Date().toISOString(),
+    })
+    .eq("id", session.id)
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new SessionStoreError("database_error", "Could not resume session", 500, error);
+  }
+
+  await supabase.from("events").insert({
+    session_id: session.id,
+    type: "session.resumed",
+    payload: {},
+  });
+
+  return data;
+}
+
+export async function endSession(sessionId: string): Promise<SessionRow> {
+  assertSupabaseConfigured();
+
+  const { session } = await getLobbyState(sessionId);
+
+  if (session.status === "finished") {
+    return session;
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({
+      status: "finished",
+      last_activity_at: new Date().toISOString(),
+    })
+    .eq("id", session.id)
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new SessionStoreError("database_error", "Could not end session", 500, error);
+  }
+
+  await supabase.from("events").insert({
+    session_id: session.id,
+    type: "session.ended",
+    payload: { previousStatus: session.status },
+  });
+
+  return data;
 }
 
 export function tallyAccusations(votes: AccusationVoteRow[]) {
@@ -1048,6 +1202,14 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
 
   const { session, caseData, chapter, suspect, messages } =
     await getInterviewContext(input.sessionId);
+
+  if (session.status === "paused") {
+    throw new SessionStoreError("invalid_request", "Session is paused", 409);
+  }
+
+  if (session.status === "finished") {
+    throw new SessionStoreError("invalid_request", "Session has ended", 409);
+  }
 
   if (session.current_interviewer_player_id !== input.playerId) {
     throw new SessionStoreError(

@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-05-23
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2i.4 — round-robin interviewer rotation — shipped. **Next: Phase 2i.5 (TV host strip + Case Status panel) remains unblocked.** Remaining order: 2i.5 → 2i.6.
+**Current phase**: Phase 2i.5 — TV host strip + Case Status panel — shipped. **2i.1–2i.5 are complete on main; Phase 2i.6 (wrap + verify + design.md) is the only remaining sub-phase.**
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -32,7 +32,7 @@ If you're a new agent (Cursor included) taking over this project:
 
 3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. The round-2 free-choice suspect picker ships on top. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harness (`npm run eval:adjudicator -- all`) is the contract between the author and the engine; keep it green whenever cue text changes.
 
-4. **Phase 2i is the active next slice.** 2i.1, 2i.2, and 2i.3 are shipped: the AI host service exists, the old round-2/3/4 chapter walk now collapses into one open Interrogation phase, and the round-3/4 forensic evidence has authored `arrivesWhen` conditions plus host eval coverage. Next useful work is 2i.5 (TV host strip + Case Status panel), with 2i.4 round-robin interviewer independent. **Do them one at a time, each in its own worktree**, commit + push between each, then update the relevant task in your task board.
+4. **Phase 2i is nearly complete.** 2i.1–2i.5 are shipped (AI host, phase machine, forensic `arrivesWhen`, round-robin mic rotation, TV coordination strip + Case Status panel). **Next useful work is 2i.6** (end-to-end verify, `design.md` rewrite, handoff cleanup). Do 2i.6 in a fresh worktree; commit + push when the full suite is green.
 
 5. **Local environment** required for Phase 2i work:
    - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
@@ -333,6 +333,29 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 
 ## Completed Work
 
+### Phase 2i.5 — TV host strip refactor + Case Status panel
+
+Shipped coordination-only TV host controls and a Case Status panel driven by AI host reasoning events:
+
+- **TV strip removed**: Previous, Next (story-advance controls — AI host owns pacing now). Drop-evidence was never on the top strip; host-unlock **Reveal** remains in `InterviewScene`'s `HostFallbackBanner` (unchanged).
+- **TV strip kept**: Start game, Pause / Resume (toggles `sessions.status`), Open accusation (calls `transitionSessionPhase` → `accusation`), End session (sets `status: finished`; `askSuspect` rejects further LLM calls when paused or finished).
+- **CaseStatusPanel** (`HostLobbyView.tsx`): polls `GET /api/sessions/[sessionId]/events?type=interview.host_judgment` every **2000ms**; renders only `interview.host_judgment` rows (not adjudicator unlock events, not `host_judgment_fired`).
+- **Idle placeholder**: `"Watching the room…"` (also used as do-nothing fallback when the host verdict has no usable `reason` string).
+- **Do-nothing verdicts**: when `payload.reason` is present, the panel shows it; empty/missing reason → low-key `"Watching the room…"`.
+- **New route**: `GET /api/sessions/[sessionId]/events` — service-role Supabase query via `getSessionEvents()`, optional `?type=` filter, max **20** results, `created_at desc`.
+- **Pure helpers**: `src/lib/case-status.ts` (`formatHostJudgmentEvent`, `resolveCaseStatusLine`), `src/lib/session-events.ts` (query post-process + cap).
+- **Tests**: `tests/case-status.test.mjs`, `tests/events-route.test.mjs` (pure query helpers + `getSessionEvents` 404 when Supabase env is configured).
+
+**Measured CaseStatusPanel update lag** (local smoke, dev server + Supabase REST event insert): event visible to events API in **14ms**; with the 2s poll interval, worst-case panel refresh bound **~2014ms** (≤ 2.5s target).
+
+**Verification**:
+- `npm run validate-cases` passed.
+- `npm test` passed **118/118** (1 skipped: live `getSessionEvents` 404 when Supabase env absent in test runner).
+- `npm run eval:adjudicator -- all` returned **103/104** — known pre-existing Bisht `secret:the-rifle` flake unchanged.
+- `npm run eval:host` returned **59/60** — known occasional `bisht-devraj-call` positive flake unchanged.
+- `npm run lint` passed.
+- `npm run build` passed; `/api/sessions/[sessionId]/events` registered.
+
 ### Phase 2i.4 — Round-robin interviewer rotation
 
 Shipped automatic mic rotation during live interviews:
@@ -604,7 +627,7 @@ Both blocks live in the same section so a new agent finds the long context natur
 | 2i.2 — Phase state machine ✅ | 2i.1 | 2i.3 |
 | 2i.3 — Author `arrivesWhen` on round-3/4 evidence ✅ | 2i.2 | 2i.6 |
 | 2i.4 — Round-robin interviewer ✅ | none | 2i.6 |
-| 2i.5 — TV host strip + case status panel | 2i.2 | 2i.6 |
+| 2i.5 — TV host strip + case status panel ✅ | 2i.2 | 2i.6 |
 | 2i.6 — Verify + eval + handoff doc | all others | — |
 
 Strict ordering: **2i.1 → 2i.2 → (2i.3 + 2i.5 in parallel) → 2i.6**. 2i.4 is independent and can land any time before 2i.6.

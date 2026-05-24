@@ -3,6 +3,11 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import type { Case, Chapter } from "@/engine/types";
+import {
+  HOST_JUDGMENT_EVENT_TYPE,
+  resolveCaseStatusLine,
+  type HostJudgmentEventRow,
+} from "@/lib/case-status";
 import type { LobbyState } from "@/lib/session-store";
 import { getQuestionsPerDetective } from "@/lib/round-robin";
 import type { MessageRow, SessionScene } from "@/lib/supabase";
@@ -48,7 +53,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   const [lobby, setLobby] = useState(initialLobby);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
-  const [isAdvancing, setIsAdvancing] = useState(false);
+  const [isHostActionBusy, setIsHostActionBusy] = useState(false);
 
   useEffect(() => {
     const interval = window.setInterval(async () => {
@@ -91,8 +96,10 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
     setIsStarting(false);
   }
 
-  async function changeScene(action: "next" | "previous") {
-    setIsAdvancing(true);
+  async function hostControlAction(
+    action: "pause" | "resume" | "open-accusation" | "end-session",
+  ) {
+    setIsHostActionBusy(true);
     setError(null);
 
     const response = await fetch(`/api/sessions/${lobby.session.id}/scene`, {
@@ -108,28 +115,23 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
     };
 
     if (!response.ok || !payload.session) {
-      setError(payload.error ?? "Could not change scene.");
-      setIsAdvancing(false);
+      setError(payload.error ?? "Could not update session.");
+      setIsHostActionBusy(false);
       return;
     }
 
     setLobby((current) => ({ ...current, session: payload.session! }));
-    setIsAdvancing(false);
+    setIsHostActionBusy(false);
   }
 
   const detectives = lobby.players.filter((player) => !player.is_observer);
   const observers = lobby.players.filter((player) => player.is_observer);
   const hasStarted = lobby.session.status !== "lobby";
+  const isPaused = lobby.session.status === "paused";
+  const isFinished = lobby.session.status === "finished";
   const currentChapter = getCurrentChapter(caseData, lobby.session.current_chapter_id);
-  const currentChapterIndex = currentChapter
-    ? caseData.chapters.findIndex((chapter) => chapter.id === currentChapter.id)
-    : -1;
   const isInterrogationPhase = lobby.session.phase === "interrogation";
-  const hasPrevious = !isInterrogationPhase && currentChapterIndex > 0;
-  const hasNext =
-    !isInterrogationPhase &&
-    currentChapterIndex !== -1 &&
-    currentChapterIndex < caseData.chapters.length - 1;
+  const canOpenAccusation = hasStarted && !isFinished && isInterrogationPhase;
 
   return (
     <section className="py-10">
@@ -149,22 +151,34 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
           </button>
           <button
             type="button"
-            onClick={() => changeScene("previous")}
-            disabled={isAdvancing || !hasStarted || !hasPrevious}
+            onClick={() => hostControlAction(isPaused ? "resume" : "pause")}
+            disabled={isHostActionBusy || !hasStarted || isFinished}
             className="rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition hover:border-[#c8a46a] hover:text-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Previous
+            {isHostActionBusy ? "Updating..." : isPaused ? "Resume" : "Pause"}
           </button>
           <button
             type="button"
-            onClick={() => changeScene("next")}
-            disabled={isAdvancing || !hasStarted || !hasNext}
+            onClick={() => hostControlAction("open-accusation")}
+            disabled={isHostActionBusy || !canOpenAccusation}
             className="rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition hover:border-[#c8a46a] hover:text-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isAdvancing ? "Moving..." : "Next"}
+            Open accusation
+          </button>
+          <button
+            type="button"
+            onClick={() => hostControlAction("end-session")}
+            disabled={isHostActionBusy || !hasStarted || isFinished}
+            className="rounded-full border border-red-400/40 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-red-100 transition hover:border-red-300 hover:text-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            End session
           </button>
         </div>
       </div>
+
+      {hasStarted && !isFinished ? (
+        <CaseStatusPanel sessionId={lobby.session.id} />
+      ) : null}
 
       {error ? (
         <p className="mb-5 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
@@ -252,6 +266,43 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
         />
       ) : null}
     </section>
+  );
+}
+
+function CaseStatusPanel({ sessionId }: { sessionId: string }) {
+  const [statusLine, setStatusLine] = useState(() => resolveCaseStatusLine([]));
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      const response = await fetch(
+        `/api/sessions/${sessionId}/events?type=${encodeURIComponent(HOST_JUDGMENT_EVENT_TYPE)}`,
+        { cache: "no-store" },
+      );
+      if (cancelled || !response.ok) {
+        return;
+      }
+
+      const payload = (await response.json().catch(() => ({}))) as {
+        events?: HostJudgmentEventRow[];
+      };
+      setStatusLine(resolveCaseStatusLine(payload.events ?? []));
+    }
+
+    load();
+    const interval = window.setInterval(load, 2000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [sessionId]);
+
+  return (
+    <div className="mb-5 rounded-3xl border border-[#c8a46a]/30 bg-zinc-950/70 p-5">
+      <p className="text-xs uppercase tracking-[0.28em] text-[#c8a46a]">Case status</p>
+      <p className="mt-2 text-lg leading-8 text-[#f5f2ea]">{statusLine}</p>
+    </div>
   );
 }
 

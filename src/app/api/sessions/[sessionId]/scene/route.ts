@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import {
   advanceSessionChapter,
+  endSession,
+  pauseSession,
+  resumeSession,
   SessionStoreError,
   setSessionScene,
+  transitionSessionPhase,
 } from "@/lib/session-store";
 import type { SessionScene } from "@/lib/supabase";
 
@@ -20,6 +24,9 @@ type SceneRequest =
       action: "set";
       scene: SessionScene;
       chapterId?: string | null;
+    }
+  | {
+      action: "pause" | "resume" | "open-accusation" | "end-session";
     };
 
 export async function POST(request: Request, context: SceneRouteContext) {
@@ -38,6 +45,29 @@ export async function POST(request: Request, context: SceneRouteContext) {
         scene: body.scene,
         chapterId: "chapterId" in body ? body.chapterId : undefined,
       });
+      return NextResponse.json({ session });
+    }
+
+    if (body.action === "pause") {
+      const session = await pauseSession(sessionId);
+      return NextResponse.json({ session });
+    }
+
+    if (body.action === "resume") {
+      const session = await resumeSession(sessionId);
+      return NextResponse.json({ session });
+    }
+
+    if (body.action === "open-accusation") {
+      const session = await transitionSessionPhase({
+        sessionId,
+        targetPhase: "accusation",
+      });
+      return NextResponse.json({ session });
+    }
+
+    if (body.action === "end-session") {
+      const session = await endSession(sessionId);
       return NextResponse.json({ session });
     }
 
