@@ -600,11 +600,15 @@ function InterviewMode({
   );
   const [question, setQuestion] = useState("");
   const [selectedEvidence, setSelectedEvidence] = useState<string | null>(null);
+  const [isEvidencePickerOpen, setIsEvidencePickerOpen] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const transcript = useTranscript(session.id, suspect?.id ?? null);
   const speech = useSpeechToText();
   const lastAppendedRef = useRef("");
+  const selectedEvidenceItem = selectedEvidence
+    ? (presentable.find((evidence) => evidence.id === selectedEvidence) ?? null)
+    : null;
 
   // Append committed STT chunks to the textarea. We track the last-appended
   // length so finalTranscript growing doesn't re-append previous text.
@@ -711,6 +715,7 @@ function InterviewMode({
 
     setQuestion("");
     setSelectedEvidence(null);
+    setIsEvidencePickerOpen(false);
     transcript.refresh();
     setIsAsking(false);
   }
@@ -826,40 +831,80 @@ function InterviewMode({
       ) : null}
 
       {presentable.length > 0 ? (
-        <div className="mt-5">
+        <div className="relative mt-5">
           <p className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">Present evidence</p>
-          <div className="mt-2 grid gap-2">
-            <button
-              type="button"
-              onClick={() => setSelectedEvidence(null)}
-              disabled={isAsking}
-              className={`rounded-2xl border px-4 py-3 text-left text-sm disabled:cursor-not-allowed disabled:opacity-60 ${
-                selectedEvidence === null
-                  ? "border-[#c8a46a] text-[#e6bd77]"
-                  : "border-white/15 text-[#cfc8ba]"
-              }`}
-            >
-              No evidence (ask plainly)
-            </button>
-            {presentable.map((evidence) => (
+          <button
+            type="button"
+            onClick={() => setIsEvidencePickerOpen((value) => !value)}
+            disabled={isAsking}
+            className="mt-2 flex w-full items-center justify-between gap-3 rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-left text-sm transition hover:border-[#c8a46a]/60 focus:border-[#c8a46a] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+            aria-expanded={isEvidencePickerOpen}
+          >
+            <span className="min-w-0">
+              <span className="block truncate font-semibold text-[#f5f2ea]">
+                {selectedEvidenceItem?.title ?? "No evidence (ask plainly)"}
+              </span>
+              {selectedEvidenceItem ? (
+                <span className="mt-1 block truncate text-[10px] uppercase tracking-[0.2em] text-[#a6a29a]">
+                  {selectedEvidenceItem.category}
+                </span>
+              ) : null}
+            </span>
+            <span className="shrink-0 text-xs uppercase tracking-[0.18em] text-[#e6bd77]">
+              {isEvidencePickerOpen ? "Close" : "Choose"}
+            </span>
+          </button>
+
+          {isEvidencePickerOpen ? (
+            <div className="absolute inset-x-0 top-full z-30 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-[#c8a46a]/30 bg-[#080909] p-2 shadow-2xl shadow-black/60">
               <button
-                key={evidence.id}
                 type="button"
-                onClick={() => setSelectedEvidence(evidence.id)}
+                onClick={() => {
+                  setSelectedEvidence(null);
+                  setIsEvidencePickerOpen(false);
+                }}
                 disabled={isAsking}
-                className={`rounded-2xl border px-4 py-3 text-left text-sm disabled:cursor-not-allowed disabled:opacity-60 ${
-                  selectedEvidence === evidence.id
-                    ? "border-[#c8a46a] text-[#e6bd77]"
-                    : "border-white/15 text-[#cfc8ba]"
+                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left text-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  selectedEvidence === null
+                    ? "bg-[#c8a46a] text-zinc-950"
+                    : "text-[#cfc8ba] hover:bg-white/[0.06]"
                 }`}
               >
-                <span className="block text-xs uppercase tracking-[0.2em] text-[#a6a29a]">
-                  {evidence.category}
-                </span>
-                <span className="mt-1 block font-semibold">{evidence.title}</span>
+                <span className="font-semibold">No evidence (ask plainly)</span>
+                {selectedEvidence === null ? (
+                  <span className="text-xs font-semibold">Selected</span>
+                ) : null}
               </button>
-            ))}
-          </div>
+              {presentable.map((evidence) => {
+                const isSelected = selectedEvidence === evidence.id;
+                return (
+                  <button
+                    key={evidence.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedEvidence(evidence.id);
+                      setIsEvidencePickerOpen(false);
+                    }}
+                    disabled={isAsking}
+                    className={`mt-1 w-full rounded-xl px-3 py-3 text-left text-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      isSelected
+                        ? "bg-[#c8a46a] text-zinc-950"
+                        : "text-[#cfc8ba] hover:bg-white/[0.06]"
+                    }`}
+                  >
+                    <span className="block font-semibold">{evidence.title}</span>
+                    <span
+                      className={`mt-1 block text-[10px] uppercase tracking-[0.2em] ${
+                        isSelected ? "text-zinc-900/70" : "text-[#a6a29a]"
+                      }`}
+                    >
+                      {evidence.category}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       ) : (
         <p className="mt-5 text-xs text-[#a6a29a]">No evidence unlocked yet to present.</p>

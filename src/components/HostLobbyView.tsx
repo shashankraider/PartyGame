@@ -134,18 +134,34 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
     hasStarted && !isPaused && !isFinished && isBriefingPhase && isBriefingChapter;
 
   return (
-    <section className="py-10">
-      <div className="mb-5 flex flex-col gap-4 rounded-3xl border border-white/10 bg-zinc-950/70 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.28em] text-[#a6a29a]">Current TV scene</p>
-          <p className="mt-1 text-xl font-semibold">{sceneLabels[lobby.session.current_scene]}</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
+    <section className="py-4">
+      <div className="mb-4 rounded-2xl border border-white/10 bg-[#0b0c0c]/90 p-3 shadow-2xl shadow-black/25">
+        <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="border-white/10 sm:border-r sm:pr-5">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">Scene</p>
+              <p className="mt-1 text-base font-semibold">{sceneLabels[lobby.session.current_scene]}</p>
+            </div>
+            <div className="border-white/10 sm:border-r sm:pr-5">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">Status</p>
+              <p className="mt-1 text-base font-semibold capitalize">
+                {lobby.session.status.replace(/[-_]/g, " ")}
+                {currentChapter ? ` · Round ${currentChapter.roundNumber}` : ""}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">Join code</p>
+              <p className="mt-1 font-mono text-base font-semibold tracking-[0.16em]">
+                {lobby.session.join_code}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
           <button
             type="button"
             onClick={startGame}
             disabled={isStarting || hasStarted}
-            className="rounded-full bg-[#c8a46a] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-[#d4ad67] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-zinc-950 transition hover:bg-[#edc77d] disabled:opacity-50"
           >
             {hasStarted ? "Started" : isStarting ? "Starting..." : "Start game"}
           </button>
@@ -154,7 +170,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
               type="button"
               onClick={() => hostControlAction("next")}
               disabled={isHostActionBusy}
-              className="rounded-full bg-[#c8a46a] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-[#d4ad67] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-zinc-950 transition hover:bg-[#edc77d] disabled:opacity-50"
             >
               {isHostActionBusy ? "Advancing..." : "Continue"}
             </button>
@@ -163,7 +179,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
             type="button"
             onClick={() => hostControlAction(isPaused ? "resume" : "pause")}
             disabled={isHostActionBusy || !hasStarted || isFinished}
-            className="rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition hover:border-[#c8a46a] hover:text-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-white/15 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-[#cfc8ba] transition hover:border-[#d4ad67] hover:text-[#edc77d] disabled:opacity-50"
           >
             {isHostActionBusy ? "Updating..." : isPaused ? "Resume" : "Pause"}
           </button>
@@ -171,7 +187,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
             type="button"
             onClick={() => hostControlAction("open-accusation")}
             disabled={isHostActionBusy || !canOpenAccusation}
-            className="rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition hover:border-[#c8a46a] hover:text-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-white/15 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-[#cfc8ba] transition hover:border-[#d4ad67] hover:text-[#edc77d] disabled:opacity-50"
           >
             Open accusation
           </button>
@@ -179,10 +195,11 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
             type="button"
             onClick={() => hostControlAction("end-session")}
             disabled={isHostActionBusy || !hasStarted || isFinished}
-            className="rounded-full border border-red-400/40 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-red-100 transition hover:border-red-300 hover:text-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-red-400/35 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-red-100 transition hover:border-red-300 hover:text-red-50 disabled:opacity-50"
           >
             End session
           </button>
+          </div>
         </div>
       </div>
 
@@ -284,9 +301,9 @@ function CaseStatusPanel({ sessionId }: { sessionId: string }) {
   const statusLine = resolveCaseStatusLine(events as HostJudgmentEventRow[]);
 
   return (
-    <div className="mb-5 rounded-3xl border border-[#c8a46a]/30 bg-zinc-950/70 p-5">
-      <p className="text-xs uppercase tracking-[0.28em] text-[#c8a46a]">Case status</p>
-      <p className="mt-2 text-lg leading-8 text-[#f5f2ea]">{statusLine}</p>
+    <div className="mb-4 rounded-2xl border border-[#d4ad67]/25 bg-[#d4ad67]/10 px-4 py-3">
+      <p className="text-[10px] uppercase tracking-[0.22em] text-[#d4ad67]">Case status</p>
+      <p className="mt-1 text-base leading-7 text-[#f6f0e4]">{statusLine}</p>
     </div>
   );
 }
@@ -354,15 +371,44 @@ function LobbyScene({
 }
 
 function BriefScene({ caseData, detectives }: { caseData: Case; detectives: number }) {
+  const coverImage = `/api/cases/${encodeURIComponent(caseData.id)}/hero`;
+
   return (
-    <div className="rounded-[2rem] border border-white/10 bg-zinc-950/75 p-8 shadow-2xl shadow-black/30">
-      <p className="text-sm uppercase tracking-[0.35em] text-[#c8a46a]">{caseData.meta.setting}</p>
-      <h2 className="mt-5 text-6xl font-semibold tracking-tight">{caseData.meta.title}</h2>
-      <p className="mt-6 max-w-4xl text-2xl leading-10 text-[#cfc8ba]">{caseData.meta.tagline}</p>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        <InfoCard label="Victim" value={caseData.victim.name} />
-        <InfoCard label="Detectives Joined" value={String(detectives)} />
-        <InfoCard label="Opening Round" value={caseData.rounds[0]?.title ?? "Round 1"} />
+    <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#090a0a] shadow-2xl shadow-black/30">
+      <div className="relative min-h-[31rem] p-7 sm:p-10">
+        {coverImage ? (
+          <Image
+            src={coverImage}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 1180px, 100vw"
+            className="scale-[1.65] object-cover object-right opacity-80"
+            priority
+            unoptimized
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.92)_0%,rgba(5,5,5,0.72)_42%,rgba(5,5,5,0.28)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#090a0a] to-transparent" />
+
+        <div className="relative z-10 flex min-h-[26rem] max-w-4xl flex-col justify-between">
+          <div>
+            <p className="max-w-4xl text-xs uppercase tracking-[0.34em] text-[#d4ad67]">
+              {caseData.meta.setting}
+            </p>
+            <h2 className="mt-6 max-w-3xl text-6xl font-semibold tracking-tight text-[#f6f0e4]">
+              {caseData.meta.title}
+            </h2>
+            <p className="mt-6 max-w-2xl text-2xl leading-10 text-[#ded6c7]">
+              {caseData.meta.tagline}
+            </p>
+          </div>
+
+          <div className="grid max-w-5xl gap-3 md:grid-cols-3">
+            <InfoCard label="Victim" value={caseData.victim.name} />
+            <InfoCard label="Detectives Joined" value={String(detectives)} />
+            <InfoCard label="Opening Round" value={caseData.rounds[0]?.title ?? "Round 1"} />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -397,14 +443,14 @@ function CaseBoardScene({
     : null;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <article className="rounded-3xl border border-white/10 bg-zinc-950/75 p-6">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
+      <article className="min-h-[30rem] rounded-2xl border border-white/10 bg-[#0b0c0c]/80 p-7 shadow-2xl shadow-black/25">
         <ChapterBadge chapter={chapter} />
-        <h2 className="mt-3 text-4xl font-semibold">{chapter?.title ?? "Case Board"}</h2>
+        <h2 className="mt-3 text-5xl font-semibold tracking-tight">{chapter?.title ?? "Case Board"}</h2>
         {chapter?.type === "narrative" ? (
           <div className="mt-6 grid gap-4">
             {chapter.beats.map((beat, index) => (
-              <blockquote key={`${beat.speaker ?? "beat"}-${index}`} className="rounded-2xl border border-white/10 p-4">
+              <blockquote key={`${beat.speaker ?? "beat"}-${index}`} className="border-l border-[#d4ad67]/40 py-1 pl-4">
                 {beat.speaker ? (
                   <p className="mb-2 text-sm uppercase tracking-[0.2em] text-[#c8a46a]">{beat.speaker}</p>
                 ) : null}
@@ -414,22 +460,22 @@ function CaseBoardScene({
           </div>
         ) : null}
         {chapter?.type === "evidence-reveal" && chapter.narration ? (
-          <p className="mt-5 text-xl leading-9 text-[#cfc8ba]">{chapter.narration}</p>
+          <p className="mt-5 max-w-4xl text-xl leading-9 text-[#cfc8ba]">{chapter.narration}</p>
         ) : null}
       </article>
 
-      <aside className="rounded-3xl border border-white/10 bg-zinc-950/75 p-6">
-        <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Evidence Locker</p>
+      <aside className="rounded-2xl border border-white/10 bg-[#0b0c0c]/80 p-4">
+        <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Evidence Locker</p>
         {evidenceByRound.length === 0 ? (
           <p className="mt-5 text-[#a6a29a]">Evidence will appear here as chapters unlock it.</p>
         ) : (
-          <div className="mt-5 grid gap-5">
+          <div className="mt-4 grid max-h-[34rem] gap-4 overflow-y-auto pr-1">
             {evidenceByRound.map(({ round, items }) => (
               <div key={round.number}>
-                <p className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
                   Round {round.number} · {round.title}
                 </p>
-                <div className="mt-2 grid gap-3">
+                <div className="mt-2 grid gap-2">
                   {items.map((evidence) => {
                     const isFresh = justUnlockedIds.has(evidence.id);
                     const isSelected = selectedEvidenceId === evidence.id;
@@ -438,7 +484,7 @@ function CaseBoardScene({
                         key={evidence.id}
                         type="button"
                         onClick={() => setSelectedEvidenceId(isSelected ? null : evidence.id)}
-                        className={`rounded-2xl border p-4 text-left transition ${
+                        className={`rounded-xl border px-3 py-3 text-left transition ${
                           isSelected
                             ? "border-[#c8a46a] bg-[#c8a46a]/15"
                             : isFresh
@@ -447,7 +493,7 @@ function CaseBoardScene({
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <p className="text-xs uppercase tracking-[0.2em] text-[#a6a29a]">
+                          <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
                             {evidence.category}
                           </p>
                           {isFresh ? (
@@ -456,8 +502,8 @@ function CaseBoardScene({
                             </span>
                           ) : null}
                         </div>
-                        <h3 className="mt-2 text-lg font-semibold">{evidence.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">
+                        <h3 className="mt-1 text-base font-semibold">{evidence.title}</h3>
+                        <p className="mt-1 max-h-10 overflow-hidden text-xs leading-5 text-[#cfc8ba]">
                           {evidence.description}
                         </p>
                       </button>
@@ -469,7 +515,7 @@ function CaseBoardScene({
           </div>
         )}
         {selectedLockerEvidence ? (
-          <div className="mt-6 border-t border-white/10 pt-6">
+          <div className="mt-4 border-t border-white/10 pt-4">
             <div className="flex items-start justify-between gap-4">
               <p className="text-xs uppercase tracking-[0.24em] text-[#c8a46a]">Full case file text</p>
               <button
@@ -639,9 +685,9 @@ function InterviewScene({
     : null;
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-950/75 p-8">
+    <div className="rounded-2xl border border-white/10 bg-[#0b0c0c]/85 p-6 shadow-2xl shadow-black/25">
       <ChapterBadge chapter={chapter} />
-      <h2 className="mt-3 text-5xl font-semibold">{chapter?.title ?? "Live Interview"}</h2>
+      <h2 className="mt-3 text-5xl font-semibold tracking-tight">{chapter?.title ?? "Live Interview"}</h2>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <span className="rounded-full border border-[#c8a46a]/40 bg-[#c8a46a]/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-[#e6bd77]">
           Interviewer
@@ -662,15 +708,15 @@ function InterviewScene({
         <HostFallbackBanner sessionId={sessionId} suspectName={suspect.name} />
       ) : null}
       {suspect ? (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-3xl border border-white/10 p-6">
-            <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Suspect</p>
+        <div className="mt-6 grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Suspect</p>
             <h3 className="mt-3 text-4xl font-semibold">{suspect.name}</h3>
             <p className="mt-3 text-lg text-[#cfc8ba]">{suspect.shortDescription}</p>
           </div>
-          <div className="rounded-3xl border border-white/10 p-6">
-            <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Interview Brief</p>
-            <p className="mt-4 text-xl leading-9 text-[#f5f2ea]">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Interview Brief</p>
+            <p className="mt-3 text-lg leading-8 text-[#f5f2ea]">
               {chapter?.type === "interview" && chapter.intro
                 ? chapter.intro
                 : "The interviewer may question this suspect from their phone controller."}
@@ -680,14 +726,14 @@ function InterviewScene({
       ) : null}
 
       {suspect ? (
-        <div className="mt-8 rounded-3xl border border-white/10 bg-black/30 p-6">
-          <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Transcript</p>
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/25 p-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Transcript</p>
           {messages.length === 0 ? (
             <p className="mt-4 text-lg text-[#a6a29a]">
               The interviewer has not asked anything yet.
             </p>
           ) : (
-            <div className="mt-4 max-h-[28rem] space-y-4 overflow-y-auto pr-2">
+            <div className="mt-4 max-h-[24rem] space-y-4 overflow-y-auto pr-2">
               {messages.map((message) => {
                 if (message.role === "system") {
                   return (
@@ -713,7 +759,7 @@ function InterviewScene({
                         <span className="ml-2 text-[#c8a46a]">typing…</span>
                       ) : null}
                     </p>
-                    <p className="mt-1 text-xl leading-9 text-[#f5f2ea]">
+                    <p className="mt-1 text-lg leading-8 text-[#f5f2ea]">
                       {message.content}
                       {message.is_streaming ? (
                         <span className="ml-1 inline-block h-5 w-[2px] animate-pulse bg-[#c8a46a] align-middle" />
@@ -728,16 +774,16 @@ function InterviewScene({
       ) : null}
 
       {suspect && lockerItems.length > 0 ? (
-        <div className="mt-6 rounded-3xl border border-white/10 bg-black/30 p-6">
+        <div className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-5">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm uppercase tracking-[0.28em] text-[#c8a46a]">Evidence locker</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Evidence locker</p>
             {newLockerIds.size > 0 ? (
               <span className="rounded-full bg-[#c8a46a] px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-zinc-950">
                 {newLockerIds.size} new
               </span>
             ) : null}
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {lockerItems.map((evidence) => {
               const isNew = newLockerIds.has(evidence.id);
               const isSelected = selectedLockerId === evidence.id;
@@ -746,7 +792,7 @@ function InterviewScene({
                   key={evidence.id}
                   type="button"
                   onClick={() => setSelectedLockerId(isSelected ? null : evidence.id)}
-                  className={`rounded-2xl border p-4 text-left transition ${
+                  className={`rounded-xl border px-3 py-3 text-left transition ${
                     isSelected
                       ? "border-[#c8a46a] bg-[#c8a46a]/15"
                       : isNew
@@ -764,8 +810,8 @@ function InterviewScene({
                       </span>
                     ) : null}
                   </div>
-                  <h3 className="mt-2 text-lg font-semibold">{evidence.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">{evidence.description}</p>
+                  <h3 className="mt-1 text-base font-semibold">{evidence.title}</h3>
+                  <p className="mt-1 max-h-10 overflow-hidden text-xs leading-5 text-[#cfc8ba]">{evidence.description}</p>
                 </button>
               );
             })}

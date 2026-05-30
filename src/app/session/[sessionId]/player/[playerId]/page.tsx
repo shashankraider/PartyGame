@@ -33,14 +33,16 @@ export default async function PlayerSessionPage({ params }: PlayerSessionPagePro
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col overflow-x-hidden px-0 py-8 sm:py-10">
       <Link
         href={`/j/${lobby.session.join_code}`}
-        className="mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a]"
+        className="mx-4 mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a] sm:mx-6"
       >
         Back to join
       </Link>
-      <PlayerLobbyView initialLobby={lobby} caseData={caseData} playerId={playerId} />
+      <div className="mx-4 min-w-0 sm:mx-6">
+        <PlayerLobbyView initialLobby={lobby} caseData={caseData} playerId={playerId} />
+      </div>
     </main>
   );
 }
