@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
 import { getEvidencePrintableUrl } from "@/lib/printables";
@@ -8,6 +8,7 @@ import {
   useInterviewTranscriptRealtime,
   useSessionLobbyRealtime,
 } from "@/lib/session-realtime";
+import { useSpeechToText } from "@/lib/use-speech-to-text";
 import {
   countQuestionsInCurrentStretch,
   getNextInterviewerName,
@@ -602,6 +603,26 @@ function InterviewMode({
   const [isClaiming, setIsClaiming] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const transcript = useTranscript(session.id, suspect?.id ?? null);
+  const speech = useSpeechToText();
+  const lastAppendedRef = useRef("");
+
+  // Append committed STT chunks to the textarea. We track the last-appended
+  // length so finalTranscript growing doesn't re-append previous text.
+  useEffect(() => {
+    const finalText = speech.finalTranscript;
+    if (!finalText) {
+      lastAppendedRef.current = "";
+      return;
+    }
+    if (finalText === lastAppendedRef.current) return;
+    const delta = finalText.slice(lastAppendedRef.current.length).trim();
+    lastAppendedRef.current = finalText;
+    if (!delta) return;
+    setQuestion((prev) => {
+      const joined = prev ? `${prev.trimEnd()} ${delta}` : delta;
+      return joined.replace(/\s+/g, " ");
+    });
+  }, [speech.finalTranscript]);
 
   const isInterviewer = session.current_interviewer_player_id === player.id;
   const questionsPerDetective = getQuestionsPerDetective(caseData);
@@ -652,6 +673,12 @@ function InterviewMode({
   async function askSuspect() {
     const trimmed = question.trim();
     if (!trimmed || !suspect) return;
+
+    // Cut the mic before send so we don't capture the suspect's response
+    // (over loudspeaker) as the next question, and so finalTranscript resets.
+    if (speech.isListening) speech.stop();
+    speech.reset();
+    lastAppendedRef.current = "";
 
     setIsAsking(true);
     onError(null);
@@ -752,17 +779,51 @@ function InterviewMode({
         </p>
       ) : null}
 
-      <label className="mt-6 block text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
-        Your next question
-      </label>
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <label className="block text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
+          Your next question
+        </label>
+        {speech.isSupported ? (
+          <button
+            type="button"
+            onClick={() => (speech.isListening ? speech.stop() : speech.start())}
+            disabled={isAsking}
+            aria-pressed={speech.isListening}
+            aria-label={speech.isListening ? "Stop voice input" : "Start voice input"}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+              speech.isListening
+                ? "border-red-400/60 bg-red-500/15 text-red-100 hover:bg-red-500/25"
+                : "border-white/15 text-[#cfc8ba] hover:border-[#c8a46a] hover:text-[#e6bd77]"
+            }`}
+          >
+            <span aria-hidden className="text-base leading-none">
+              {speech.isListening ? "■" : "🎙"}
+            </span>
+            {speech.isListening ? "Stop" : "Voice"}
+          </button>
+        ) : null}
+      </div>
       <textarea
         value={question}
         onChange={(event) => setQuestion(event.target.value)}
         rows={3}
-        placeholder="Where were you between 8 and 10 last night?"
+        placeholder={
+          speech.isSupported
+            ? "Type or tap the mic to dictate."
+            : "Where were you between 8 and 10 last night?"
+        }
         disabled={isAsking}
         className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-base leading-6 outline-none focus:border-[#c8a46a] disabled:opacity-60"
       />
+      {speech.isListening || speech.interimTranscript ? (
+        <p className="mt-2 rounded-2xl border border-[#c8a46a]/30 bg-[#c8a46a]/5 px-4 py-2 text-sm italic text-[#cfc8ba]">
+          <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-red-400 align-middle" />
+          {speech.interimTranscript || "Listening…"}
+        </p>
+      ) : null}
+      {speech.error ? (
+        <p className="mt-2 text-xs text-red-300">{speech.error}</p>
+      ) : null}
 
       {presentable.length > 0 ? (
         <div className="mt-5">
