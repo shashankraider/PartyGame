@@ -1,8 +1,8 @@
 # Mystery Engine — Handoff
 
-**Last updated**: 2026-05-24
+**Last updated**: 2026-05-29
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2i complete. Next: **Phase 2h** (Realtime infrastructure + token streaming).
+**Current phase**: Phase 2h complete. Next: **Phase 2j** (Pause / Resume).
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -18,7 +18,7 @@ If you're a new agent (Cursor included) taking over this project:
    cd /Users/shashankmendiratta/shire/PartyGame
    npm install                       # if node_modules isn't current
    npm run validate-cases            # expect: 0 errors
-   npm test                          # expect: 118 pass, 1 skipped (live getSessionEvents 404 when Supabase env absent)
+   npm test                          # expect: 122 pass, 1 skipped (live getSessionEvents 404 when Supabase env absent)
    npm run eval:adjudicator -- all   # expect: 103/104 (known Bisht 'the-rifle / challenges collector' flake)
    npm run eval:host                 # expect: 59/60 or 60/60 (occasional 'bisht-devraj-call' positive flake)
    npm run lint                      # expect: clean
@@ -27,26 +27,25 @@ If you're a new agent (Cursor included) taking over this project:
    If anything regresses beyond the documented flakes, **stop and investigate before continuing** — the state is not what this doc describes.
 
 2. **Read `docs/CLAUDE_HANDOFF.md` end-to-end** (this file). The most important sections after this TL;DR:
-   - "Next Recommended Phase" — **Phase 2h** (Realtime infrastructure + token streaming). The next mainline initiative; sits on top of the Phase 2i AI-host/free-Interrogation architecture and replaces the remaining 2.5s / 1.5s polls with authenticated Supabase Realtime + true token-by-token streaming.
+   - "Next Recommended Phase" — **Phase 2j** (Pause / Resume). The next mainline initiative; builds the session-lifecycle layer on top of Phase 2h's Realtime infrastructure so a host can pause, close the laptop, come back hours later, and resume cleanly.
    - "Completed Work" — every shipped phase with its concrete artifacts.
-   - "Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)" — the locked design language for the unlock-tier system that Phase 2i builds on.
+   - "Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)" — the locked design language for the unlock-tier system that Phase 2i / 2h build on.
 
-3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. Phase 2i ships the AI host + free-Interrogation architecture on top. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harnesses (`npm run eval:adjudicator -- all` for per-cue cue text; `npm run eval:host` for AI-host evidence-drop / phase-transition decisions) are the contract between the author and the engine; keep them green whenever cue or `arrivesWhen` text changes.
+3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. Phase 2i ships the AI host + free-Interrogation architecture on top. Phase 2h ships session-scoped Supabase Realtime + word-boundary token streaming so every UX surface (Case Status, mic handoff, host-fallback banner, suspect transcripts) updates within ~100ms. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harnesses (`npm run eval:adjudicator -- all` for per-cue cue text; `npm run eval:host` for AI-host evidence-drop / phase-transition decisions) are the contract between the author and the engine; keep them green whenever cue or `arrivesWhen` text changes.
 
-4. **Phase 2i shipped.** What it delivered:
-   - **AI host-judgment service** (`src/lib/host-judgment.ts`) — one OpenRouter call per `askSuspect` turn judges (a) whether any authored not-yet-unlocked evidence's `arrivesWhen` clause is satisfied, and (b) whether a `transition-phase` (e.g., Interrogation → Accusation) should fire. Conservative bias toward "wait."
-   - **Phase state machine** (`supabase/migrations/0005_session_phase.sql` + `transitionSessionPhase`) — sessions now have `phase: briefing | interrogation | accusation | reveal`. Within Interrogation, `advanceSessionChapter()` is a no-op; the free-choice suspect picker still works via `setSessionScene`.
-   - **`arrivesWhen` authoring** on all 14 round-3/4 forensic evidence items in `cases/mussoorie/case.json`, with `cases/mussoorie/evals/host.eval.json` covering 60 host-judgment cases.
-   - **Round-robin interviewer** — optional `case.rules.questionsPerDetective` (default 3). Mic auto-rotates after every N questions; manual claim/pass still works.
-   - **TV host strip refactor** — story controls (Previous / Next) removed; only social-fabric controls remain (Start game, Pause, Open accusation, End session). New **Case Status panel** polls `GET /api/sessions/[sessionId]/events?type=interview.host_judgment` every 2s.
-   - **Design.md rewrite** — `cases/mussoorie/design.md` sections 6 + 9b updated to phase language (Briefing → Interrogation → Accusation → Reveal). The Section 9b playbook is now the canonical host reference for the Interrogation arc.
+4. **Phase 2h shipped.** What it delivered (on top of Phase 2i):
+   - **Session-scoped JWT auth** (`src/lib/realtime-auth.ts`) — short-lived HS256 JWTs signed with `SUPABASE_JWT_SECRET`; `session_id` custom claim; minted from `GET /api/sessions/[sessionId]/realtime-token`.
+   - **Realtime RLS hookup** (`supabase/migrations/0006_realtime_jwt_rls.sql`) — `current_session_id()` now reads `auth.jwt() ->> 'session_id'` first, falling back to the legacy `app.session_id` GUC. Every existing RLS policy works unchanged.
+   - **Authed browser client** (`src/lib/supabase-client.ts`) — `createSessionRealtimeClient(sessionId)` fetches the token, wires `realtime.setAuth`, schedules silent refresh. Returns `null` when realtime auth isn't available so callers degrade to polls without surfacing an error.
+   - **Realtime hooks** (`src/lib/session-realtime.ts`) — `useSessionLobbyRealtime`, `useInterviewTranscriptRealtime`, `useCaseStatusRealtime`, `useHostFallbackRealtime`. All six previous polls are gone; each hook falls back to its original cadence if Realtime auth or the channel fails.
+   - **Word-boundary token streaming** — `askSuspect` now pre-inserts the assistant row with `is_streaming: true`, streams via OpenRouter `stream: true`, UPDATEs `messages.content` on every word boundary. The Phase 2g two-pass revelation rewrite also re-enters streaming mode. UI renders a `typing…` caret while the row is streaming.
 
-   Next mainline initiative is **Phase 2h** (Realtime infrastructure + token streaming). See "Next Recommended Phase" below.
+   Next mainline initiative is **Phase 2j** (Pause / Resume). See "Next Recommended Phase" below.
 
-5. **Local environment** required for Phase 2i work:
-   - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine).
-   - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work).
-   - `OPENROUTER_API_KEY` is the only thing the eval script needs.
+5. **Local environment** required:
+   - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine), `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and **`SUPABASE_JWT_SECRET`** (Phase 2h; must match the Supabase project's JWT secret — locally, `supabase status -o env | grep JWT_SECRET`). When `SUPABASE_JWT_SECRET` is unset, the Realtime mint route returns 503 and the UI silently falls back to legacy polling.
+   - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work). Apply `supabase/migrations/0006_realtime_jwt_rls.sql` via `supabase db push --local`.
+   - `OPENROUTER_API_KEY` is the only thing the eval scripts need.
 
 6. **Phones on Wi‑Fi testing the dev server** (`http://<LAN-IP>:3000`): `npm run dev` listens on `0.0.0.0`; `next.config.ts` auto-adds this machine’s non-loopback IPv4 addresses to `allowedDevOrigins` so Next 16 does not 403 `/_next/*` when the page is loaded from a LAN host. Optional: `NEXT_ALLOWED_DEV_ORIGINS=host1,host2,tailscale.hostname`.
 
@@ -318,6 +317,9 @@ src/
   lib/
     adjudicator.ts           # Per-cue unlock judge (Phase 2g)
     host-judgment.ts         # AI host pacing verdicts: evidence drops + phase transitions (Phase 2i)
+    realtime-auth.ts         # Phase 2h: mint short-lived session-scoped JWTs for Supabase Realtime
+    supabase-client.ts       # Phase 2h: browser-side authed Supabase client + silent token refresh
+    session-realtime.ts      # Phase 2h: React hooks (lobby / transcript / case-status / host-fallback)
     interview-unlocks.ts     # Shared unlock-firing primitives (system messages + unlock-state writes)
     case-status.ts           # Pure formatters for the TV Case Status panel
     session-events.ts        # Query helpers for GET /api/sessions/[id]/events
@@ -334,6 +336,7 @@ supabase/
     0003_message_role_system.sql       # adds 'system' to message_role enum
     0004_interview_unlock_state.sql    # Phase 2g per-condition state
     0005_session_phase.sql             # Phase 2i.2 briefing/interrogation/accusation/reveal phase
+    0006_realtime_jwt_rls.sql          # Phase 2h: current_session_id() reads auth.jwt() for Realtime
 
 tests/
   phase-machine.test.mjs
@@ -354,6 +357,62 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 ---
 
 ## Completed Work
+
+### Phase 2h — Realtime infrastructure + token streaming
+
+Shipped session-scoped Supabase Realtime + true token-by-token streaming on top of the Phase 2i AI-host architecture. Every poll in the TV and phone UIs has been replaced with an authenticated Realtime subscription; suspect responses now stream into `messages.content` word-by-word and fan out to every subscribed client live.
+
+What's in the architecture:
+
+- **Session-scoped JWT auth.** `src/lib/realtime-auth.ts` mints short-lived (1 hour) HS256 JWTs signed with `SUPABASE_JWT_SECRET`. Each token carries a `session_id` custom claim plus `role: "authenticated"` so Supabase Realtime allows the channel. `GET /api/sessions/[sessionId]/realtime-token` is the mint endpoint (validates the session exists first; returns `{ token, expiresAt }`; returns 503 with `code: "realtime_disabled"` when the JWT secret isn't set so clients can degrade gracefully).
+- **RLS hookup.** `supabase/migrations/0006_realtime_jwt_rls.sql` rewrites `current_session_id()` to read `auth.jwt() ->> 'session_id'` first, falling back to the original `current_setting('app.session_id')` GUC. Every existing SELECT policy on `sessions`, `players`, `messages`, `events`, `accusation_votes`, `interview_unlock_state` works unchanged — Realtime channels see only the rows belonging to the JWT's session.
+- **Browser-side client.** `src/lib/supabase-client.ts` exposes `createSessionRealtimeClient(sessionId)` which fetches a token, wires it via `realtime.setAuth(token)`, and schedules silent refresh 60s before expiry. Returns `null` (not throws) when Realtime auth is unavailable so callers can keep their poll fallback.
+- **Realtime hooks.** `src/lib/session-realtime.ts` exposes four hooks consumed by `HostLobbyView` and `PlayerLobbyView`:
+  - `useSessionLobbyRealtime(sessionId, initial)` — subscribes to `sessions`, `players`, `accusation_votes` filtered to this session. Returns `{ lobby, error, applySnapshot }`; `applySnapshot` lets local mutations (start game, hostControlAction, accusation vote) seed state without waiting for a Realtime echo.
+  - `useInterviewTranscriptRealtime(sessionId, suspectId)` — subscribes to `messages` filtered to this session; refetches on every change so streaming UPDATEs flow through.
+  - `useCaseStatusRealtime(sessionId, eventType)` — subscribes to `events` INSERTs filtered to the session + event type (`interview.host_judgment` for the Case Status panel).
+  - `useHostFallbackRealtime(sessionId, suspectId, bump)` — subscribes to `interview_unlock_state` so the "players stuck on X for 5 turns" host-fallback banner appears the moment the adjudicator flags it server-side.
+  Each hook auto-falls-back to its original polling cadence (2.5s / 1.5s / 2s) when realtime auth isn't available OR the Realtime channel errors/times-out, so the app stays playable in a degraded state.
+- **Token-by-token streaming.** `src/lib/session-store.ts` gains `callRoleplayStream()` — OpenRouter `stream: true` SSE consumer with word-boundary flushes. `askSuspect()` now pre-inserts the assistant row with `is_streaming: true` and empty content, then UPDATEs `messages.content` on every word-boundary flush (Realtime fans those UPDATEs to all subscribed clients). On stream end, flips `is_streaming: false`. The Phase 2g two-pass roleplay (revelation rewrite) also re-enters streaming mode so a fired secret/breaking-point re-streams the assistant message live. Network failure on the stream falls back to the original non-streaming call so a flaky connection never kills a turn.
+- **UI typing indicator.** Both transcript renderers (TV `InterviewScene`, phone `Transcript`) render `typing…` plus a pulsing caret when `message.is_streaming === true`.
+
+What it shipped in code (file inventory):
+
+- New: `src/lib/realtime-auth.ts`, `src/lib/supabase-client.ts`, `src/lib/session-realtime.ts`, `src/app/api/sessions/[sessionId]/realtime-token/route.ts`, `supabase/migrations/0006_realtime_jwt_rls.sql`, `tests/realtime-auth.test.mjs` (4 cases covering missing-secret, claim shape, TTL clamp).
+- Modified: `src/lib/session-store.ts` (added `callRoleplayStream`, switched `askSuspect` + revelation rewrite to streaming), `src/components/HostLobbyView.tsx` (3 polls → hooks; typing indicator on InterviewScene), `src/components/PlayerLobbyView.tsx` (2 polls → hooks; typing indicator on Transcript), `.env.example` (`SUPABASE_JWT_SECRET`), `package.json` (`jose` dep added).
+
+Polls removed (all six Phase 2i-era polls):
+
+| Surface | Old cadence | Now |
+|---|---|---|
+| HostLobbyView lobby | 2500ms `GET /api/sessions/:id` | Realtime on `sessions`/`players`/`accusation_votes` |
+| HostLobbyView Case Status panel | 2000ms `GET /api/sessions/:id/events` | Realtime on `events` filtered to `interview.host_judgment` |
+| HostLobbyView InterviewScene transcript | 1500ms `GET /api/sessions/:id/interview` | Realtime on `messages` filtered to session |
+| HostLobbyView HostFallbackBanner | 2500ms `GET /api/sessions/:id/interview/host-unlock` | Realtime on `interview_unlock_state` |
+| PlayerLobbyView lobby | 2500ms (same as TV) | Same Realtime subscription |
+| PlayerLobbyView InterviewMode transcript | 1500ms (same as TV) | Same Realtime subscription |
+
+Design caveats authors should know going forward:
+
+- **`SUPABASE_JWT_SECRET` must match the project's JWT secret** (Supabase dashboard → Settings → API → JWT Secret; locally, `supabase status -o env | grep JWT_SECRET`). Mismatch means Realtime accepts the JWT signature but `auth.jwt() ->> 'session_id'` returns null and RLS hides everything — the UI silently falls back to polls.
+- **The streaming write rate is governed by `callRoleplayStream`'s word-boundary flush.** Per-token UPDATEs would burn Postgres + Realtime quota; per-message would defeat the purpose. Word-boundary is the sweet spot. Don't lower it without a benchmark.
+- **Fallback is silent by design.** A missing `SUPABASE_JWT_SECRET`, a 503 from the mint route, or a `CHANNEL_ERROR` from Realtime all degrade to the original poll cadence without surfacing an error. This is intentional — the game must stay playable when Realtime is misconfigured — but it does mask infra problems. Check `Network` for a 503 on `/api/sessions/:id/realtime-token` if updates feel slow.
+- **`useSessionLobbyRealtime.applySnapshot` is the seam for local-action results.** When a route returns a fresh `session` after a mutation (Start game, hostControlAction, etc.), call `applySnapshot({ session })` instead of waiting for the Realtime echo. The echo will arrive a moment later and be a no-op merge.
+
+**Verification (Phase 2h commit)**:
+- `npm run validate-cases` — 0 errors.
+- `npm test` — 122 pass / 0 fail / 1 skipped (+4 vs 2i.6: `tests/realtime-auth.test.mjs`).
+- `npm run eval:adjudicator -- all` — 103/104 (known pre-existing Bisht `secret:the-rifle` flake; unchanged).
+- `npm run eval:host` — 59/60 (known pre-existing `bisht-devraj-call` flake; unchanged).
+- `npm run lint` — clean.
+- `npm run build` — clean; `/api/sessions/[sessionId]/realtime-token` route registered.
+- `supabase db push --local` applied `0006_realtime_jwt_rls.sql` cleanly.
+
+Manual smoke (verified manually is on you; the automated suite above is the engine contract):
+- TV + phone open the same session. Ask a suspect a question. The suspect's response appears word-by-word on both screens simultaneously with the `typing…` indicator showing while streaming.
+- AI-host fires `anonymous-letter-2` mid-Interrogation. The TV Case Status panel updates within ~100ms (no more 2s poll delay).
+- Mic auto-rotates after 3 questions. The new interviewer's phone lights up the Ask suspect button within ~100ms.
+- Host-fallback banner appears on the TV the moment the adjudicator's stuck-counter trips, without waiting for the 2.5s poll.
 
 ### Phase 2i — AI host + free-form Interrogation (roll-up: 2i.1 → 2i.6)
 
@@ -659,43 +718,38 @@ The old `/api/interview` route has been removed; all interview traffic flows thr
 
 ## Next Recommended Phase
 
-### Phase 2h — Realtime Infrastructure + Token Streaming
+### Phase 2j — Pause / Resume
 
-Phase 2i shipped the AI-host + free-Interrogation architecture on top of the existing polling/non-streaming infrastructure. Phase 2h is the infrastructure layer that makes the new design feel instant: replace every poll with authenticated Supabase Realtime, then upgrade the interview route to true token-by-token streaming. Originally planned as a Phase 2f fast-follow ("2f.1"); deferred so 2g and 2i could land first. Now the highest-leverage next move — every Phase 2i UX win (AI host firing forensic evidence, mic auto-rotating, Case Status panel) currently waits up to 2s for a poll cycle, and the interview suspect responses arrive as a single full-message render rather than streaming.
+Phase 2h shipped Realtime infrastructure. Phase 2j builds the social-fabric layer on top: real Pause / Resume that survives a host page reload, a phone reconnect, or the whole session being closed and re-opened from a join URL later. Today's Pause is a `sessions.status = 'paused'` toggle that gates `askSuspect` LLM calls; the next step is making sessions feel like a saved game.
 
-Goal: A suspect's response appears token-by-token on the TV and on every phone simultaneously; the AI host's forensic drops, phase transitions, and Case Status panel update instantly; the round-robin mic handoff and the host-fallback banner refresh without a 1.5–2.5s lag.
+Goal: A host can Pause a session, close the laptop, come back hours later, open the same session URL, and the TV picks up exactly where it left off — same phase, same chapter, same Interrogation transcripts, same unlocked evidence, same suspect picker state. Players re-join via the original join code and their phones rehydrate to the right scene.
 
 Likely files:
 
-- New: server-side JWT minting helper (probably `src/lib/realtime-auth.ts`) that signs short-lived tokens with `app.session_id` claim.
-- New: browser-side authenticated Supabase client init (probably `src/lib/supabase-client.ts`).
-- `src/components/HostLobbyView.tsx` — replace the 2.5s `getLobbyState` poll AND the 2s `CaseStatusPanel` events poll with Realtime subscriptions on `sessions`, `players`, `accusation_votes`, and a filtered subscription to the `events` table for `interview.host_judgment` rows.
-- `src/components/PlayerLobbyView.tsx` — same for the phone side. Replace the 1.5–2.5s transcript poll inside `InterviewMode` with a Realtime subscription on `messages` filtered by session + suspect.
-- `src/app/api/sessions/[sessionId]/interview/route.ts` — switch from non-streaming OpenRouter call to SSE; write incremental updates to `messages.content` with `is_streaming: true` so Realtime fans out tokens to all clients.
-- `src/lib/session-store.ts` — adjust `askSuspect` to stream and incrementally update. The Phase 2i `adjudicator → host-judgment → unlocks → mic rotation` post-roleplay pipeline still runs after the stream completes; only the visible LLM response shape changes.
-- `src/lib/supabase.ts` / `supabase/migrations/` — possible new column `messages.is_streaming` (boolean, default false) so the UI can render a "typing" indicator while incremental tokens land.
+- `src/lib/session-store.ts` — `pauseSession` / `resumeSession` exist already; extend with a `getSessionForResume(joinCode)` helper that finds a session by join code regardless of `status` (today's join flow probably filters to `status: 'lobby'`).
+- `src/app/api/join/route.ts` — accept a join code that points at a `paused` session and let the original device re-attach to the existing player row by `device_id`.
+- `src/components/PlayerLobbyView.tsx` — render a "Paused" mode that explains the host paused the session and players should wait. Auto-dismiss when `status` flips back to `in_progress` via Realtime.
+- `src/components/HostLobbyView.tsx` — pause button already toggles `status`; add an explicit "Saved session" badge with the timestamp of last activity so the host knows resume is safe.
+- `supabase/migrations/` — possibly a migration to extend the session TTL when paused (today `expires_at` may close out paused sessions).
+- Cleanup: a small job (cron / scheduled Edge Function) that finalises sessions paused for > 7 days. Out of scope for the initial slice; add as a follow-up TODO.
 
 Verify:
 
-- All existing 2.5s lobby/scene polls, the 1.5s interview-message polls, and the 2s `CaseStatusPanel` events poll are removed.
-- A suspect's response appears token-by-token on TV and on every phone simultaneously.
-- The session-scoped Realtime auth path does not leak rows from other sessions (test by joining two sessions in different tabs).
-- AI-host forensic drops (`interview.host_judgment` events written by `src/lib/host-judgment.ts`) and phase transitions (`interview.host_phase_transitioned`) appear on the TV's Case Status panel within ~100ms instead of ~2000ms.
-- Round-robin mic handoff (`current_interviewer_player_id` change after every N questions) lights up on every phone within ~100ms.
-- Phase 2g host-fallback notification (currently lands on the next 2.5s lobby poll) now appears instantly.
-- Full hard gate still green: `npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build`.
+- Pause an in-progress session. Close every browser tab. Re-open the host URL after a long delay. TV rehydrates to the same scene + chapter + unlocked evidence. Phones rejoining via the join code land on the right player row + scene.
+- Resume from Pause. AI host + Realtime + streaming all resume cleanly (no zombie subscriptions).
+- Hard gate stays green: `npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build`.
 
 What NOT to do:
 
-- Don't touch any Phase 2i case-data (`arrivesWhen`, `unlockBehavior`, eval files). This is pure infrastructure; the contract between author and engine doesn't change.
-- Don't reintroduce the chapter-walk navigation removed in 2i.2/2i.5. The phase machine and AI host stay in charge of pacing.
-- Don't bundle in Phase 2j (Pause/Resume) features. Pause already works as a status toggle; resume is its own phase.
+- Don't change the AI host or streaming pipeline. Phase 2j is session-lifecycle, not engine logic.
+- Don't expand Pause into a save-slot UI. One paused session per join code is the contract.
+- Don't add a cron worker yet — note it as Phase 2j.1 follow-up but ship the in-app flow first.
 
 Open design questions for whoever picks this up:
 
-- **JWT scope shape.** Probably `app.session_id` only, with RLS policies filtering `messages`, `events`, `players`, `accusation_votes`, `sessions`, `interview_unlock_state` by that claim. Anything beyond that risks the same boundary leakage we're guarding against in interview prompts.
-- **Streaming buffer policy.** Whether to flush every token, every word boundary, or every 50ms. Word-boundary flushes tend to feel best and reduce write amplification on the `messages` table.
-- **Fallback when Realtime is unavailable.** Probably keep the current poll helpers around behind a feature flag; the UI degrades to polling if the Realtime subscription fails to connect.
+- **Resume URL vs join code.** The host already has a session URL; phones use a join code. Pick whether resume happens by (a) reusing the original join code, (b) reusing the original session URL, or (c) both. Probably both, but the join code is the simpler primitive.
+- **What to do with in-flight streaming messages on pause.** A `messages` row with `is_streaming: true` that gets paused mid-stream needs a fixup on resume — probably flip `is_streaming: false` on resume and let the player re-ask if the visible content looks truncated.
+- **Realtime auth across resume.** The JWT minted in Phase 2h is 1-hour TTL with silent refresh. Long-paused sessions need to remint cleanly when the host returns; the `createSessionRealtimeClient` helper already handles this on mount, but verify multi-day resumes don't trip an auth.jwt() expiry trap inside Postgres.
 
 ### Recently Completed Reference — Phase 2g.2
 
@@ -851,13 +905,6 @@ Phase 2g.2 further resolved the original "everything-in-round-1" pacing problem.
 ---
 
 ## Later Phases
-
-### Phase 2j — Pause/Resume
-
-- Pause/resume controls
-- Re-enter join code or URL to resume
-- Expiry handling
-- Host restore flow
 
 ### Phase 3 — Printables
 

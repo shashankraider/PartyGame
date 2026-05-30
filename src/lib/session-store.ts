@@ -1036,14 +1036,16 @@ function buildInterviewSystemPrompt(input: {
   return lines.join("\n\n");
 }
 
-async function callRoleplay(input: {
+type RoleplayInput = {
   apiKey: string;
   model: string;
   temperature: number;
   systemPrompt: string;
   history: { role: "user" | "assistant"; content: string }[];
   question: string;
-}): Promise<string> {
+};
+
+async function callRoleplay(input: RoleplayInput): Promise<string> {
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -1081,6 +1083,111 @@ async function callRoleplay(input: {
     throw new SessionStoreError("database_error", "OpenRouter returned an empty response", 502);
   }
   return content;
+}
+
+/**
+ * Phase 2h — streaming roleplay call.
+ *
+ * Hits OpenRouter with `stream: true` and forwards each token chunk to
+ * `onChunk(textSoFar)`. Returns the final concatenated content. Callers can
+ * use this to UPDATE messages.content live so Realtime subscribers see the
+ * suspect's response appear token-by-token.
+ *
+ * The buffer flushes on whitespace boundaries (word-level) instead of every
+ * raw token to keep the UPDATE write rate sane on Supabase. Per the design
+ * decision in CLAUDE_HANDOFF.md (Phase 2h "Open design questions"),
+ * word-boundary flushes feel best and reduce write amplification.
+ */
+async function callRoleplayStream(
+  input: RoleplayInput,
+  onChunk: (textSoFar: string) => Promise<void>,
+): Promise<string> {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${input.apiKey}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      "X-Title": "Mystery Engine",
+      Accept: "text/event-stream",
+    },
+    body: JSON.stringify({
+      model: input.model,
+      stream: true,
+      temperature: input.temperature,
+      messages: [
+        { role: "system", content: input.systemPrompt },
+        ...input.history,
+        { role: "user", content: input.question },
+      ],
+    }),
+  });
+
+  if (!response.ok || !response.body) {
+    throw new SessionStoreError(
+      "database_error",
+      `OpenRouter stream request failed with status ${response.status}`,
+      502,
+    );
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let sseBuffer = "";
+  let assembled = "";
+  let flushedUpTo = 0;
+
+  async function maybeFlush(force = false) {
+    if (assembled.length === flushedUpTo) return;
+    // Flush on the last whitespace so we never write a partial word — feels
+    // smoother than per-token writes.
+    const candidate = assembled.slice(flushedUpTo);
+    const lastSpaceIdx = force ? candidate.length : candidate.lastIndexOf(" ");
+    if (lastSpaceIdx <= 0 && !force) return;
+    const cutoff = flushedUpTo + (force ? candidate.length : lastSpaceIdx);
+    if (cutoff <= flushedUpTo) return;
+    flushedUpTo = cutoff;
+    await onChunk(assembled.slice(0, flushedUpTo));
+  }
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    sseBuffer += decoder.decode(value, { stream: true });
+
+    let lineBreak = sseBuffer.indexOf("\n");
+    while (lineBreak !== -1) {
+      const line = sseBuffer.slice(0, lineBreak).trim();
+      sseBuffer = sseBuffer.slice(lineBreak + 1);
+      lineBreak = sseBuffer.indexOf("\n");
+
+      if (!line.startsWith("data:")) continue;
+      const data = line.slice(5).trim();
+      if (data === "[DONE]") continue;
+
+      try {
+        const parsed = JSON.parse(data) as {
+          choices?: { delta?: { content?: string } }[];
+        };
+        const delta = parsed.choices?.[0]?.delta?.content;
+        if (typeof delta === "string" && delta.length > 0) {
+          assembled += delta;
+          await maybeFlush(false);
+        }
+      } catch {
+        // Skip malformed SSE frame; OpenRouter occasionally interleaves
+        // keep-alive comments.
+      }
+    }
+  }
+
+  await maybeFlush(true);
+
+  const trimmed = assembled.trim();
+  if (!trimmed) {
+    throw new SessionStoreError("database_error", "OpenRouter returned an empty stream", 502);
+  }
+  return trimmed;
 }
 
 async function getNextSequence(input: {
@@ -1352,28 +1459,22 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
   const model = caseData.llm?.modelOverride ?? process.env.OPENROUTER_MODEL ?? "openai/gpt-4o-mini";
   const temperature = caseData.llm?.temperature ?? 0.7;
 
-  let assistantContent = await callRoleplay({
-    apiKey,
-    model,
-    temperature,
-    systemPrompt: baseSystemPrompt,
-    history,
-    question: trimmedQuestion,
-  });
-
   const assistantSequence = await getNextSequence({
     sessionId: session.id,
     suspectId: suspect.id,
   });
 
+  // Phase 2h — pre-insert the assistant row with empty content +
+  // is_streaming=true so Realtime subscribers see a "typing" placeholder
+  // immediately and incremental UPDATEs fan out the tokens as they arrive.
   const { data: assistantRowInitial, error: assistantInsertError } = await supabase
     .from("messages")
     .insert({
       session_id: session.id,
       suspect_id: suspect.id,
       role: "assistant",
-      content: assistantContent,
-      is_streaming: false,
+      content: "",
+      is_streaming: true,
       sequence: assistantSequence,
     })
     .select("*")
@@ -1389,6 +1490,63 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
   }
 
   let assistantRow = assistantRowInitial;
+
+  let assistantContent: string;
+  try {
+    assistantContent = await callRoleplayStream(
+      {
+        apiKey,
+        model,
+        temperature,
+        systemPrompt: baseSystemPrompt,
+        history,
+        question: trimmedQuestion,
+      },
+      async (textSoFar) => {
+        // Word-boundary flushes happen inside callRoleplayStream; this
+        // callback fires once per flush. Realtime UPDATE fans out to all
+        // subscribed clients.
+        await supabase
+          .from("messages")
+          .update({ content: textSoFar })
+          .eq("id", assistantRow.id);
+      },
+    );
+  } catch (streamError) {
+    // Fall back to non-streaming on transport-level failure so a flaky
+    // network doesn't kill the turn.
+    assistantContent = await callRoleplay({
+      apiKey,
+      model,
+      temperature,
+      systemPrompt: baseSystemPrompt,
+      history,
+      question: trimmedQuestion,
+    });
+    void streamError;
+  }
+
+  // Final write: flip is_streaming off and write the full trimmed content.
+  const { data: assistantRowFinal, error: assistantFinalError } = await supabase
+    .from("messages")
+    .update({
+      content: assistantContent,
+      is_streaming: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", assistantRow.id)
+    .select("*")
+    .single();
+
+  if (assistantFinalError || !assistantRowFinal) {
+    throw new SessionStoreError(
+      "database_error",
+      "Could not finalise suspect response",
+      500,
+      assistantFinalError,
+    );
+  }
+  assistantRow = assistantRowFinal;
 
   await supabase.from("events").insert({
     session_id: session.id,
@@ -1431,17 +1589,50 @@ export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResu
       presentedEvidence,
       unlockedRevelations: spokenRevelations,
     });
-    const newContent = await callRoleplay({
-      apiKey,
-      model,
-      temperature,
-      systemPrompt: enrichedSystemPrompt,
-      history,
-      question: trimmedQuestion,
-    });
+
+    // Phase 2h — re-enter streaming mode for the rewrite so Realtime
+    // subscribers see the revelation re-stream in place of the cover story.
+    await supabase
+      .from("messages")
+      .update({ content: "", is_streaming: true })
+      .eq("id", assistantRow.id);
+
+    let newContent: string;
+    try {
+      newContent = await callRoleplayStream(
+        {
+          apiKey,
+          model,
+          temperature,
+          systemPrompt: enrichedSystemPrompt,
+          history,
+          question: trimmedQuestion,
+        },
+        async (textSoFar) => {
+          await supabase
+            .from("messages")
+            .update({ content: textSoFar })
+            .eq("id", assistantRow.id);
+        },
+      );
+    } catch {
+      newContent = await callRoleplay({
+        apiKey,
+        model,
+        temperature,
+        systemPrompt: enrichedSystemPrompt,
+        history,
+        question: trimmedQuestion,
+      });
+    }
+
     const { data: updatedAssistant, error: updateError } = await supabase
       .from("messages")
-      .update({ content: newContent, updated_at: new Date().toISOString() })
+      .update({
+        content: newContent,
+        is_streaming: false,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", assistantRow.id)
       .select("*")
       .single();

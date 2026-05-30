@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Case, Chapter } from "@/engine/types";
 import {
   HOST_JUDGMENT_EVENT_TYPE,
@@ -10,17 +10,19 @@ import {
 } from "@/lib/case-status";
 import type { LobbyState } from "@/lib/session-store";
 import { getQuestionsPerDetective } from "@/lib/round-robin";
-import type { MessageRow, SessionScene } from "@/lib/supabase";
+import {
+  useCaseStatusRealtime,
+  useHostFallbackRealtime,
+  useInterviewTranscriptRealtime,
+  useSessionLobbyRealtime,
+} from "@/lib/session-realtime";
+import type { SessionScene } from "@/lib/supabase";
 
 type HostLobbyViewProps = {
   initialLobby: LobbyState;
   caseData: Case;
   qrCode: string;
   joinUrl: string;
-};
-
-type LobbyResponse = LobbyState & {
-  error?: string;
 };
 
 const sceneLabels: Record<SessionScene, string> = {
@@ -50,29 +52,15 @@ function ChapterBadge({ chapter }: { chapter: Chapter | null }) {
 }
 
 export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostLobbyViewProps) {
-  const [lobby, setLobby] = useState(initialLobby);
-  const [error, setError] = useState<string | null>(null);
+  const { lobby, error: realtimeError, applySnapshot } = useSessionLobbyRealtime(
+    initialLobby.session.id,
+    initialLobby,
+  );
+  const [localError, setLocalError] = useState<string | null>(null);
+  const error = localError ?? realtimeError;
+  const setError = setLocalError;
   const [isStarting, setIsStarting] = useState(false);
   const [isHostActionBusy, setIsHostActionBusy] = useState(false);
-
-  useEffect(() => {
-    const interval = window.setInterval(async () => {
-      const response = await fetch(`/api/sessions/${initialLobby.session.id}`, {
-        cache: "no-store",
-      });
-      const payload = (await response.json().catch(() => ({}))) as LobbyResponse;
-
-      if (!response.ok || payload.error) {
-        setError(payload.error ?? "Could not refresh lobby.");
-        return;
-      }
-
-      setLobby(payload);
-      setError(null);
-    }, 2500);
-
-    return () => window.clearInterval(interval);
-  }, [initialLobby.session.id]);
 
   async function startGame() {
     setIsStarting(true);
@@ -92,7 +80,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
       return;
     }
 
-    setLobby((current) => ({ ...current, session: payload.session! }));
+    applySnapshot({ session: payload.session! });
     setIsStarting(false);
   }
 
@@ -120,7 +108,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
       return;
     }
 
-    setLobby((current) => ({ ...current, session: payload.session! }));
+    applySnapshot({ session: payload.session! });
     setIsHostActionBusy(false);
   }
 
@@ -292,33 +280,8 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
 }
 
 function CaseStatusPanel({ sessionId }: { sessionId: string }) {
-  const [statusLine, setStatusLine] = useState(() => resolveCaseStatusLine([]));
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const response = await fetch(
-        `/api/sessions/${sessionId}/events?type=${encodeURIComponent(HOST_JUDGMENT_EVENT_TYPE)}`,
-        { cache: "no-store" },
-      );
-      if (cancelled || !response.ok) {
-        return;
-      }
-
-      const payload = (await response.json().catch(() => ({}))) as {
-        events?: HostJudgmentEventRow[];
-      };
-      setStatusLine(resolveCaseStatusLine(payload.events ?? []));
-    }
-
-    load();
-    const interval = window.setInterval(load, 2000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [sessionId]);
+  const events = useCaseStatusRealtime(sessionId, HOST_JUDGMENT_EVENT_TYPE);
+  const statusLine = resolveCaseStatusLine(events as HostJudgmentEventRow[]);
 
   return (
     <div className="mb-5 rounded-3xl border border-[#c8a46a]/30 bg-zinc-950/70 p-5">
@@ -746,8 +709,16 @@ function InterviewScene({
                           ? `${interviewer.name} (interviewer)`
                           : "Interviewer"
                         : suspect.name}
+                      {message.is_streaming ? (
+                        <span className="ml-2 text-[#c8a46a]">typing…</span>
+                      ) : null}
                     </p>
-                    <p className="mt-1 text-xl leading-9 text-[#f5f2ea]">{message.content}</p>
+                    <p className="mt-1 text-xl leading-9 text-[#f5f2ea]">
+                      {message.content}
+                      {message.is_streaming ? (
+                        <span className="ml-1 inline-block h-5 w-[2px] animate-pulse bg-[#c8a46a] align-middle" />
+                      ) : null}
+                    </p>
                   </div>
                 );
               })}
@@ -841,43 +812,8 @@ function InterviewScene({
 }
 
 function useInterviewMessages(sessionId: string, suspectId: string | null) {
-  const [messagesBySuspect, setMessagesBySuspect] = useState<Record<string, MessageRow[]>>({});
-
-  useEffect(() => {
-    if (!suspectId) return;
-
-    let cancelled = false;
-
-    async function load() {
-      const response = await fetch(
-        `/api/sessions/${sessionId}/interview?suspectId=${encodeURIComponent(suspectId!)}`,
-        { cache: "no-store" },
-      );
-      const payload = (await response.json().catch(() => ({}))) as { messages?: MessageRow[] };
-      if (!cancelled && response.ok && payload.messages) {
-        setMessagesBySuspect((prev) => ({ ...prev, [suspectId!]: payload.messages! }));
-      }
-    }
-
-    load();
-    const interval = window.setInterval(load, 1500);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [sessionId, suspectId]);
-
-  return suspectId ? messagesBySuspect[suspectId] ?? [] : [];
+  return useInterviewTranscriptRealtime(sessionId, suspectId);
 }
-
-type HostFallback = {
-  conditionId: string;
-  subject: "secret" | "breaking-point" | "evidence";
-  label: string;
-  attempts: number;
-  maxAdjacency: number;
-  evidenceId?: string;
-};
 
 function HostFallbackBanner({
   sessionId,
@@ -886,35 +822,9 @@ function HostFallbackBanner({
   sessionId: string;
   suspectName: string;
 }) {
-  const [fallbacks, setFallbacks] = useState<HostFallback[]>([]);
   const [revealing, setRevealing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [bump, setBump] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const response = await fetch(
-        `/api/sessions/${sessionId}/interview/host-unlock`,
-        { cache: "no-store" },
-      );
-      if (cancelled) return;
-      if (response.ok) {
-        const payload = (await response.json().catch(() => ({}))) as {
-          fallbacks?: HostFallback[];
-        };
-        setFallbacks(payload.fallbacks ?? []);
-      }
-    }
-
-    load();
-    const interval = window.setInterval(load, 2500);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [sessionId, bump]);
+  const { fallbacks, refresh } = useHostFallbackRealtime(sessionId, "current", 0);
 
   async function reveal(conditionId: string) {
     setRevealing(conditionId);
@@ -934,7 +844,7 @@ function HostFallbackBanner({
       return;
     }
     setRevealing(null);
-    setBump((value) => value + 1);
+    refresh();
   }
 
   if (fallbacks.length === 0 && !error) return null;

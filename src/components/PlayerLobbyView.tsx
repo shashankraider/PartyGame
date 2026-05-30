@@ -5,6 +5,10 @@ import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
 import { getEvidencePrintableUrl } from "@/lib/printables";
 import {
+  useInterviewTranscriptRealtime,
+  useSessionLobbyRealtime,
+} from "@/lib/session-realtime";
+import {
   countQuestionsInCurrentStretch,
   getNextInterviewerName,
   getQuestionsPerDetective,
@@ -17,10 +21,6 @@ type PlayerLobbyViewProps = {
   initialLobby: LobbyState;
   caseData: Case;
   playerId: string;
-};
-
-type LobbyResponse = LobbyState & {
-  error?: string;
 };
 
 type ScenePayload = {
@@ -62,28 +62,14 @@ function getPresentableEvidence(caseData: Case, chapter: Chapter | null, unlocke
 }
 
 export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobbyViewProps) {
-  const [lobby, setLobby] = useState(initialLobby);
-  const [error, setError] = useState<string | null>(null);
+  const { lobby, error: realtimeError, applySnapshot } = useSessionLobbyRealtime(
+    initialLobby.session.id,
+    initialLobby,
+  );
+  const [localError, setLocalError] = useState<string | null>(null);
+  const error = localError ?? realtimeError;
+  const setError = setLocalError;
   const hasStarted = lobby.session.status !== "lobby";
-
-  useEffect(() => {
-    const interval = window.setInterval(async () => {
-      const response = await fetch(`/api/sessions/${initialLobby.session.id}`, {
-        cache: "no-store",
-      });
-      const payload = (await response.json().catch(() => ({}))) as LobbyResponse;
-
-      if (!response.ok || payload.error) {
-        setError(payload.error ?? "Could not refresh lobby.");
-        return;
-      }
-
-      setLobby(payload);
-      setError(null);
-    }, 2500);
-
-    return () => window.clearInterval(interval);
-  }, [initialLobby.session.id]);
 
   const player = lobby.players.find((item) => item.id === playerId);
   const detectives = useMemo(
@@ -103,8 +89,15 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
     );
   }
 
-  const updateSession = (next: SessionRow) =>
-    setLobby((current) => ({ ...current, session: next }));
+  const updateSession = (next: SessionRow) => applySnapshot({ session: next });
+  const setLobby = (next: LobbyState | ((current: LobbyState) => LobbyState)) => {
+    if (typeof next === "function") {
+      const computed = next(lobby);
+      applySnapshot(computed);
+    } else {
+      applySnapshot(next);
+    }
+  };
 
   return (
     <section className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6">
@@ -946,36 +939,11 @@ function SwitchSuspectControl({
 }
 
 function useTranscript(sessionId: string, suspectId: string | null) {
-  const [messagesBySuspect, setMessagesBySuspect] = useState<Record<string, MessageRow[]>>({});
-  const [bump, setBump] = useState(0);
-
-  useEffect(() => {
-    if (!suspectId) return;
-
-    let cancelled = false;
-
-    async function load() {
-      const response = await fetch(
-        `/api/sessions/${sessionId}/interview?suspectId=${encodeURIComponent(suspectId!)}`,
-        { cache: "no-store" },
-      );
-      const payload = (await response.json().catch(() => ({}))) as { messages?: MessageRow[] };
-      if (!cancelled && response.ok && payload.messages) {
-        setMessagesBySuspect((prev) => ({ ...prev, [suspectId!]: payload.messages! }));
-      }
-    }
-
-    load();
-    const interval = window.setInterval(load, 1500);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [sessionId, suspectId, bump]);
-
-  const messages = suspectId ? messagesBySuspect[suspectId] ?? [] : [];
-  return { messages, refresh: () => setBump((value) => value + 1) };
+  const messages = useInterviewTranscriptRealtime(sessionId, suspectId);
+  // `refresh` is a no-op now because the hook auto-subscribes and reloads on
+  // every messages change. Kept as a stable callback so callers don't need to
+  // change. Realtime fallback to a slow poll happens inside the hook.
+  return { messages, refresh: () => {} };
 }
 
 function Transcript({
@@ -1012,8 +980,16 @@ function Transcript({
           <div key={message.id}>
             <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
               {message.role === "user" ? "Interviewer" : (suspectName ?? "Suspect")}
+              {message.is_streaming ? (
+                <span className="ml-2 text-[#c8a46a]">typing…</span>
+              ) : null}
             </p>
-            <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">{message.content}</p>
+            <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">
+              {message.content}
+              {message.is_streaming ? (
+                <span className="ml-1 inline-block h-3 w-[2px] animate-pulse bg-[#c8a46a] align-middle" />
+              ) : null}
+            </p>
           </div>
         );
       })}
