@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
@@ -48,6 +49,18 @@ function getCurrentSuspect(caseData: Case, chapter: Chapter | null): Suspect | n
     return null;
   }
   return caseData.suspects.find((suspect) => suspect.id === chapter.suspectId) ?? null;
+}
+
+function getCaseAssetUrl(caseData: Case, assetPath: string | undefined): string | null {
+  if (!assetPath?.startsWith("assets/")) {
+    return null;
+  }
+
+  return `/api/cases/${encodeURIComponent(caseData.id)}/assets/${assetPath
+    .slice("assets/".length)
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")}`;
 }
 
 function getPresentableEvidence(caseData: Case, chapter: Chapter | null, unlocked: string[]) {
@@ -609,6 +622,7 @@ function InterviewMode({
   const selectedEvidenceItem = selectedEvidence
     ? (presentable.find((evidence) => evidence.id === selectedEvidence) ?? null)
     : null;
+  const suspectPortraitUrl = getCaseAssetUrl(caseData, suspect?.portraitUrl);
 
   // Append committed STT chunks to the textarea. We track the last-appended
   // length so finalTranscript growing doesn't re-append previous text.
@@ -740,7 +754,19 @@ function InterviewMode({
       <div>
         <h2 className="text-2xl font-semibold">{chapter?.title ?? "Live interview"}</h2>
         {suspect ? (
-          <p className="mt-1 text-sm uppercase tracking-[0.22em] text-[#a6a29a]">{suspect.name}</p>
+          <div className="mt-3 flex items-center gap-3">
+            {suspectPortraitUrl ? (
+              <Image
+                src={suspectPortraitUrl}
+                alt=""
+                width={56}
+                height={56}
+                className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                unoptimized
+              />
+            ) : null}
+            <p className="text-sm uppercase tracking-[0.22em] text-[#a6a29a]">{suspect.name}</p>
+          </div>
         ) : null}
         <p className="mt-4 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
           {session.current_interviewer_player_id
@@ -766,11 +792,25 @@ function InterviewMode({
       <h2 className="text-2xl font-semibold">{chapter?.title ?? "Live interview"}</h2>
       {suspect ? (
         <div className="mt-3 rounded-2xl border border-white/10 p-4">
-          <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">Questioning</p>
-          <p className="mt-1 text-lg font-semibold">{suspect.name}</p>
-          {suspect.shortDescription ? (
-            <p className="mt-1 text-sm text-[#cfc8ba]">{suspect.shortDescription}</p>
-          ) : null}
+          <div className="flex items-start gap-4">
+            {suspectPortraitUrl ? (
+              <Image
+                src={suspectPortraitUrl}
+                alt=""
+                width={72}
+                height={72}
+                className="h-[72px] w-[72px] shrink-0 rounded-2xl object-cover"
+                unoptimized
+              />
+            ) : null}
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">Questioning</p>
+              <p className="mt-1 text-lg font-semibold">{suspect.name}</p>
+              {suspect.shortDescription ? (
+                <p className="mt-1 text-sm text-[#cfc8ba]">{suspect.shortDescription}</p>
+              ) : null}
+            </div>
+          </div>
         </div>
       ) : null}
 

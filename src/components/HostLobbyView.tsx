@@ -39,6 +39,18 @@ function getCurrentChapter(caseData: Case, chapterId: string | null) {
   return caseData.chapters.find((chapter) => chapter.id === chapterId) ?? null;
 }
 
+function getCaseAssetUrl(caseData: Case, assetPath: string | undefined): string | null {
+  if (!assetPath?.startsWith("assets/")) {
+    return null;
+  }
+
+  return `/api/cases/${encodeURIComponent(caseData.id)}/assets/${assetPath
+    .slice("assets/".length)
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")}`;
+}
+
 function ChapterBadge({ chapter }: { chapter: Chapter | null }) {
   if (!chapter) {
     return null;
@@ -616,6 +628,7 @@ function Round2InterviewPicker({
           if (!suspect) return null;
           const isCurrent = chapter.id === currentChapterId;
           const isBusy = busyChapterId === chapter.id;
+          const portraitUrl = getCaseAssetUrl(caseData, suspect.portraitUrl);
           return (
             <button
               key={chapter.id}
@@ -628,23 +641,37 @@ function Round2InterviewPicker({
                   : "border-white/10 hover:border-[#c8a46a]/60 hover:bg-white/[0.03]"
               } ${busyChapterId !== null && !isCurrent ? "opacity-60" : ""}`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-lg font-semibold">{suspect.name}</p>
-                {isCurrent ? (
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
-                    Current
-                  </span>
-                ) : isBusy ? (
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
-                    Loading…
-                  </span>
+              <div className="flex items-start gap-4">
+                {portraitUrl ? (
+                  <Image
+                    src={portraitUrl}
+                    alt=""
+                    width={72}
+                    height={72}
+                    className="h-[72px] w-[72px] shrink-0 rounded-xl object-cover"
+                    unoptimized
+                  />
                 ) : null}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-lg font-semibold">{suspect.name}</p>
+                    {isCurrent ? (
+                      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
+                        Current
+                      </span>
+                    ) : isBusy ? (
+                      <span className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
+                        Loading…
+                      </span>
+                    ) : null}
+                  </div>
+                  {suspect.shortDescription ? (
+                    <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">
+                      {suspect.shortDescription}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              {suspect.shortDescription ? (
-                <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">
-                  {suspect.shortDescription}
-                </p>
-              ) : null}
             </button>
           );
         })}
@@ -683,6 +710,7 @@ function InterviewScene({
   const selectedLockerEvidence = selectedLockerId
     ? (caseData.evidence.find((evidence) => evidence.id === selectedLockerId) ?? null)
     : null;
+  const suspectPortraitUrl = getCaseAssetUrl(caseData, suspect?.portraitUrl);
 
   return (
     <div className="rounded-2xl border border-white/10 bg-[#0b0c0c]/85 p-6 shadow-2xl shadow-black/25">
@@ -710,9 +738,23 @@ function InterviewScene({
       {suspect ? (
         <div className="mt-6 grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Suspect</p>
-            <h3 className="mt-3 text-4xl font-semibold">{suspect.name}</h3>
-            <p className="mt-3 text-lg text-[#cfc8ba]">{suspect.shortDescription}</p>
+            <div className="flex items-start gap-5">
+              {suspectPortraitUrl ? (
+                <Image
+                  src={suspectPortraitUrl}
+                  alt=""
+                  width={112}
+                  height={112}
+                  className="h-28 w-28 shrink-0 rounded-2xl object-cover"
+                  unoptimized
+                />
+              ) : null}
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Suspect</p>
+                <h3 className="mt-3 text-4xl font-semibold">{suspect.name}</h3>
+                <p className="mt-3 text-lg text-[#cfc8ba]">{suspect.shortDescription}</p>
+              </div>
+            </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
             <p className="text-xs uppercase tracking-[0.2em] text-[#d4ad67]">Interview Brief</p>
