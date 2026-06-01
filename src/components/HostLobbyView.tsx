@@ -384,10 +384,12 @@ function LobbyScene({
 
 function BriefScene({ caseData, detectives }: { caseData: Case; detectives: number }) {
   const coverImage = `/api/cases/${encodeURIComponent(caseData.id)}/hero`;
+  const openingRound = caseData.rounds[0];
+  const openingBeats = openingRound?.introNarration ?? [];
 
   return (
     <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#090a0a] shadow-2xl shadow-black/30">
-      <div className="relative min-h-[31rem] p-7 sm:p-10">
+      <div className="relative min-h-[35rem] p-7 sm:p-10">
         {coverImage ? (
           <Image
             src={coverImage}
@@ -402,7 +404,7 @@ function BriefScene({ caseData, detectives }: { caseData: Case; detectives: numb
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.92)_0%,rgba(5,5,5,0.72)_42%,rgba(5,5,5,0.28)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#090a0a] to-transparent" />
 
-        <div className="relative z-10 flex min-h-[26rem] max-w-4xl flex-col justify-between">
+        <div className="relative z-10 flex min-h-[30rem] max-w-4xl flex-col justify-between">
           <div>
             <p className="max-w-4xl text-xs uppercase tracking-[0.34em] text-[#d4ad67]">
               {caseData.meta.setting}
@@ -413,12 +415,30 @@ function BriefScene({ caseData, detectives }: { caseData: Case; detectives: numb
             <p className="mt-6 max-w-2xl text-2xl leading-10 text-[#ded6c7]">
               {caseData.meta.tagline}
             </p>
+
+            {openingBeats.length ? (
+              <div className="mt-8 max-w-3xl rounded-2xl border border-[#d4ad67]/25 bg-black/40 p-5 backdrop-blur-sm">
+                <p className="text-xs uppercase tracking-[0.28em] text-[#d4ad67]">Detective mandate</p>
+                <div className="mt-4 grid gap-3">
+                  {openingBeats.map((beat, index) => (
+                    <div key={`${beat.speaker ?? "brief"}-${index}`}>
+                      {beat.speaker ? (
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-[#a6a29a]">
+                          {beat.speaker}
+                        </p>
+                      ) : null}
+                      <p className="mt-1 text-base leading-7 text-[#f5f2ea]">{beat.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="grid max-w-5xl gap-3 md:grid-cols-3">
             <InfoCard label="Victim" value={caseData.victim.name} />
             <InfoCard label="Detectives Joined" value={String(detectives)} />
-            <InfoCard label="Opening Round" value={caseData.rounds[0]?.title ?? "Round 1"} />
+            <InfoCard label="Opening Round" value={openingRound?.title ?? "Round 1"} />
           </div>
         </div>
       </div>

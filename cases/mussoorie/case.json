@@ -61,7 +61,15 @@
       "introNarration": [
         {
           "speaker": "Narrator",
-          "text": "Mussoorie at dusk. Mist swallows the cedar trees. The CBI team arrives in two unmarked Toyotas, dispatched from Dehradun. Local police are not happy to see them."
+          "text": "Mussoorie at dusk. Mist swallows the cedar trees as a CBI special investigation team climbs the road from Dehradun in two unmarked Toyotas. Local police have already called Vikram Singh's death an accident. An anonymous letter says the investigation itself is rotten."
+        },
+        {
+          "speaker": "Senior CBI Officer",
+          "text": "You are not here to win an argument with Mussoorie police. You are here to rebuild the first twelve hours from the ground up: read the letter, test the scene, check the official report, and learn what Vikram was trying to expose before anyone starts accusing suspects."
+        },
+        {
+          "speaker": "Narrator",
+          "text": "Round 1 is orientation. Establish the victim, the road, the missing details, and the six people whose stories the detectives will have to crack."
         }
       ]
     },
@@ -1337,15 +1345,15 @@
       "beats": [
         {
           "speaker": "Narrator",
-          "text": "Two unmarked Toyotas climb the last switchback into Mussoorie at dusk. The CBI special team is here from Dehradun, sent because a typed letter on plain paper suggested that a young man's death was not what the local police had ruled it."
+          "text": "Two unmarked Toyotas climb the last switchback into Mussoorie at dusk. The CBI special team is here from Dehradun, sent because a typed letter on plain paper suggested that Vikram Singh's death was not what the local police had ruled it."
         },
         {
           "speaker": "Narrator",
-          "text": "Inspector Devraj Khanna greets the team on the front steps of the station, polite as a knife. The cottage isn't far. The body has long since been taken away. The road, though — the road remains."
+          "text": "Inspector Devraj Khanna greets the team on the front steps of the station, polite as a knife. He was the officer who closed the original file. The letter names him as part of the problem. That means every shortcut in his report has to be treated as evidence."
         },
         {
           "speaker": "Senior CBI Officer",
-          "text": "Two weeks ago, a YouTuber named Vikram Singh fell from a bend on Camel's Back Road. Local police closed the case in twenty-four hours. We are here because somebody — anonymous, untraceable, brave — wrote us a letter."
+          "text": "Tonight, your job is not to solve the murder in one leap. Build the board. Start with why the CBI is here, then the road, then the victim's work, then the people around him. If the story feels too neat, find the part that was made neat for you."
         }
       ]
     },
@@ -1356,7 +1364,7 @@
       "roundNumber": 1,
       "prerequisites": ["r1-arrival"],
       "evidenceIds": ["anonymous-letter-1"],
-      "narration": "The letter is short. The accusation in it is sharp. Note the postmark, the choice to name the investigating officer himself.",
+      "narration": "The first file is not from the crime scene. It is the reason the CBI is in Mussoorie at all: a short, typed letter with no signature, a Dehradun postmark, and one dangerous claim. Vikram Singh did not simply fall, and Inspector Devraj Khanna's quick accident ruling should not be trusted.",
       "printablePrompt": "Open Case File 1 now — the anonymous letter."
     },
     {
@@ -1367,7 +1375,7 @@
       "prerequisites": ["r1-anonymous-letter"],
       "locationId": "camels-back-road",
       "evidenceIds": ["crime-scene-summary", "police-report"],
-      "narration": "Camel's Back Road in May. Cool. Damp. Mist rises off the cedar slopes. The bend near Gun Hill has a railing that gave way. Vikram Singh's tripod was found a strange distance from his body. The local police report is three paragraphs long.",
+      "narration": "The team reaches Camel's Back Road before the mist burns off. The bend near Gun Hill is narrow, damp, and badly lit. A railing gave way. Vikram's tripod was found too far from his body for an easy accident, and Devraj's official report spends only three paragraphs closing the question.",
       "printablePrompt": "Open Case File 2 — the police report and crime-scene summary."
     },
     {
@@ -1381,7 +1389,7 @@
         "youtube-channel-page",
         "vikram-working-wall"
       ],
-      "narration": "Vikram Singh, 32. Beloved son of Mussoorie. Four hundred thousand subscribers. He had an upcoming video titled 'The Truth About Mussoorie'. His public trail and working wall point to a story he was still trying to finish. The CBI followed it.",
+      "narration": "Back at Vikram's cottage, the dead man starts to become more than a body on a road. Thirty-two years old. Mussoorie born. Four hundred thousand subscribers following his channel, Hidden Mussoorie. His next video was titled 'The Truth About Mussoorie', and the wall above his desk shows a story still unfinished when he died.",
       "printablePrompt": "Open Case File 3 — Vikram's Instagram, the channel page, and the photographs of his working wall."
     },
     {
@@ -1394,11 +1402,11 @@
       "beats": [
         {
           "speaker": "Narrator",
-          "text": "The CBI built the list from what was already in front of them. His phone. His wall. The public trail he left while working on a story too large to finish."
+          "text": "The CBI does not begin with a culprit. It begins with contact points. Vikram's phone, his working wall, his calendar, and the public trail he left while chasing a story too large to finish."
         },
         {
           "speaker": "Senior CBI Officer",
-          "text": "Three names on the wall — Bisht, Devraj, Anya — the people he was investigating. Three more came off his phone and his calendar. His business partner. The ex he had been ignoring, who happens to be a corporate investigator he had just hired. An old college friend whose name is in the loose-threads corner of his wall. Six interviews. Start with the surface stories. We'll see what cracks."
+          "text": "Three names on the wall — Bisht, Devraj, Anya — are people Vikram was investigating. Three more come from his life: his business partner, the ex he had been ignoring, and an old college friend whose name sits in the loose-threads corner of his wall. Six interviews. Start with the surface stories. Your task is to listen for the first contradiction."
         }
       ]
     },

@@ -246,11 +246,31 @@ function LobbyMode({
 }
 
 function BriefMode({ caseData, player }: { caseData: Case; player: PlayerRow }) {
+  const openingRound = caseData.rounds[0];
+  const openingBeats = openingRound?.introNarration ?? [];
+
   return (
     <div>
       <p className="text-sm uppercase tracking-[0.24em] text-[#a6a29a]">{caseData.meta.setting}</p>
       <h2 className="mt-2 text-2xl font-semibold">{caseData.meta.title}</h2>
       <p className="mt-4 text-base leading-7 text-[#cfc8ba]">{caseData.meta.tagline}</p>
+      {openingBeats.length ? (
+        <div className="mt-6 rounded-2xl border border-[#c8a46a]/25 bg-black/25 px-4 py-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#c8a46a]">Your assignment</p>
+          <div className="mt-3 grid gap-3">
+            {openingBeats.map((beat, index) => (
+              <div key={`${beat.speaker ?? "brief"}-${index}`}>
+                {beat.speaker ? (
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
+                    {beat.speaker}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">{beat.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       <p className="mt-6 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
         {player.is_observer
           ? "Watch the TV for the opening narration. You're spectating this case."
@@ -552,6 +572,25 @@ function CaseBoardTabs({
             </p>
           ) : null}
           <h2 className="mt-2 text-2xl font-semibold">{chapter?.title ?? "Case board"}</h2>
+          {chapter?.type === "narrative" ? (
+            <div className="mt-4 grid gap-3">
+              {chapter.beats.map((beat, index) => (
+                <div key={`${beat.speaker ?? "beat"}-${index}`} className="border-l border-[#c8a46a]/35 pl-3">
+                  {beat.speaker ? (
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
+                      {beat.speaker}
+                    </p>
+                  ) : null}
+                  <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">{beat.text}</p>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {chapter?.type === "evidence-reveal" ? (
+            <p className="mt-4 rounded-2xl border border-[#c8a46a]/25 bg-black/20 px-4 py-3 text-sm leading-6 text-[#f5f2ea]">
+              {chapter.narration}
+            </p>
+          ) : null}
           <p className="mt-3 text-sm text-[#cfc8ba]">
             Follow the TV. When something unlocks, open the <span className="text-[#e6bd77]">Evidence</span>{" "}
             tab — tap an item to read notes and view the prop sheet one step at a time.
