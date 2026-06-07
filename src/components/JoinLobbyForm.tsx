@@ -1,7 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  clearActivePlayerSession,
+  getPlayerSessionPath,
+  readActivePlayerSession,
+  type ActivePlayerSession,
+  writeActivePlayerSession,
+} from "@/lib/player-session";
 
 type JoinLobbyFormProps = {
   joinCode: string;
@@ -16,6 +23,7 @@ type JoinResponse = {
     is_observer: boolean;
   };
   error?: string;
+  code?: string;
 };
 
 /**
@@ -54,57 +62,120 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [isJoining, setIsJoining] = useState(false);
+  const [savedSession, setSavedSession] = useState<ActivePlayerSession | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const connectPlayer = useCallback(async (name: string, isResume = false) => {
+    setIsJoining(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          joinCode,
+          name,
+          deviceId: getOrCreateDeviceId(),
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as JoinResponse;
+
+      if (!response.ok || !payload.session || !payload.player) {
+        if (isResume && ["join_code_not_found", "case_not_found"].includes(payload.code ?? "")) {
+          clearActivePlayerSession(window.localStorage, joinCode);
+          setSavedSession(null);
+        } else if (isResume) {
+          setSavedSession(readActivePlayerSession(window.localStorage, joinCode));
+        }
+        setError(
+          isResume
+            ? "Could not reconnect automatically. Tap Return to game to try again."
+            : (payload.error ?? "Could not join lobby."),
+        );
+        return;
+      }
+
+      const activeSession: ActivePlayerSession = {
+        version: 1,
+        joinCode,
+        playerName: name,
+        sessionId: payload.session.id,
+        playerId: payload.player.id,
+      };
+      writeActivePlayerSession(window.localStorage, activeSession);
+      setSavedSession(activeSession);
+      router.replace(getPlayerSessionPath(activeSession));
+    } catch {
+      setError(
+        isResume
+          ? "Could not reconnect automatically. Tap Return to game to try again."
+          : "Could not join lobby. Check your connection and try again.",
+      );
+      if (isResume) {
+        setSavedSession(readActivePlayerSession(window.localStorage, joinCode));
+      }
+    } finally {
+      setIsJoining(false);
+    }
+  }, [joinCode, router]);
 
   const joinLobby = useCallback(async () => {
     const form = formRef.current;
     if (!form) return;
 
-    setIsJoining(true);
-    setError(null);
-
     const raw = String(new FormData(form).get("playerName") ?? "");
     const name = raw.trim();
     if (!name) {
       setError("Please enter your name.");
-      setIsJoining(false);
       return;
     }
 
-    const response = await fetch("/api/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        joinCode,
-        name,
-        deviceId: getOrCreateDeviceId(),
-      }),
+    await connectPlayer(name);
+  }, [connectPlayer]);
+
+  useEffect(() => {
+    const activeSession = readActivePlayerSession(window.localStorage, joinCode);
+    if (!activeSession) return;
+
+    queueMicrotask(() => {
+      void connectPlayer(activeSession.playerName, true);
     });
-
-    const payload = (await response.json().catch(() => ({}))) as JoinResponse;
-
-    if (!response.ok || !payload.session || !payload.player) {
-      setError(payload.error ?? "Could not join lobby.");
-      setIsJoining(false);
-      return;
-    }
-
-    router.push(`/session/${payload.session.id}/player/${payload.player.id}`);
-  }, [joinCode, router]);
+  }, [connectPlayer, joinCode]);
 
   return (
-    <form
-      ref={formRef}
-      className="mt-10 rounded-3xl border border-white/10 bg-zinc-950/70 p-6"
-      onSubmit={(event) => {
-        // Never allow a native GET/POST navigation (e.g. iOS Safari, failed hydration).
-        // Join must go through /api/join only.
-        event.preventDefault();
-        void joinLobby();
-      }}
-    >
+    <div className="mt-10">
+      {savedSession ? (
+        <section className="mb-4 rounded-3xl border border-[#c8a46a]/30 bg-[#c8a46a]/10 p-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">Active investigation</p>
+          <h2 className="mt-2 text-xl font-semibold">Return as {savedSession.playerName}</h2>
+          <p className="mt-2 text-sm leading-6 text-[#cfc8ba]">
+            This phone is already connected to the game.
+          </p>
+          <button
+            type="button"
+            disabled={isJoining}
+            onClick={() => void connectPlayer(savedSession.playerName, true)}
+            className="mt-5 w-full rounded-full bg-[#c8a46a] px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isJoining ? "Returning..." : "Return to game"}
+          </button>
+        </section>
+      ) : null}
+
+      <form
+        ref={formRef}
+        className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6"
+        onSubmit={(event) => {
+          // Never allow a native GET/POST navigation (e.g. iOS Safari, failed hydration).
+          // Join must go through /api/join only.
+          event.preventDefault();
+          void joinLobby();
+        }}
+      >
       <label className="text-sm uppercase tracking-[0.22em] text-[#a6a29a]" htmlFor="playerName">
         Detective name
       </label>
@@ -145,6 +216,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
         If the game has already started or the detective seats are full, you will join as an
         observer.
       </p>
-    </form>
+      </form>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
+import { writeActivePlayerSession } from "@/lib/player-session";
 import { getEvidencePrintableUrl } from "@/lib/printables";
 import {
   useInterviewTranscriptRealtime,
@@ -86,6 +87,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
   const hasStarted = lobby.session.status !== "lobby";
 
   const player = lobby.players.find((item) => item.id === playerId);
+  const activePlayerName = player?.name;
   const detectives = useMemo(
     () => lobby.players.filter((item) => !item.is_observer),
     [lobby.players],
@@ -94,6 +96,22 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
     () => getCurrentChapter(caseData, lobby.session.current_chapter_id),
     [caseData, lobby.session.current_chapter_id],
   );
+
+  useEffect(() => {
+    if (!activePlayerName) return;
+
+    writeActivePlayerSession(window.localStorage, {
+      joinCode: lobby.session.join_code,
+      playerName: activePlayerName,
+      sessionId: lobby.session.id,
+      playerId,
+    });
+  }, [
+    activePlayerName,
+    lobby.session.id,
+    lobby.session.join_code,
+    playerId,
+  ]);
 
   if (!player) {
     return (

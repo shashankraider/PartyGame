@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PlayerLobbyView } from "@/components/PlayerLobbyView";
 import { loadCase } from "@/engine/case-loader";
@@ -34,12 +33,9 @@ export default async function PlayerSessionPage({ params }: PlayerSessionPagePro
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col overflow-x-hidden px-0 py-8 sm:py-10">
-      <Link
-        href={`/j/${lobby.session.join_code}`}
-        className="mx-4 mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a] sm:mx-6"
-      >
-        Back to join
-      </Link>
+      <p className="mx-4 mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a] sm:mx-6">
+        Detective controller
+      </p>
       <div className="mx-4 min-w-0 sm:mx-6">
         <PlayerLobbyView initialLobby={lobby} caseData={caseData} playerId={playerId} />
       </div>
