@@ -62,6 +62,33 @@ describe("Mussoorie case", () => {
     assert.equal(perRound[4], 6, "Round 4 should have 6 evidence items");
   });
 
+  test("every evidence item has one standalone printable asset", async () => {
+    const { loadCaseFromFile } = await import("../src/engine/validator.mjs");
+    const { readFile } = await import("node:fs/promises");
+    const { join, dirname } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const caseDir = join(__dirname, "..", "cases", "mussoorie");
+    const c = await loadCaseFromFile(join(caseDir, "case.json"));
+    const printableNames = c.evidence.map((evidence) => evidence.printableHtml);
+
+    assert.equal(new Set(printableNames).size, c.evidence.length);
+
+    for (const evidence of c.evidence) {
+      assert.equal(evidence.printableHtml, `${evidence.id}.html`);
+      const html = await readFile(
+        join(caseDir, "printables", evidence.printableHtml),
+        "utf8",
+      );
+      assert.match(html, new RegExp(`id="${evidence.id}" class="evidence-item"`));
+      assert.equal(
+        [...html.matchAll(/class="evidence-item"/g)].length,
+        1,
+        `${evidence.printableHtml} should contain exactly one evidence sheet`,
+      );
+    }
+  });
+
   test("schema accepts optional evidence arrivesWhen without requiring authored content yet", async () => {
     const { loadCaseFromFile } = await import("../src/engine/validator.mjs");
     const { join, dirname } = await import("node:path");

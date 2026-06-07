@@ -958,10 +958,10 @@
   // ----------------------------------------------------------------------------
 
   "evidence": [
-    // ---- Round 1 (items 1-5) -------------------------------------------------
+    // ---- Round 1 (6 items) ---------------------------------------------------
     {
       "id": "crime-scene-summary",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "crime-scene-summary.html",
       "title": "Crime Scene Summary",
       "category": "document",
       "description": "An overview of the scene at the base of the ravine. Broken tripod. One shoe missing. The railing at the bend, twisted outward.",
@@ -972,7 +972,7 @@
     },
     {
       "id": "police-report",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "police-report.html",
       "title": "Inspector Devraj's Police Report",
       "category": "document",
       "description": "Three paragraphs. 'Accidental fall. Wet conditions. Damaged railing. Case closed.'",
@@ -984,7 +984,7 @@
     },
     {
       "id": "anonymous-letter-1",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "anonymous-letter-1.html",
       "title": "The Anonymous Letter (to the CBI)",
       "category": "letter",
       "description": "Typed, no signature, postmark Dehradun. Names Inspector Devraj as a suspect and demands an independent investigation.",
@@ -994,7 +994,7 @@
     },
     {
       "id": "instagram-grey-lady",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "instagram-grey-lady.html",
       "title": "Vikram's Instagram Stories — 'The Grey Lady'",
       "category": "digital",
       "description": "Three phone-screen captures over two weeks. 'Day 5. She's back. Mussoorie's Grey Lady doesn't want me on her road.'",
@@ -1005,7 +1005,7 @@
     },
     {
       "id": "youtube-channel-page",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "youtube-channel-page.html",
       "title": "Vikram's YouTube Channel Page",
       "category": "digital",
       "description": "'Hidden Mussoorie' — 412K subscribers. One scheduled video: 'The Truth About Mussoorie' — now permanently unpublished.",
@@ -1016,7 +1016,7 @@
     },
     {
       "id": "naina-corporate-memo",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "naina-corporate-memo.html",
       "title": "Memo — Rhea Bhatia / Metropolis Media Inquiry",
       "category": "document",
       "description": "A short, professional memo prepared by Naina Kapoor at Vikram's request. Subject: Rhea Bhatia. Two pages.",
@@ -1032,7 +1032,7 @@
     },
     {
       "id": "vikram-naina-whatsapp",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "vikram-naina-whatsapp.html",
       "title": "WhatsApp Thread — Vikram and Naina, Last 30 Days",
       "category": "digital",
       "description": "Three weeks of friendly, professional messages. Then, in the final week, Vikram stops replying. Naina does not.",
@@ -1048,7 +1048,7 @@
     },
     {
       "id": "vikram-voice-memo",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "vikram-voice-memo.html",
       "title": "Vikram's Voice Memo — Recorded 11:42 PM, Two Nights Before His Death",
       "category": "digital",
       "description": "A 1-minute 47-second voice memo from Vikram's phone. He is talking to himself, working through the pitch. The recording ends mid-sentence.",
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "vikram-working-wall",
-      "printableHtml": "Round1_The_Scene.html",
+      "printableHtml": "vikram-working-wall.html",
       "title": "Vikram's Working Wall — Cottage Study",
       "category": "photo",
       "description": "CBI scene photographs of a corkboard covering one wall of Vikram's study. Three names on the spine. One name in the corner. Red string between some. Question marks over others.",
@@ -1069,10 +1069,10 @@
       "relatesToSuspectIds": ["bisht", "devraj", "anya", "kabir"]
     },
 
-    // ---- Round 2 (items 6-12) ------------------------------------------------
+    // ---- Round 2 (9 items) ---------------------------------------------------
     {
       "id": "chai-shop-receipt",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "chai-shop-receipt.html",
       "title": "Chai-Shop Receipt — Lovely Omelette Centre",
       "category": "document",
       "description": "6:32 PM the evening of the murder. Two cutting chai. Who was the second person?",
@@ -1084,7 +1084,7 @@
     },
     {
       "id": "naina-phone-records",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "naina-phone-records.html",
       "title": "Naina's Phone Records — 23 Calls",
       "category": "document",
       "description": "23 calls placed to Vikram's number in the 48 hours before his death. All unanswered.",
@@ -1095,7 +1095,7 @@
     },
     {
       "id": "shopkeeper-statement-naina",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "shopkeeper-statement-naina.html",
       "title": "Shopkeeper Statement — Kulri Bazaar End",
       "category": "testimony",
       "description": "'She walked toward Gun Hill side around 8:15. Pretty madam, Delhi accent. I noticed because of the cold.'",
@@ -1107,7 +1107,7 @@
     },
     {
       "id": "building-cctv-rhea",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "building-cctv-rhea.html",
       "title": "Building CCTV — 5:00 AM",
       "category": "photo",
       "description": "A still from the camera on Vikram's lane. Rhea, entering his cottage with a key. The body has not yet been found.",
@@ -1119,7 +1119,7 @@
     },
     {
       "id": "rhea-draft-email",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "rhea-draft-email.html",
       "title": "Rhea's Draft Email — Channel Sale",
       "category": "digital",
       "description": "Negotiation with a Delhi media company. Dated two days before the murder. Rhea claims it never existed.",
@@ -1130,7 +1130,7 @@
     },
     {
       "id": "bisht-hotel-cctv-log",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "bisht-hotel-cctv-log.html",
       "title": "Royal Pines Hotel CCTV Log",
       "category": "document",
       "description": "Continuous footage from the lobby — except for a 15-minute gap from 8:00 to 8:15 PM the night of the murder. Logged as 'routine maintenance'.",
@@ -1142,7 +1142,7 @@
     },
     {
       "id": "pawn-shop-receipt",
-      "printableHtml": "Round2_Suspects_Crack.html",
+      "printableHtml": "pawn-shop-receipt.html",
       "title": "Pawn-Shop Receipt — Bangalore",
       "category": "document",
       "description": "Receipt for the sale of a Tag Heuer watch, dated the day before Kabir's trip to Mussoorie.",
@@ -1152,10 +1152,10 @@
       "relatesToSuspectIds": ["kabir"]
     },
 
-    // ---- Round 3 (items 13-20) -----------------------------------------------
+    // ---- Round 3 (9 items) ---------------------------------------------------
     {
       "id": "anonymous-letter-2",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "anonymous-letter-2.html",
       "title": "The Second Anonymous Letter",
       "category": "letter",
       "description": "Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.'",
@@ -1166,7 +1166,7 @@
     },
     {
       "id": "old-newspaper-clipping",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "old-newspaper-clipping.html",
       "title": "Newspaper Clipping — Doon Echo, December 2011",
       "category": "document",
       "description": "'Tragic Robbery Claims Three Lives — Thakur Family Killed in Landour Home Invasion.'",
@@ -1178,7 +1178,7 @@
     },
     {
       "id": "theft-fir-inventory",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "theft-fir-inventory.html",
       "title": "Theft FIR Inventory — Thakur Cottage, 2011",
       "category": "document",
       "description": "Lists every stolen item, including 'British-era Enfield rifle, carved walnut stock, circa 1890.'",
@@ -1191,7 +1191,7 @@
     },
     {
       "id": "wall-mount-photo",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "wall-mount-photo.html",
       "title": "Vikram's Photograph — Empty Wall Mount, Thakur Cottage",
       "category": "photo",
       "description": "Two empty hooks on a wall. The unfaded wallpaper outline of a long, heavy object that hung there for years.",
@@ -1203,7 +1203,7 @@
     },
     {
       "id": "office-rifle-photo",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "office-rifle-photo.html",
       "title": "Vikram's Photograph — Rifle in Bisht's Office",
       "category": "photo",
       "description": "A British-era Enfield rifle mounted on a wall. Carved walnut stock. Photo taken on Vikram's phone, in Mr. Bisht's office at the Royal Pines.",
@@ -1216,7 +1216,7 @@
     },
     {
       "id": "land-registry",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "land-registry.html",
       "title": "Land Registry — Shell Companies",
       "category": "document",
       "description": "Plots adjacent to Thakur Cottage bought up over 12 years by 'Highland Properties' — a chain of trusts and shells terminating in a trust controlled by Rajveer Bisht.",
@@ -1228,7 +1228,7 @@
     },
     {
       "id": "bisht-family-history",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "bisht-family-history.html",
       "title": "Bisht Family History — Hotel Licence Revocation, 2010",
       "category": "document",
       "description": "Records showing Harish Bisht's hotel licence was revoked at the personal request of Brigadier Thakur over a minor land-boundary dispute. Harish died of a heart attack six months later.",
@@ -1240,7 +1240,7 @@
     },
     {
       "id": "anya-bus-ticket",
-      "printableHtml": "Round3_Thakur_Connection.html",
+      "printableHtml": "anya-bus-ticket.html",
       "title": "Anya's Bus Ticket — 9:15 PM",
       "category": "document",
       "description": "9:15 PM departure, Mussoorie bus stand. She says she left Vikram's cottage at 7:30 PM. Where was she for nearly two hours?",
@@ -1252,10 +1252,10 @@
       "relatesToSuspectIds": ["anya"]
     },
 
-    // ---- Round 4 (items 21-26) -----------------------------------------------
+    // ---- Round 4 (6 items) ---------------------------------------------------
     {
       "id": "bisht-devraj-call",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "bisht-devraj-call.html",
       "title": "Phone Records — Bisht to Devraj, 8:00 PM",
       "category": "document",
       "description": "An 8:00 PM call from Bisht's personal mobile to Devraj's personal mobile. Duration: 47 seconds. Aligns with the hotel CCTV gap.",
@@ -1267,7 +1267,7 @@
     },
     {
       "id": "devraj-jeep-cctv",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "devraj-jeep-cctv.html",
       "title": "CCTV — Devraj's Police Jeep on Camel's Back Road",
       "category": "photo",
       "description": "Still from a shopkeeper's camera near Camel's Back Road. 8:10 PM. Devraj's jeep is plainly visible. He claimed he was at the station all evening.",
@@ -1280,7 +1280,7 @@
     },
     {
       "id": "lathi-postmortem",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "lathi-postmortem.html",
       "title": "Post-Mortem — Independent CBI Medical Review",
       "category": "document",
       "description": "Independent review of Vikram's body identifies a blunt-force injury to the back of the head consistent with a lathi strike — not with a fall.",
@@ -1292,7 +1292,7 @@
     },
     {
       "id": "grey-shawl-fresh",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "grey-shawl-fresh.html",
       "title": "Anya's Grey Shawl — Freshly Washed",
       "category": "object",
       "description": "Listed in Anya's belongings inventory as 'freshly washed wool shawl, grey'. Why wash a wool shawl in May?",
@@ -1304,7 +1304,7 @@
     },
     {
       "id": "anya-payments",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "anya-payments.html",
       "title": "Bank Records — Bisht to Anya's Son's Education Fund",
       "category": "document",
       "description": "Monthly transfers from a Bisht-linked account to an education trust naming Rohan Devi as beneficiary. Fifteen years. Unbroken.",
@@ -1316,7 +1316,7 @@
     },
     {
       "id": "vikram-research-notes",
-      "printableHtml": "Round4_The_Solve.html",
+      "printableHtml": "vikram-research-notes.html",
       "title": "Vikram's Recovered Research Notes",
       "category": "digital",
       "description": "Partial recovery from his laptop. The Thakur FIR. The land-registry trail. Bisht's name circled three times. And a line: 'Anya Devi — housekeeper — possible witness.'",

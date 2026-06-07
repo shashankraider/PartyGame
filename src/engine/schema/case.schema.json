@@ -382,7 +382,8 @@
         "pdfUrl": { "type": "string" },
         "printableHtml": {
           "type": "string",
-          "description": "Basename only: HTML file under the case printables/ folder. Mobile locker opens this file at #evidenceId."
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.html$",
+          "description": "Basename only: standalone HTML exhibit under the case printables/ folder. Each evidence item should reference its own file."
         },
         "description": { "type": "string", "description": "Short label that appears on the evidence card on the TV." },
         "loreText": { "type": "string", "description": "Longer description fed to the LLM when this evidence is presented in an interview." },

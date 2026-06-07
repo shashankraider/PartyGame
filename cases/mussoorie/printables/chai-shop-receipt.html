@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murder in Mussoorie - chai-shop-receipt</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --parchment: #f4edd3;
+    --ink: #1a1a1a;
+    --faded-ink: #3d3529;
+    --red-stamp: #8b1a1a;
+    --blue-ink: #1a3a6b;
+    --folder-tab: #c4a265;
+    --evidence-bg: #faf6e8;
+    --border-dark: #8b7d5e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
+  body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .evidence-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; }
+    .round-cover { page-break-after: always; }
+    .no-print { display: none !important; }
+  }
+
+  .round-cover {
+    max-width: 800px; margin: 0 auto 40px; background: var(--parchment);
+    border: 3px solid var(--border-dark); padding: 60px 50px; position: relative; text-align: center;
+  }
+  .round-cover::before {
+    content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
+    border: 1px solid var(--border-dark); pointer-events: none;
+  }
+  .cbi-header { font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--blue-ink); margin-bottom: 8px; }
+  .cbi-emblem { font-size: 48px; margin: 15px 0; color: var(--blue-ink); }
+  .case-title { font-family: 'Special Elite', cursive; font-size: 32px; color: var(--red-stamp); margin: 20px 0 5px; letter-spacing: 2px; }
+  .case-subtitle { font-family: 'Courier Prime', monospace; font-size: 14px; color: var(--faded-ink); margin-bottom: 25px; }
+  .round-label { display: inline-block; background: var(--red-stamp); color: #f4edd3; font-family: 'Courier Prime', monospace; font-size: 18px; padding: 8px 30px; letter-spacing: 3px; text-transform: uppercase; margin: 20px 0; }
+  .round-name { font-family: 'Special Elite', cursive; font-size: 26px; color: var(--faded-ink); margin: 10px 0; }
+  .classification { font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 3px; color: var(--red-stamp); border: 2px solid var(--red-stamp); display: inline-block; padding: 4px 15px; margin-top: 25px; }
+  .cover-meta { font-family: 'Courier Prime', monospace; font-size: 11px; color: var(--faded-ink); margin-top: 20px; line-height: 2; }
+
+  .evidence-item { max-width: 800px; margin: 30px auto; background: var(--evidence-bg); border: 1px solid var(--border-dark); box-shadow: 3px 3px 15px rgba(0,0,0,0.3); position: relative; }
+  .evidence-tab { background: var(--folder-tab); color: white; font-family: 'Courier Prime', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 6px 20px; display: inline-block; }
+  .evidence-header { background: linear-gradient(135deg, #2c2416, #3d3529); color: var(--parchment); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+  .evidence-header h3 { font-family: 'Courier Prime', monospace; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+  .evidence-number { font-family: 'Courier Prime', monospace; font-size: 12px; opacity: 0.7; }
+  .evidence-body { padding: 30px; }
+
+  .handwritten-note { font-family: 'Special Elite', cursive; color: var(--blue-ink); font-size: 13px; margin-top: 15px; padding: 10px 15px; border-left: 3px solid var(--blue-ink); opacity: 0.8; }
+
+  .print-bar { max-width: 800px; margin: 0 auto 20px; text-align: right; }
+  .print-btn { background: var(--folder-tab); color: white; border: none; padding: 10px 25px; font-family: 'Courier Prime', monospace; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .print-btn:hover { background: #a88942; }
+
+  /* ── Receipt ── */
+  .receipt {
+    background: #fffef7; border: 1px solid #ddd; padding: 25px 30px;
+    max-width: 350px; margin: 0 auto; font-family: 'Courier Prime', monospace; font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative;
+  }
+  .receipt::before {
+    content: ''; position: absolute; top: -8px; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(90deg, transparent, transparent 4px, var(--evidence-bg) 4px, var(--evidence-bg) 8px);
+  }
+  .receipt-header { text-align: center; border-bottom: 1px dashed #999; padding-bottom: 10px; margin-bottom: 12px; }
+  .receipt-shop { font-weight: bold; font-size: 14px; }
+  .receipt-addr { font-size: 10px; color: #666; margin-top: 3px; }
+  .receipt-line { display: flex; justify-content: space-between; padding: 3px 0; }
+  .receipt-total { border-top: 1px dashed #999; margin-top: 8px; padding-top: 8px; font-weight: bold; }
+  .receipt-footer { text-align: center; margin-top: 12px; font-size: 10px; color: #888; border-top: 1px dashed #999; padding-top: 10px; }
+
+  /* ── Phone Records ── */
+  .phone-log { font-family: 'Courier Prime', monospace; font-size: 11px; width: 100%; border-collapse: collapse; }
+  .phone-log th { background: #2c2416; color: var(--parchment); padding: 8px 10px; text-align: left; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .phone-log td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  .phone-log tr:nth-child(even) { background: rgba(0,0,0,0.03); }
+  .phone-log .highlight { background: rgba(139, 26, 26, 0.08); }
+  .call-count-badge { display: inline-block; background: var(--red-stamp); color: white; font-family: 'Courier Prime', monospace; font-size: 18px; font-weight: bold; padding: 8px 15px; border-radius: 4px; margin: 10px 0; }
+
+  /* ── Witness Statement ── */
+  .witness-stmt {
+    background: white; border: 1px solid #ccc; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 2; position: relative;
+    background-image: repeating-linear-gradient(transparent, transparent 23px, #e8e4d8 24px);
+    background-size: 100% 24px;
+  }
+  .witness-stmt .stmt-header { font-weight: bold; text-align: center; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; font-size: 11px; }
+  .witness-stmt .stmt-field { margin-bottom: 4px; }
+  .witness-stmt .stmt-field strong { display: inline-block; min-width: 120px; }
+  .witness-stmt .stmt-body { margin-top: 15px; text-align: justify; }
+  .witness-stmt .stmt-signature { margin-top: 20px; text-align: right; font-style: italic; }
+  .thumb-impression {
+    width: 50px; height: 65px; border-radius: 50% 50% 45% 45%;
+    background: radial-gradient(ellipse, #555 0%, #888 40%, transparent 70%);
+    opacity: 0.3; display: inline-block; margin-left: 10px; vertical-align: middle;
+  }
+
+  /* ── CCTV ── */
+  .cctv-frame {
+    background: #111; border-radius: 4px; padding: 15px; max-width: 500px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; color: #0f0;
+  }
+  .cctv-overlay { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; }
+  .cctv-image {
+    background: linear-gradient(180deg, #1a1a1a 0%, #222 50%, #1a1a1a 100%);
+    height: 200px; display: flex; align-items: center; justify-content: center; position: relative;
+    border: 1px solid #333; overflow: hidden;
+  }
+  .cctv-image::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, transparent 1px, transparent 2px);
+    pointer-events: none;
+  }
+  .cctv-figure {
+    font-size: 14px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.6;
+  }
+  .cctv-timestamp { text-align: center; margin-top: 8px; font-size: 11px; color: #0f0; }
+  .cctv-rec { color: red; animation: blink 1s infinite; font-weight: bold; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── Email ── */
+  .email-frame {
+    background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+    max-width: 550px; margin: 0 auto; font-family: 'Noto Sans', -apple-system, sans-serif; font-size: 13px;
+  }
+  .email-toolbar { background: #f6f6f6; padding: 10px 15px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px; }
+  .email-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .email-head { padding: 18px 20px; border-bottom: 1px solid #eee; }
+  .email-row { display: flex; padding: 3px 0; font-size: 12px; }
+  .email-label { color: #888; min-width: 50px; }
+  .email-val { color: #333; }
+  .email-subject { font-size: 16px; font-weight: 700; color: #111; margin-top: 10px; }
+  .email-draft { display: inline-block; background: #ffcc02; color: #333; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+  .email-body { padding: 20px; line-height: 1.7; color: #333; }
+
+  /* ── Pawn Receipt ── */
+  .pawn-receipt {
+    background: #fffde7; border: 2px solid #a08040; padding: 20px 25px;
+    max-width: 400px; margin: 0 auto; font-family: 'Courier Prime', monospace; font-size: 12px;
+    position: relative;
+  }
+  .pawn-receipt .shop-header { text-align: center; border-bottom: 2px double #a08040; padding-bottom: 10px; margin-bottom: 15px; }
+  .pawn-receipt .shop-name { font-size: 16px; font-weight: bold; letter-spacing: 2px; }
+  .pawn-receipt .shop-est { font-size: 9px; color: #888; letter-spacing: 1px; }
+  .pawn-receipt .pawn-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .pawn-receipt .pawn-divider { border-top: 1px dashed #a08040; margin: 8px 0; }
+
+
+  /* Standalone in-app evidence sheet */
+  html { min-height: 100%; background: #2a2520; }
+  body { min-height: 100%; padding: 12px; }
+  body > .evidence-item { margin: 0 auto; }
+  @media (max-width: 640px) {
+    body { padding: 6px; }
+    .evidence-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="chai-shop-receipt" class="evidence-item">
+  <div class="evidence-tab">Exhibit F</div>
+  <div class="evidence-header">
+    <h3>Receipt &mdash; Lovely Omelette Centre, Mall Road</h3>
+    <span class="evidence-number">CBI/EX/006</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Recovered from victim's jacket pocket &bull; Bagged at scene
+    </div>
+    <div class="receipt">
+      <div class="receipt-header">
+        <div class="receipt-shop">LOVELY OMELETTE CENTRE</div>
+        <div class="receipt-addr">Est. 1978 &bull; Mall Road, Mussoorie<br>Ph: 0135-263XXXX &bull; GSTIN: 05AXXXX</div>
+      </div>
+      <div class="receipt-line"><span>Date:</span><span>[Night of murder]</span></div>
+      <div class="receipt-line"><span>Time:</span><span>18:32 hrs</span></div>
+      <div class="receipt-line"><span>Token:</span><span>#247</span></div>
+      <div style="border-top:1px dashed #999; margin:8px 0;"></div>
+      <div class="receipt-line"><span>Cutting Chai x2</span><span>&#8377;40</span></div>
+      <div class="receipt-line"><span>Maggi (plain) x1</span><span>&#8377;50</span></div>
+      <div class="receipt-total">
+        <div class="receipt-line"><span>TOTAL</span><span>&#8377;90</span></div>
+      </div>
+      <div class="receipt-line" style="margin-top:5px;"><span>Payment:</span><span>UPI</span></div>
+      <div class="receipt-footer">
+        Thank you for visiting!<br>
+        &mdash; Since 1978 &mdash;
+      </div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Two cutting chai ordered. Vikram was not alone. Who was with him at 6:32 PM &mdash; less than two hours before his death? The Maggi was ordered for one &mdash; only one spoon provided according to the shop owner.
+    </div>
+  </div>
+</div>
+</body>
+</html>

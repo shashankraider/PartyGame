@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murder in Mussoorie - vikram-voice-memo</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --parchment: #f4edd3; --ink: #1a1a1a; --faded-ink: #3d3529; --red-stamp: #8b1a1a;
+    --blue-ink: #1a3a6b; --folder-tab: #c4a265; --evidence-bg: #faf6e8; --border-dark: #8b7d5e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
+  body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
+  @media print {
+    body { background: white; padding: 0; }
+    .evidence-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; }
+    .round-cover { page-break-after: always; }
+    .no-print { display: none !important; }
+  }
+
+  .round-cover { max-width:800px; margin:0 auto 40px; background:var(--parchment); border:3px solid var(--border-dark); padding:60px 50px; position:relative; text-align:center; }
+  .round-cover::before { content:''; position:absolute; top:15px; left:15px; right:15px; bottom:15px; border:1px solid var(--border-dark); pointer-events:none; }
+  .cbi-header { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--blue-ink); margin-bottom:8px; }
+  .cbi-emblem { font-size:48px; margin:15px 0; color:var(--blue-ink); }
+  .case-title { font-family:'Special Elite',cursive; font-size:32px; color:var(--red-stamp); margin:20px 0 5px; letter-spacing:2px; }
+  .case-subtitle { font-family:'Courier Prime',monospace; font-size:14px; color:var(--faded-ink); margin-bottom:25px; }
+  .round-label { display:inline-block; background:var(--red-stamp); color:#f4edd3; font-family:'Courier Prime',monospace; font-size:18px; padding:8px 30px; letter-spacing:3px; text-transform:uppercase; margin:20px 0; }
+  .round-name { font-family:'Special Elite',cursive; font-size:26px; color:var(--faded-ink); margin:10px 0; }
+  .classification { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:3px; color:var(--red-stamp); border:2px solid var(--red-stamp); display:inline-block; padding:4px 15px; margin-top:25px; }
+  .cover-meta { font-family:'Courier Prime',monospace; font-size:11px; color:var(--faded-ink); margin-top:20px; line-height:2; }
+
+  .evidence-item { max-width:800px; margin:30px auto; background:var(--evidence-bg); border:1px solid var(--border-dark); box-shadow:3px 3px 15px rgba(0,0,0,0.3); position:relative; }
+  .evidence-tab { background:var(--folder-tab); color:white; font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:6px 20px; display:inline-block; }
+  .evidence-header { background:linear-gradient(135deg,#2c2416,#3d3529); color:var(--parchment); padding:15px 25px; display:flex; justify-content:space-between; align-items:center; }
+  .evidence-header h3 { font-family:'Courier Prime',monospace; font-size:14px; letter-spacing:1px; text-transform:uppercase; }
+  .evidence-number { font-family:'Courier Prime',monospace; font-size:12px; opacity:0.7; }
+  .evidence-body { padding:30px; }
+  .handwritten-note { font-family:'Special Elite',cursive; color:var(--blue-ink); font-size:13px; margin-top:15px; padding:10px 15px; border-left:3px solid var(--blue-ink); opacity:0.8; }
+
+  .print-bar { max-width:800px; margin:0 auto 20px; text-align:right; }
+  .print-btn { background:var(--folder-tab); color:white; border:none; padding:10px 25px; font-family:'Courier Prime',monospace; font-size:13px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; }
+  .print-btn:hover { background:#a88942; }
+
+  /* ── Anonymous Letter ── */
+  .anonymous-letter {
+    font-family:'Special Elite',cursive; font-size:15px; line-height:2; padding:20px;
+    background:white; border:1px dashed #999; margin:10px; position:relative;
+  }
+
+  /* ── Newspaper ── */
+  .newspaper {
+    background: #f5f0e0; border: 1px solid #b5a67a; padding: 0; max-width: 550px;
+    margin: 0 auto; font-family: 'Merriweather', Georgia, serif; position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.05);
+  }
+  .newspaper-header {
+    text-align: center; padding: 20px 20px 10px; border-bottom: 3px double #333;
+  }
+  .newspaper-name {
+    font-family: 'Special Elite', cursive; font-size: 28px; letter-spacing: 4px;
+    text-transform: uppercase; color: #222;
+  }
+  .newspaper-date { font-size: 10px; color: #666; margin-top: 5px; letter-spacing: 2px; }
+  .newspaper-body { padding: 20px; column-count: 1; font-size: 12px; line-height: 1.8; text-align: justify; }
+  .newspaper-headline {
+    font-family: 'Merriweather', Georgia, serif; font-size: 20px; font-weight: 700;
+    text-align: center; margin-bottom: 12px; line-height: 1.3; color: #111;
+  }
+  .newspaper-byline { font-size: 10px; color: #888; text-align: center; margin-bottom: 12px; font-style: italic; }
+  .newspaper-age {
+    position: absolute; top: 10px; right: 10px; background: var(--red-stamp); color: white;
+    font-family: 'Courier Prime', monospace; font-size: 10px; padding: 3px 8px;
+    transform: rotate(3deg);
+  }
+
+  /* ── FIR Document ── */
+  .fir-doc {
+    background: white; border: 2px solid #333; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 1.8; max-width: 550px; margin: 0 auto;
+  }
+  .fir-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 15px; }
+  .fir-title { font-weight: bold; font-size: 14px; letter-spacing: 2px; }
+  .fir-row { display: flex; margin-bottom: 4px; }
+  .fir-label { font-weight: bold; min-width: 170px; }
+  .fir-value { flex: 1; border-bottom: 1px dotted #999; }
+  .fir-inventory { margin-top: 15px; border: 1px solid #999; padding: 12px; }
+  .fir-inventory-title { font-weight: bold; font-size: 11px; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+  .fir-inv-item { padding: 4px 0; padding-left: 15px; border-bottom: 1px dotted #ddd; }
+  .fir-inv-item:last-child { border-bottom: none; }
+  .fir-highlight { background: #fff3cd; padding: 2px 4px; border: 1px solid #f0d060; }
+
+  /* ── Photo frames ── */
+  .photo-frame {
+    background: white; border: 8px solid white; box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    max-width: 400px; margin: 0 auto; transform: rotate(-1deg);
+  }
+  .photo-inner {
+    background: #2a2a2a; min-height: 220px; display: flex; align-items: center;
+    justify-content: center; color: #ccc; font-family: 'Courier Prime', monospace;
+    font-size: 12px; text-align: center; padding: 20px; line-height: 1.8; position: relative;
+  }
+  .photo-caption {
+    font-family: 'Special Elite', cursive; font-size: 12px; color: #555;
+    padding: 8px; text-align: center;
+  }
+  .photo-date { font-family: 'Courier Prime', monospace; font-size: 10px; color: #f80; text-align: right; padding-right: 8px; }
+
+  /* ── Land Registry ── */
+  .registry-doc {
+    background: #fffff0; border: 2px solid #556b2f; padding: 25px;
+    font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.8;
+    max-width: 550px; margin: 0 auto;
+  }
+  .registry-header {
+    text-align: center; border-bottom: 2px solid #556b2f; padding-bottom: 10px; margin-bottom: 15px;
+  }
+  .registry-emblem { font-size: 30px; color: #556b2f; }
+  .registry-title { font-weight: bold; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #556b2f; }
+  .registry-row { display: flex; margin-bottom: 4px; }
+  .registry-label { font-weight: bold; min-width: 180px; color: #556b2f; }
+  .registry-chain { margin-top: 15px; padding: 12px; background: #f5f5e0; border: 1px dashed #999; }
+  .registry-chain-title { font-weight: bold; font-size: 11px; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
+  .chain-step { padding: 5px 0; display: flex; align-items: center; gap: 10px; }
+  .chain-arrow { color: var(--red-stamp); font-weight: bold; font-size: 16px; }
+
+  /* ── Bus Ticket ── */
+  .bus-ticket {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: 2px solid #4caf50; padding: 20px; max-width: 400px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; font-size: 12px; position: relative;
+    border-radius: 4px;
+  }
+  .bus-ticket::before, .bus-ticket::after {
+    content: ''; position: absolute; width: 20px; height: 20px; background: var(--evidence-bg);
+    border-radius: 50%; top: 50%;
+  }
+  .bus-ticket::before { left: -10px; }
+  .bus-ticket::after { right: -10px; }
+  .bus-header { text-align: center; font-weight: bold; font-size: 14px; letter-spacing: 2px; color: #2e7d32; border-bottom: 1px dashed #4caf50; padding-bottom: 8px; margin-bottom: 10px; }
+  .bus-route { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; color: #1b5e20; }
+  .bus-row { display: flex; justify-content: space-between; padding: 3px 10px; }
+  .bus-divider { border-top: 1px dashed #4caf50; margin: 8px 0; }
+
+  /* ── Family History ── */
+  .history-doc {
+    background: #fefefe; border-left: 4px solid var(--red-stamp); padding: 20px 25px;
+    font-family: 'Merriweather', Georgia, serif; font-size: 13px; line-height: 1.9;
+    max-width: 550px; margin: 0 auto;
+  }
+  .history-title {
+    font-family: 'Courier Prime', monospace; font-size: 12px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--red-stamp);
+    margin-bottom: 15px;
+  }
+
+
+  /* Standalone in-app evidence sheet */
+  html { min-height: 100%; background: #2a2520; }
+  body { min-height: 100%; padding: 12px; }
+  body > .evidence-item { margin: 0 auto; }
+  @media (max-width: 640px) {
+    body { padding: 6px; }
+    .evidence-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="vikram-voice-memo" class="evidence-item">
+  <div class="evidence-tab">Exhibit U</div>
+  <div class="evidence-header">
+    <h3>Voice Memo &mdash; Recorded 11:42 PM, Two Nights Before Death</h3>
+    <span class="evidence-number">CBI/EX/021</span>
+  </div>
+  <div class="evidence-body">
+    <div style="font-family:'Courier Prime',monospace; font-size:11px; color:#999; margin-bottom:15px;">
+      Source: Vikram Singh's iCloud backup &bull; Voice Memos app &bull; Duration 1:47 &bull; Transcript excerpt
+    </div>
+    <div style="background:white; border:1px solid #ddd; padding:22px; font-family:'Special Elite',cursive; font-size:13px; line-height:1.75; color:#222;">
+      Okay. Okay. The Thakur thing keeps coming back. I can't make the episode work without it but I can't prove it. Bisht's land &mdash; that's clean on paper, all the registry stuff routes through shell companies but the timeline lines up too well, it's not a coincidence. And the rifle. The rifle is the rifle, I'm sure of it, I just can't say so on camera without &mdash;<br><br>
+      <em>[pause]</em><br><br>
+      &mdash; Anya knows. Anya knows something. She won't sit down with me. Three times now. She's not avoiding me, she's avoiding the question. Hm.<br><br>
+      <em>[pause]</em><br><br>
+      Devraj. Three pages. Three pages on a death investigation. He didn't even &mdash;<br><br>
+      <span style="color:#a33; font-family:'Courier Prime',monospace; font-size:11px;">[AUDIO CUTS OFF &bull; phone battery log: 1% at 11:43:49 PM]</span>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Now that the Thakur file is open, this memo lands differently. Vikram had Bisht, the rifle, Devraj's thin file, and Anya's silence in his head two nights before he died. He had not yet drawn the final Bisht-to-Devraj line.
+    </div>
+  </div>
+</div>
+</body>
+</html>

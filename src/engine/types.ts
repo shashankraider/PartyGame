@@ -379,7 +379,7 @@ export interface Evidence {
   fullViewUrl?: string;
   pdfUrl?: string;
   /**
-   * Basename only: HTML file under the case printables/ folder. Mobile locker opens this file at #evidenceId.
+   * Basename only: standalone HTML exhibit under the case printables/ folder. Each evidence item should reference its own file.
    */
   printableHtml?: string;
   /**

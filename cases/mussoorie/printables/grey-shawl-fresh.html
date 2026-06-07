@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murder in Mussoorie - grey-shawl-fresh</title>
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --parchment: #f4edd3; --ink: #1a1a1a; --faded-ink: #3d3529; --red-stamp: #8b1a1a;
+    --blue-ink: #1a3a6b; --folder-tab: #c4a265; --evidence-bg: #faf6e8; --border-dark: #8b7d5e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .evidence-item[id]:target { scroll-margin-top: 20px; }
+  body { background: #2a2520; font-family: 'Merriweather', Georgia, serif; color: var(--ink); padding: 20px; }
+  @media print {
+    body { background: white; padding: 0; }
+    .evidence-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; }
+    .round-cover { page-break-after: always; }
+    .no-print { display: none !important; }
+  }
+
+  .round-cover { max-width:800px; margin:0 auto 40px; background:var(--parchment); border:3px solid var(--border-dark); padding:60px 50px; position:relative; text-align:center; }
+  .round-cover::before { content:''; position:absolute; top:15px; left:15px; right:15px; bottom:15px; border:1px solid var(--border-dark); pointer-events:none; }
+  .cbi-header { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--blue-ink); margin-bottom:8px; }
+  .cbi-emblem { font-size:48px; margin:15px 0; color:var(--blue-ink); }
+  .case-title { font-family:'Special Elite',cursive; font-size:32px; color:var(--red-stamp); margin:20px 0 5px; letter-spacing:2px; }
+  .case-subtitle { font-family:'Courier Prime',monospace; font-size:14px; color:var(--faded-ink); margin-bottom:25px; }
+  .round-label { display:inline-block; background:var(--red-stamp); color:#f4edd3; font-family:'Courier Prime',monospace; font-size:18px; padding:8px 30px; letter-spacing:3px; text-transform:uppercase; margin:20px 0; }
+  .round-name { font-family:'Special Elite',cursive; font-size:26px; color:var(--faded-ink); margin:10px 0; }
+  .classification { font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:3px; color:var(--red-stamp); border:2px solid var(--red-stamp); display:inline-block; padding:4px 15px; margin-top:25px; }
+  .cover-meta { font-family:'Courier Prime',monospace; font-size:11px; color:var(--faded-ink); margin-top:20px; line-height:2; }
+
+  .evidence-item { max-width:800px; margin:30px auto; background:var(--evidence-bg); border:1px solid var(--border-dark); box-shadow:3px 3px 15px rgba(0,0,0,0.3); position:relative; }
+  .evidence-tab { background:var(--folder-tab); color:white; font-family:'Courier Prime',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:6px 20px; display:inline-block; }
+  .evidence-header { background:linear-gradient(135deg,#2c2416,#3d3529); color:var(--parchment); padding:15px 25px; display:flex; justify-content:space-between; align-items:center; }
+  .evidence-header h3 { font-family:'Courier Prime',monospace; font-size:14px; letter-spacing:1px; text-transform:uppercase; }
+  .evidence-number { font-family:'Courier Prime',monospace; font-size:12px; opacity:0.7; }
+  .evidence-body { padding:30px; }
+  .handwritten-note { font-family:'Special Elite',cursive; color:var(--blue-ink); font-size:13px; margin-top:15px; padding:10px 15px; border-left:3px solid var(--blue-ink); opacity:0.8; }
+
+  .print-bar { max-width:800px; margin:0 auto 20px; text-align:right; }
+  .print-btn { background:var(--folder-tab); color:white; border:none; padding:10px 25px; font-family:'Courier Prime',monospace; font-size:13px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; }
+  .print-btn:hover { background:#a88942; }
+
+  /* ── Phone Record ── */
+  .call-record {
+    background: #111; padding: 20px; border-radius: 4px; font-family: 'Courier Prime', monospace;
+    color: #0f0; max-width: 500px; margin: 0 auto;
+  }
+  .call-record .cr-header { color: #666; font-size: 10px; letter-spacing: 2px; margin-bottom: 15px; text-transform: uppercase; }
+  .call-record .cr-entry {
+    background: rgba(0,255,0,0.05); border: 1px solid rgba(0,255,0,0.15);
+    padding: 12px 15px; margin-bottom: 10px; border-radius: 2px;
+  }
+  .call-record .cr-label { color: #0a0; font-size: 10px; letter-spacing: 1px; }
+  .call-record .cr-value { font-size: 14px; margin-top: 3px; }
+  .cr-highlight { color: #ff4444 !important; font-weight: bold; }
+
+  /* ── CCTV ── */
+  .cctv-frame {
+    background: #111; border-radius: 4px; padding: 15px; max-width: 500px; margin: 0 auto;
+    font-family: 'Courier Prime', monospace; color: #0f0;
+  }
+  .cctv-overlay { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; }
+  .cctv-image {
+    background: linear-gradient(180deg, #1a1a1a 0%, #222 50%, #1a1a1a 100%);
+    height: 200px; display: flex; align-items: center; justify-content: center; position: relative;
+    border: 1px solid #333; overflow: hidden;
+  }
+  .cctv-image::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, transparent 1px, transparent 2px);
+    pointer-events: none;
+  }
+  .cctv-figure { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.6; }
+  .cctv-timestamp { text-align: center; margin-top: 8px; font-size: 11px; color: #0f0; }
+  .cctv-rec { color: red; font-weight: bold; }
+
+  /* ── Medical Report ── */
+  .med-report {
+    background: white; border: 2px solid #1a3a6b; padding: 25px; font-family: 'Courier Prime', monospace;
+    font-size: 12px; line-height: 1.8; max-width: 550px; margin: 0 auto;
+  }
+  .med-header { text-align: center; border-bottom: 2px solid #1a3a6b; padding-bottom: 12px; margin-bottom: 15px; }
+  .med-title { font-weight: bold; font-size: 13px; letter-spacing: 2px; color: #1a3a6b; text-transform: uppercase; }
+  .med-row { display: flex; margin-bottom: 4px; }
+  .med-label { font-weight: bold; min-width: 170px; color: #1a3a6b; }
+  .med-findings { margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f8f9fa; }
+  .med-finding-item { padding: 6px 0; border-bottom: 1px dotted #ddd; }
+  .med-finding-item:last-child { border-bottom: none; }
+  .med-critical { background: #fff3cd; padding: 10px; border: 1px solid #f0d060; margin-top: 10px; font-weight: bold; }
+
+  /* ── Bank Statement ── */
+  .bank-stmt {
+    background: white; border: 1px solid #ddd; padding: 20px; font-family: 'Courier Prime', monospace;
+    font-size: 11px; max-width: 580px; margin: 0 auto;
+  }
+  .bank-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a3a6b; padding-bottom: 10px; margin-bottom: 12px; }
+  .bank-name { font-weight: bold; font-size: 14px; color: #1a3a6b; letter-spacing: 2px; }
+  .bank-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .bank-table th { background: #1a3a6b; color: white; padding: 6px 8px; text-align: left; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+  .bank-table td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 10px; }
+  .bank-table tr:nth-child(even) { background: #f8f9fa; }
+  .bank-table .amt-cr { color: #2e7d32; }
+
+  /* ── Research Notes ── */
+  .notebook {
+    background: #fffff0; border-left: 4px solid #8b1a1a; padding: 20px 25px;
+    font-family: 'Special Elite', cursive; font-size: 14px; line-height: 2.2;
+    max-width: 550px; margin: 0 auto; position: relative;
+    background-image: repeating-linear-gradient(transparent, transparent 29px, #e8e0c8 30px);
+    background-size: 100% 30px;
+  }
+  .notebook-header {
+    font-family: 'Courier Prime', monospace; font-size: 11px; font-weight: bold;
+    letter-spacing: 2px; text-transform: uppercase; color: #8b1a1a; margin-bottom: 10px;
+    background: #fffff0;
+  }
+  .nb-deleted { text-decoration: line-through; color: #999; }
+  .nb-highlight { background: #ffff00; padding: 0 4px; }
+  .nb-arrow { color: #8b1a1a; font-weight: bold; }
+
+  /* ── Evidence Bag Label ── */
+  .evidence-bag {
+    background: linear-gradient(135deg, #f5f5f0, #e8e4d8); border: 2px solid #999;
+    padding: 20px; max-width: 450px; margin: 0 auto; font-family: 'Courier Prime', monospace;
+    font-size: 12px; position: relative;
+  }
+  .evidence-bag::before {
+    content: 'EVIDENCE'; position: absolute; top: -12px; left: 20px;
+    background: var(--red-stamp); color: white; padding: 2px 15px; font-size: 10px;
+    letter-spacing: 3px; font-weight: bold;
+  }
+  .bag-row { display: flex; padding: 4px 0; }
+  .bag-label { font-weight: bold; min-width: 130px; color: #555; }
+  .bag-divider { border-top: 1px dashed #999; margin: 8px 0; }
+
+
+  /* Standalone in-app evidence sheet */
+  html { min-height: 100%; background: #2a2520; }
+  body { min-height: 100%; padding: 12px; }
+  body > .evidence-item { margin: 0 auto; }
+  @media (max-width: 640px) {
+    body { padding: 6px; }
+    .evidence-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="grey-shawl-fresh" class="evidence-item">
+  <div class="evidence-tab">Exhibit X</div>
+  <div class="evidence-header">
+    <h3>Evidence Bag &mdash; Anya Devi's Grey Shawl</h3>
+    <span class="evidence-number">CBI/EX/024</span>
+  </div>
+  <div class="evidence-body">
+    <div class="evidence-bag">
+      <div class="bag-row"><span class="bag-label">Item:</span><span>Wool shawl, grey, hand-woven</span></div>
+      <div class="bag-row"><span class="bag-label">Owner:</span><span>Anya Devi</span></div>
+      <div class="bag-row"><span class="bag-label">Collected from:</span><span>Anya Devi's residence, Jharipani</span></div>
+      <div class="bag-row"><span class="bag-label">Date collected:</span><span>[Date of CBI search]</span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row"><span class="bag-label">Condition:</span><span style="font-weight:bold; color:var(--red-stamp);">FRESHLY WASHED</span></div>
+      <div class="bag-row"><span class="bag-label">Season note:</span><span>May &mdash; average temp 25&deg;C. Not shawl weather.</span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row"><span class="bag-label">Lab analysis:</span><span>Despite washing, trace fibres recovered</span></div>
+      <div class="bag-row"><span class="bag-label">Fibre match:</span><span>Grey wool fibres found on Vikram's jacket sleeve &mdash; <strong style="color:var(--red-stamp);">POSITIVE MATCH</strong></span></div>
+      <div class="bag-divider"></div>
+      <div class="bag-row" style="font-size:11px; color:#888;"><span class="bag-label">Cross-ref:</span><span>Chai-shop owner (Ex. H, Round 2): "grey shawl"<br>Instagram stories (Ex. D, Round 1): "Grey Lady... grey shawl"</span></div>
+    </div>
+    <div class="handwritten-note">
+      CBI Note: Anya's grey shawl matches the "Grey Lady" described in Vikram's Instagram stories AND the chai-shop owner's witness statement AND fibres recovered from Vikram's jacket. She washed it in May &mdash; out of season. She's been on that road for weeks. The question is: was she the killer, or was she there for another reason?
+    </div>
+  </div>
+</div>
+</body>
+</html>

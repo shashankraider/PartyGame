@@ -10,6 +10,8 @@
     "start": "next start",
     "lint": "eslint .",
     "docs:render": "node scripts/render-diagrams.mjs",
+    "printables:split": "node scripts/split-evidence-printables.mjs",
+    "printables:check": "node scripts/split-evidence-printables.mjs --check",
     "types:generate": "node scripts/generate-types.mjs",
     "validate-case": "node scripts/validate-case.mjs",
     "validate-cases": "node scripts/validate-case.mjs --all",

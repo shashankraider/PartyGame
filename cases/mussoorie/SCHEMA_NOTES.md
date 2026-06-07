@@ -49,7 +49,7 @@ interface Chapter { /* ... */ roundNumber: number; }
 interface Evidence { /* ... */ revealedInRound: number; }
 ```
 
-The TV case-board UI uses rounds as a visible progress indicator and the printables index by round.
+The TV case-board UI uses rounds as a visible progress indicator. Each evidence record maps to its own standalone printable exhibit.
 
 ---
 

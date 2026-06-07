@@ -10,5 +10,5 @@ export function getEvidencePrintableUrl(caseId: string, evidence: Evidence): str
   }
   const safeCase = encodeURIComponent(caseId);
   const safeFile = encodeURIComponent(file);
-  return `/api/cases/${safeCase}/printables/${safeFile}#${encodeURIComponent(evidence.id)}`;
+  return `/api/cases/${safeCase}/printables/${safeFile}`;
 }

@@ -1,25 +1,28 @@
 # Printables — Murder in Mussoorie
 
-Player-facing physical case files for each round, designed in HTML with print styles (CBI vintage aesthetic).
+Player-facing evidence exhibits designed in HTML with print styles (CBI vintage aesthetic).
 
-Each round is one self-contained HTML file. Open in a browser and use **File → Print** (set to **Save as PDF**) for a digital copy, or print directly on A4. The HTML files are also viewable on-screen during play if you don't want to print.
+Each evidence item has its own self-contained HTML file. The app renders that standalone file when the evidence is revealed, so detectives cannot scroll into unrevealed evidence from the same round.
 
-## Files
+The four `RoundN_*.html` files remain the editable source bundles and print-all-round versions. Run `npm run printables:split` after changing a source bundle to regenerate the 30 standalone exhibits. CI can verify they are current with `npm run printables:check`.
 
-| File | Round | Evidence items (from Game Bible Section 11) |
+## Source bundles
+
+| File | Round | Evidence items |
 |---|---|---|
-| `Round1_The_Scene.html` | Round 1: The Scene | Items 1–5 |
-| `Round2_Suspects_Crack.html` | Round 2: Suspects' Stories Crack | Items 6–12 |
-| `Round3_Thakur_Connection.html` | Round 3: The Thakur Connection | Items 13–20 |
-| `Round4_The_Solve.html` | Round 4: The Solve | Items 21–26 |
+| `Round1_The_Scene.html` | Round 1: The Scene | 6 |
+| `Round2_Suspects_Crack.html` | Round 2: Suspects' Stories Crack | 9 |
+| `Round3_Thakur_Connection.html` | Round 3: The Thakur Connection | 9 |
+| `Round4_The_Solve.html` | Round 4: The Solve | 6 |
 
 ## Print tips
 
 - Use **plain white A4** paper (or letter — the layout fits both).
 - Set the browser print margins to **Default**; don't enable headers/footers.
 - The pages are designed to break cleanly between evidence cards.
-- A single full kit is ~25 sheets per round (most evidence cards fit one per page, some two).
+- Open a standalone evidence file to print only that exhibit.
+- Open a round source bundle to print a complete physical packet.
 
 ## Reusing across cases
 
-These printables are **Mussoorie-specific**. Future cases will ship their own `printables/` folder with the same `RoundN_*.html` convention.
+These printables are **Mussoorie-specific**. Future cases should map every evidence item to its own standalone `printableHtml` file.

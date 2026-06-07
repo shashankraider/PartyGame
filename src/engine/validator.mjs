@@ -150,6 +150,7 @@ export function crossReferenceChecks(caseObj, options = {}) {
   const chapterIds = new Set((caseObj.chapters ?? []).map((c) => c.id));
   const locationIds = new Set((caseObj.locations ?? []).map((l) => l.id));
   const roundNumbers = new Set((caseObj.rounds ?? []).map((r) => r.number));
+  const printableOwners = new Map();
 
   function checkRef(kind, set, value, ctx) {
     if (value == null) return;
@@ -216,6 +217,18 @@ export function crossReferenceChecks(caseObj, options = {}) {
     for (const sid of e.relatesToSuspectIds ?? []) {
       checkRef("suspect id", suspectIds, sid, `${ctx}.relatesToSuspectIds`);
     }
+    if (e.printableHtml) {
+      const existingOwner = printableOwners.get(e.printableHtml);
+      if (existingOwner) {
+        issues.push(
+          error(
+            `${ctx}.printableHtml shares "${e.printableHtml}" with evidence "${existingOwner}"; each evidence item must use a standalone exhibit`,
+          ),
+        );
+      } else {
+        printableOwners.set(e.printableHtml, e.id);
+      }
+    }
     if (checkAssets) {
       if (e.thumbnailUrl && !assetPathExists(caseDir, e.thumbnailUrl)) {
         issues.push(warn(`${ctx}.thumbnailUrl path not found on disk: ${e.thumbnailUrl}`));
@@ -225,6 +238,12 @@ export function crossReferenceChecks(caseObj, options = {}) {
       }
       if (e.pdfUrl && !assetPathExists(caseDir, e.pdfUrl)) {
         issues.push(warn(`${ctx}.pdfUrl path not found on disk: ${e.pdfUrl}`));
+      }
+      if (
+        e.printableHtml &&
+        !assetPathExists(caseDir, join("printables", e.printableHtml))
+      ) {
+        issues.push(warn(`${ctx}.printableHtml path not found on disk: ${e.printableHtml}`));
       }
     }
   }

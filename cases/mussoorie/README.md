@@ -12,7 +12,7 @@ A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a 
 | `design.md` | **The Game Bible** — full plot, suspects, solution, evidence list, two-path endgame, guilt map. The canonical, spoiler-heavy source of truth for this case. |
 | `Game_Bible.docx` | Earlier Word-document snapshot of the bible content. `design.md` is now the source of truth; the `.docx` may lag behind in-flight rewrites. Regenerate from `design.md` when needed. |
 | `case.json` | *(coming in Phase 1)* The structured data fed to the engine — schema-validated, references all assets and printables. |
-| `printables/` | Player-facing HTML printables, one per round. Print to PDF or A4. |
+| `printables/` | Player-facing HTML exhibits, one standalone file per evidence item, plus print-all-round source bundles. |
 | `assets/portraits/` | Suspect, victim, and backstory-character portraits. |
 | `assets/locations/` | Wide images of the 8 key locations. |
 | `assets/crime-scene/` | Scene photos used in evidence cards. |

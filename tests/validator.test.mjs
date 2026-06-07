@@ -155,6 +155,20 @@ describe("cross-reference: unknown evidence id", () => {
   });
 });
 
+describe("cross-reference: standalone evidence printables", () => {
+  test("two evidence items cannot share one printable", async () => {
+    const c = await templateClone();
+    c.evidence[0].printableHtml = "shared.html";
+    c.evidence.push({
+      ...structuredClone(c.evidence[0]),
+      id: "second-evidence",
+      printableHtml: "shared.html",
+    });
+    const issues = crossReferenceChecks(c);
+    assert.ok(hasMessage(issues, "each evidence item must use a standalone exhibit"));
+  });
+});
+
 describe("cross-reference: chapter references", () => {
   test("unknown prerequisite chapter id is an error", async () => {
     const c = await templateClone();

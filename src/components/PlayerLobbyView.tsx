@@ -308,7 +308,9 @@ function EvidenceInspector({
     () => getEvidencePrintableUrl(caseData.id, evidence),
     [caseData.id, evidence],
   );
-  const [detailTab, setDetailTab] = useState<"notes" | "exhibit">("notes");
+  const [detailTab, setDetailTab] = useState<"notes" | "exhibit">(
+    printableSrc ? "exhibit" : "notes",
+  );
 
   useEffect(() => {
     if (variant !== "sheet") return;
