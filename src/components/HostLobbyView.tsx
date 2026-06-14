@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import {
+  BriefingBeatPlayer,
+  type BriefingBeatPlayerHandle,
+} from "@/components/BriefingBeatPlayer";
 import type { Case, Chapter } from "@/engine/types";
 import {
   HOST_JUDGMENT_EVENT_TYPE,
@@ -73,6 +77,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   const setError = setLocalError;
   const [isStarting, setIsStarting] = useState(false);
   const [isHostActionBusy, setIsHostActionBusy] = useState(false);
+  const briefingPlayerRef = useRef<BriefingBeatPlayerHandle | null>(null);
 
   async function startGame() {
     setIsStarting(true);
@@ -97,7 +102,7 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
   }
 
   async function hostControlAction(
-    action: "pause" | "resume" | "open-accusation" | "end-session" | "next",
+    action: "pause" | "resume" | "open-accusation" | "end-session" | "next" | "previous",
   ) {
     setIsHostActionBusy(true);
     setError(null);
@@ -144,6 +149,14 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
     (currentChapter.type === "narrative" || currentChapter.type === "evidence-reveal");
   const canAdvanceBriefing =
     hasStarted && !isPaused && !isFinished && isBriefingPhase && isBriefingChapter;
+  // Rewind is available within Briefing when there's a previous beat in the
+  // current chapter OR a previous chapter to step back into. The first beat
+  // of the first chapter has nothing to go back to.
+  const isFirstChapter =
+    currentChapter !== null && caseData.chapters[0]?.id === currentChapter.id;
+  const currentBeat = lobby.session.current_beat_index ?? 0;
+  const canRewindBriefing =
+    canAdvanceBriefing && !(isFirstChapter && currentBeat === 0);
 
   return (
     <section className="py-4">
@@ -177,10 +190,24 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
           >
             {hasStarted ? "Started" : isStarting ? "Starting..." : "Start game"}
           </button>
+          {canRewindBriefing ? (
+            <button
+              type="button"
+              onClick={() => hostControlAction("previous")}
+              disabled={isHostActionBusy}
+              aria-label="Previous beat"
+              className="rounded-lg border border-white/15 px-3 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-[#cfc8ba] transition hover:border-[#d4ad67] hover:text-[#edc77d] disabled:opacity-50"
+            >
+              ‹ Back
+            </button>
+          ) : null}
           {canAdvanceBriefing ? (
             <button
               type="button"
-              onClick={() => hostControlAction("next")}
+              onClick={() => {
+                if (briefingPlayerRef.current?.fastForward()) return;
+                hostControlAction("next");
+              }}
               disabled={isHostActionBusy}
               className="rounded-lg bg-[#d4ad67] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-zinc-950 transition hover:bg-[#edc77d] disabled:opacity-50"
             >
@@ -235,7 +262,17 @@ export function HostLobbyView({ initialLobby, caseData, qrCode, joinUrl }: HostL
         />
       ) : null}
       {lobby.session.current_scene === "brief" ? (
-        <BriefScene caseData={caseData} detectives={detectives.length} />
+        currentChapter ? (
+          <BriefingBeatPlayer
+            caseData={caseData}
+            chapter={currentChapter}
+            beatIndex={lobby.session.current_beat_index ?? 0}
+            isPaused={isPaused}
+            handleRef={briefingPlayerRef}
+          />
+        ) : (
+          <BriefScene caseData={caseData} detectives={detectives.length} />
+        )
       ) : null}
       {lobby.session.current_scene === "case_board" ? (
         <>

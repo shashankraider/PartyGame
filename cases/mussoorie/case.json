@@ -1384,6 +1384,7 @@
       "title": "Who Was Vikram?",
       "roundNumber": 1,
       "prerequisites": ["r1-crime-scene"],
+      "locationId": "vikrams-cottage",
       "evidenceIds": [
         "instagram-grey-lady",
         "youtube-channel-page",
