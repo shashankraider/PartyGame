@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
 import type { LobbyState } from "@/lib/session-store";
-import { enumerateBriefingBeats } from "@/lib/briefing-beats";
 import { writeActivePlayerSession } from "@/lib/player-session";
 import { getEvidencePrintableUrl } from "@/lib/printables";
 import {
@@ -148,12 +147,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
         ) : null}
 
         {lobby.session.current_scene === "brief" ? (
-          <BriefMode
-            caseData={caseData}
-            player={player}
-            chapter={chapter}
-            beatIndex={lobby.session.current_beat_index ?? 0}
-          />
+          <BriefMode caseData={caseData} player={player} />
         ) : null}
 
         {lobby.session.current_scene === "case_board" ? (
@@ -269,55 +263,12 @@ function LobbyMode({
   );
 }
 
-function BriefMode({
-  caseData,
-  player,
-  chapter,
-  beatIndex,
-}: {
-  caseData: Case;
-  player: PlayerRow;
-  chapter: Chapter | null;
-  beatIndex: number;
-}) {
+function BriefMode({ caseData, player }: { caseData: Case; player: PlayerRow }) {
   const openingRound = caseData.rounds[0];
   const openingBeats = openingRound?.introNarration ?? [];
-  const briefingBeats = chapter ? enumerateBriefingBeats(chapter) : [];
-  const clampedBeatIndex = Math.max(0, Math.min(briefingBeats.length - 1, beatIndex));
-  const activeBeat = briefingBeats[clampedBeatIndex];
-  const activeSpeaker =
-    activeBeat?.kind === "narration" ? activeBeat.speaker : undefined;
 
   return (
     <div>
-      {chapter && briefingBeats.length > 0 ? (
-        <div className="mb-5 rounded-2xl border border-[#c8a46a]/30 bg-black/30 px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] uppercase tracking-[0.24em] text-[#d4ad67]">
-              {chapter.title}
-            </p>
-            <div className="flex gap-1" aria-label={`Beat ${clampedBeatIndex + 1} of ${briefingBeats.length}`}>
-              {briefingBeats.map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-1.5 w-4 rounded-full ${
-                    i < clampedBeatIndex
-                      ? "bg-[#d4ad67]"
-                      : i === clampedBeatIndex
-                        ? "bg-[#edc77d]"
-                        : "bg-white/15"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-          {activeSpeaker ? (
-            <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-[#cfc8ba]">
-              {activeSpeaker}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
       <p className="text-sm uppercase tracking-[0.24em] text-[#a6a29a]">{caseData.meta.setting}</p>
       <h2 className="mt-2 text-2xl font-semibold">{caseData.meta.title}</h2>
       <p className="mt-4 text-base leading-7 text-[#cfc8ba]">{caseData.meta.tagline}</p>
@@ -340,8 +291,8 @@ function BriefMode({
       ) : null}
       <p className="mt-6 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
         {player.is_observer
-          ? "Watch the TV — the host is reading the next beat."
-          : "Watch the TV — the host is reading the next beat. You'll act when interrogation begins."}
+          ? "Watch the TV for the opening narration. You're spectating this case."
+          : "Watch the TV for the opening narration. You'll act when the host hands control to phones."}
       </p>
     </div>
   );

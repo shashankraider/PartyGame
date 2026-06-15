@@ -1,5 +1,4 @@
 import { loadCase } from "@/engine/case-loader";
-import { getBriefingBeatCount, isBriefingBeatChapter } from "@/lib/briefing-beats";
 import type { Case, Chapter, Evidence, Suspect } from "@/engine/types";
 import {
   MAX_SESSION_EVENTS,
@@ -87,10 +86,6 @@ function getChapterScene(chapter: Chapter): SessionScene {
       return "reveal";
     case "narrative":
     case "evidence-reveal":
-      // Round-1 narrative + evidence-reveal chapters render as the cinematic
-      // "brief" scene (BriefingBeatPlayer, Phase 2j / Swing #1). Round-2+
-      // evidence-reveal (e.g., r2-evidence-drop) keeps the legacy case_board.
-      if (chapter.roundNumber === 1) return "brief";
       return "case_board";
   }
 }
@@ -576,7 +571,6 @@ export async function startSession(sessionId: string) {
       phase: "briefing",
       current_scene: "brief",
       current_chapter_id: firstChapterId,
-      current_beat_index: 0,
       unlocked_evidence: unlockedEvidence,
       last_activity_at: new Date().toISOString(),
     })
@@ -639,14 +633,6 @@ export async function transitionSessionPhase(input: {
     ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
     : session.unlocked_evidence;
   const scene = chapter ? getChapterScene(chapter) : session.current_scene;
-  // Phase 2j: beat cursor only meaningful inside Briefing. Reset to 0 when
-  // entering Briefing, null when leaving.
-  const beatIndex =
-    input.targetPhase === "briefing"
-      ? chapter && isBriefingBeatChapter(chapter)
-        ? 0
-        : session.current_beat_index ?? 0
-      : null;
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("sessions")
@@ -655,7 +641,6 @@ export async function transitionSessionPhase(input: {
       phase: input.targetPhase,
       current_scene: scene,
       current_chapter_id: chapter?.id ?? session.current_chapter_id,
-      current_beat_index: beatIndex,
       current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
       unlocked_evidence: unlockedEvidence,
       last_activity_at: new Date().toISOString(),
@@ -714,13 +699,6 @@ export async function setSessionScene(input: {
   const unlockedEvidence = chapter
     ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
     : session.unlocked_evidence;
-  // Phase 2j: keep beat index aligned with the chapter landing.
-  const beatIndex =
-    targetPhase === "briefing"
-      ? chapter && isBriefingBeatChapter(chapter)
-        ? 0
-        : session.current_beat_index ?? 0
-      : null;
   const { data, error } = await supabase
     .from("sessions")
     .update({
@@ -728,7 +706,6 @@ export async function setSessionScene(input: {
       phase: targetPhase,
       current_scene: input.scene,
       current_chapter_id: input.chapterId ?? session.current_chapter_id,
-      current_beat_index: beatIndex,
       current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
       unlocked_evidence: unlockedEvidence,
       last_activity_at: new Date().toISOString(),
@@ -866,52 +843,6 @@ export async function setAccusationVote(input: {
   return getLobbyState(input.sessionId);
 }
 
-/**
- * Phase 2j: advance the beat cursor within a Briefing chapter. Returns the
- * updated session row. Uses an idempotent UPDATE keyed on the expected current
- * index so two near-simultaneous clicks don't double-advance.
- */
-async function advanceSessionBeat(
-  session: SessionRow,
-  chapter: Chapter,
-  direction: "next" | "previous",
-): Promise<SessionRow | null> {
-  const beatCount = getBriefingBeatCount(chapter);
-  if (beatCount === 0) return null;
-  const currentBeat = session.current_beat_index ?? 0;
-  const step = direction === "next" ? 1 : -1;
-  const nextBeat = Math.max(0, Math.min(beatCount - 1, currentBeat + step));
-  if (nextBeat === currentBeat) return session;
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      current_beat_index: nextBeat,
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .eq("current_beat_index", currentBeat)
-    .select("*")
-    .single();
-
-  if (error) {
-    // Race condition: another client moved the beat before us. Re-read state
-    // and return the latest row so Realtime subscribers converge.
-    const refreshed = await getLobbyState(session.id);
-    return refreshed.session;
-  }
-  if (!data) return session;
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.beat_changed",
-    payload: { chapterId: chapter.id, beatIndex: nextBeat, direction },
-  });
-
-  return data;
-}
-
 export async function advanceSessionChapter(sessionId: string, direction: "next" | "previous") {
   assertSupabaseConfigured();
 
@@ -923,26 +854,6 @@ export async function advanceSessionChapter(sessionId: string, direction: "next"
   }
 
   const currentPhase = getSessionPhase(session);
-
-  // Phase 2j: inside Briefing on a beat-capable chapter, advance the beat
-  // cursor first. Only fall through to chapter advance when the cursor is at
-  // either end of the beat range.
-  if (currentPhase === "briefing" && session.current_chapter_id) {
-    const currentChapter = caseData.chapters.find(
-      (item) => item.id === session.current_chapter_id,
-    );
-    if (currentChapter && isBriefingBeatChapter(currentChapter)) {
-      const beatCount = getBriefingBeatCount(currentChapter);
-      const currentBeat = session.current_beat_index ?? 0;
-      const atEnd =
-        direction === "next" ? currentBeat >= beatCount - 1 : currentBeat <= 0;
-      if (!atEnd) {
-        const updated = await advanceSessionBeat(session, currentChapter, direction);
-        return updated ?? session;
-      }
-    }
-  }
-
   if (shouldNoopChapterAdvance(session)) {
     return session;
   }
@@ -981,34 +892,11 @@ export async function advanceSessionChapter(sessionId: string, direction: "next"
     });
   }
 
-  // Phase 2j: when landing on a Briefing-beat chapter on Previous, jump to its
-  // last beat (so the host rewinds smoothly into the prior chapter's tail).
-  // On Next, the default is beat 0, handled by setSessionScene below.
-  const updated = await setSessionScene({
+  return setSessionScene({
     sessionId,
     scene: getChapterScene(nextChapter),
     chapterId: nextChapter.id,
   });
-
-  if (
-    direction === "previous" &&
-    currentPhase === "briefing" &&
-    isBriefingBeatChapter(nextChapter)
-  ) {
-    const lastBeat = Math.max(0, getBriefingBeatCount(nextChapter) - 1);
-    if (lastBeat > 0) {
-      const supabase = createSupabaseServerClient();
-      const { data } = await supabase
-        .from("sessions")
-        .update({ current_beat_index: lastBeat })
-        .eq("id", sessionId)
-        .select("*")
-        .single();
-      if (data) return data;
-    }
-  }
-
-  return updated;
 }
 
 export type InterviewContext = {

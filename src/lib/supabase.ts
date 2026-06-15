@@ -21,7 +21,6 @@ export type SessionRow = {
   phase: SessionPhase;
   current_scene: SessionScene;
   current_chapter_id: string | null;
-  current_beat_index: number | null;
   current_interviewer_player_id: string | null;
   current_interview_suspect_id: string | null;
   unlocked_evidence: string[];
