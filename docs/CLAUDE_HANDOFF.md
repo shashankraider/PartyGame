@@ -1,8 +1,8 @@
 # Mystery Engine — Handoff
 
-**Last updated**: 2026-05-29
+**Last updated**: 2026-06-14
 **Repository**: Git remote `origin` → `https://github.com/shashankraider/PartyGame.git`. Deploy production on Vercel (or any Next.js host); see **Deployment** below.
-**Current phase**: Phase 2h complete. Next: **Phase 2j** (Pause / Resume).
+**Current phase**: Swing #1 (Beat-driven Briefing) complete. Next: **Swing #2** (Theorize-Out-Loud — Detective Huddle) per the manifesto in `~/.claude/plans/a-lot-of-refactored-feigenbaum.md`. **Phase 2j (Pause / Resume) is still listed as the structural alternative if you prefer infrastructure over manifesto execution.**
 **Handoff target**: Cursor (or any other coding agent / fresh Claude session). The five sibling workdirs at `/Users/shashankmendiratta/shire/PartyGame-2g2-*/` from the earlier failed parallel attempt are no longer needed for mainline work — safe to delete with `rm -rf /Users/shashankmendiratta/shire/PartyGame-2g2-*` if you want them gone.
 
 This document is the running handoff for continuing development with any coding agent. It summarizes the product, the repo state, completed work, verification commands, and the next useful development prompt. Designed to be picked up cold by a new client.
@@ -18,7 +18,7 @@ If you're a new agent (Cursor included) taking over this project:
    cd /Users/shashankmendiratta/shire/PartyGame
    npm install                       # if node_modules isn't current
    npm run validate-cases            # expect: 0 errors
-   npm test                          # expect: 122 pass, 1 skipped (live getSessionEvents 404 when Supabase env absent)
+   npm test                          # expect: 135 pass, 1 skipped (live getSessionEvents 404 when Supabase env absent)
    npm run eval:adjudicator -- all   # expect: 103/104 (known Bisht 'the-rifle / challenges collector' flake)
    npm run eval:host                 # expect: 59/60 or 60/60 (occasional 'bisht-devraj-call' positive flake)
    npm run lint                      # expect: clean
@@ -27,24 +27,27 @@ If you're a new agent (Cursor included) taking over this project:
    If anything regresses beyond the documented flakes, **stop and investigate before continuing** — the state is not what this doc describes.
 
 2. **Read `docs/CLAUDE_HANDOFF.md` end-to-end** (this file). The most important sections after this TL;DR:
-   - "Next Recommended Phase" — **Phase 2j** (Pause / Resume). The next mainline initiative; builds the session-lifecycle layer on top of Phase 2h's Realtime infrastructure so a host can pause, close the laptop, come back hours later, and resume cleanly.
+   - "Next Recommended Phase" — see the **manifesto** at `~/.claude/plans/a-lot-of-refactored-feigenbaum.md` for the full game-changer roadmap. **Swing #1 (Beat-driven Briefing) shipped on 2026-06-14**; next is Swing #2 (Theorize-Out-Loud — Detective Huddle) OR Phase 2j (Pause/Resume) if you prefer infrastructure.
    - "Completed Work" — every shipped phase with its concrete artifacts.
    - "Phase 2g — Adjudicator, Unlock Tiers, and Host Fallback (reference / shipped design)" — the locked design language for the unlock-tier system that Phase 2i / 2h build on.
 
-3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. Phase 2i ships the AI host + free-Interrogation architecture on top. Phase 2h ships session-scoped Supabase Realtime + word-boundary token streaming so every UX surface (Case Status, mic handoff, host-fallback banner, suspect transcripts) updates within ~100ms. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harnesses (`npm run eval:adjudicator -- all` for per-cue cue text; `npm run eval:host` for AI-host evidence-drop / phase-transition decisions) are the contract between the author and the engine; keep them green whenever cue or `arrivesWhen` text changes.
+3. **The codebase is at a stable, fully-built green state.** Phase 2g.2 ships unlock-cue authoring and eval coverage for all six Mussoorie suspects. Phase 2i ships the AI host + free-Interrogation architecture on top. Phase 2h ships session-scoped Supabase Realtime + word-boundary token streaming so every UX surface (Case Status, mic handoff, host-fallback banner, suspect transcripts) updates within ~100ms. Swing #1 ships beat-driven Briefing — each Continue click advances one beat (typewriter narration + speaker chyron + ambient backdrop), with a Back button for rewind during Briefing. Voice-to-text dictation, character portraits, the "Restore detective sessions after browser back" flow, and the "Redesign host and player investigation views" pass have all landed since 2h. Naina Kapoor's canon has been corrected: she is a corporate-investigations journalist, not a freelance designer, and her Mussoorie cover/reason now ties to Vikram's Rhea/Metropolis diligence plus his silence. The eval harnesses (`npm run eval:adjudicator -- all` for per-cue cue text; `npm run eval:host` for AI-host evidence-drop / phase-transition decisions) are the contract between the author and the engine; keep them green whenever cue or `arrivesWhen` text changes.
 
-4. **Phase 2h shipped.** What it delivered (on top of Phase 2i):
-   - **Session-scoped JWT auth** (`src/lib/realtime-auth.ts`) — short-lived HS256 JWTs signed with `SUPABASE_JWT_SECRET`; `session_id` custom claim; minted from `GET /api/sessions/[sessionId]/realtime-token`.
-   - **Realtime RLS hookup** (`supabase/migrations/0006_realtime_jwt_rls.sql`) — `current_session_id()` now reads `auth.jwt() ->> 'session_id'` first, falling back to the legacy `app.session_id` GUC. Every existing RLS policy works unchanged.
-   - **Authed browser client** (`src/lib/supabase-client.ts`) — `createSessionRealtimeClient(sessionId)` fetches the token, wires `realtime.setAuth`, schedules silent refresh. Returns `null` when realtime auth isn't available so callers degrade to polls without surfacing an error.
-   - **Realtime hooks** (`src/lib/session-realtime.ts`) — `useSessionLobbyRealtime`, `useInterviewTranscriptRealtime`, `useCaseStatusRealtime`, `useHostFallbackRealtime`. All six previous polls are gone; each hook falls back to its original cadence if Realtime auth or the channel fails.
-   - **Word-boundary token streaming** — `askSuspect` now pre-inserts the assistant row with `is_streaming: true`, streams via OpenRouter `stream: true`, UPDATEs `messages.content` on every word boundary. The Phase 2g two-pass revelation rewrite also re-enters streaming mode. UI renders a `typing…` caret while the row is streaming.
+4. **Swing #1 shipped (2026-06-14).** What it delivered (on top of Phase 2h):
+   - **Beat-driven Briefing** (`src/components/BriefingBeatPlayer.tsx`) — TV renders one beat at a time during the Briefing phase: typewriter narration (22ms/char, 8ms after sentence-end), speaker chyron pill (200ms fade-in lead, color-coded), ambient backdrop (chain: `beat.imageUrl` → `chapter.locationId` → `case.locations[id].imageUrl` → hero fallback). Evidence-reveal chapters render `narration` as beat 0, then one beat per evidenceId, with the printable HTML iframe sliding in from the right.
+   - **Pure helper** (`src/lib/briefing-beats.ts`): `enumerateBriefingBeats`, `getBriefingBeatCount`, `isBriefingBeatChapter`, `resolveBeatBackdrop`. Shared between engine + UI.
+   - **Engine** — `getChapterScene` returns `"brief"` for round-1 narrative + evidence-reveal chapters (round-2+ unchanged). New `advanceSessionBeat` with idempotent conditional UPDATE (no double-advance race). `advanceSessionChapter` delegates to beat advance when inside Briefing on a beat-capable chapter with cursor not at end. `setSessionScene` + `transitionSessionPhase` keep `current_beat_index` aligned (0 on enter, null on leave).
+   - **Schema** — `supabase/migrations/0007_briefing_beat_index.sql` adds nullable `sessions.current_beat_index`.
+   - **TV strip** — Continue's first click during typewriter fast-forwards (via ref); second click advances. New "Back" button scoped to Briefing only (hidden on first beat of first chapter).
+   - **Phone (BriefMode)** — chapter dot row (`● ● ○ ○`) + active speaker label above the case-meta block. "Watch the TV" copy stays.
 
-   Next mainline initiative is **Phase 2j** (Pause / Resume). See "Next Recommended Phase" below.
+   Previous Phase 2h ships session-scoped Supabase Realtime + word-boundary token streaming. See `## Completed Work` below for full inventory.
+
+   Next mainline initiative: **Swing #2** (Theorize-Out-Loud — Detective Huddle) per the manifesto, OR **Phase 2j** (Pause / Resume) if you prefer infrastructure.
 
 5. **Local environment** required:
    - `.env.local` with `OPENROUTER_API_KEY` (gpt-4o-mini is the default model; works fine), `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and **`SUPABASE_JWT_SECRET`** (Phase 2h; must match the Supabase project's JWT secret — locally, `supabase status -o env | grep JWT_SECRET`). When `SUPABASE_JWT_SECRET` is unset, the Realtime mint route returns 503 and the UI silently falls back to legacy polling.
-   - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work). Apply `supabase/migrations/0006_realtime_jwt_rls.sql` via `supabase db push --local`.
+   - Local Supabase running via `supabase start` from this repo root (needed if you also test in the browser; NOT needed for eval-only work). Apply both `supabase/migrations/0006_realtime_jwt_rls.sql` and `supabase/migrations/0007_briefing_beat_index.sql` via `supabase db push --local`. Hosted Supabase is also already at 0007 (applied 2026-06-14).
    - `OPENROUTER_API_KEY` is the only thing the eval scripts need.
 
 6. **Phones on Wi‑Fi testing the dev server** (`http://<LAN-IP>:3000`): `npm run dev` listens on `0.0.0.0`; `next.config.ts` auto-adds this machine’s non-loopback IPv4 addresses to `allowedDevOrigins` so Next 16 does not 403 `/_next/*` when the page is loaded from a LAN host. Optional: `NEXT_ALLOWED_DEV_ORIGINS=host1,host2,tailscale.hostname`.
@@ -324,6 +327,9 @@ src/
     case-status.ts           # Pure formatters for the TV Case Status panel
     session-events.ts        # Query helpers for GET /api/sessions/[id]/events
     round-robin.ts           # Pure mic-rotation arithmetic (Phase 2i.4)
+    briefing-beats.ts        # Swing #1: beat enumeration + backdrop resolution (round-1 chapters)
+    use-speech-to-text.ts    # Phone-side voice dictation (Web Speech API)
+    player-session.ts        # Phone restore-after-browser-back (recent)
     printables.ts            # resolve printable path + URL helper
     session-codes.ts
     session-store.ts
@@ -337,6 +343,7 @@ supabase/
     0004_interview_unlock_state.sql    # Phase 2g per-condition state
     0005_session_phase.sql             # Phase 2i.2 briefing/interrogation/accusation/reveal phase
     0006_realtime_jwt_rls.sql          # Phase 2h: current_session_id() reads auth.jwt() for Realtime
+    0007_briefing_beat_index.sql       # Swing #1: sessions.current_beat_index for beat-by-beat Briefing
 
 tests/
   phase-machine.test.mjs
@@ -357,6 +364,56 @@ If a new client (Cursor) ignores these workdirs and authors directly in the main
 ---
 
 ## Completed Work
+
+### Phase 2j Swing #1 — Beat-driven Briefing (shipped 2026-06-14, commit `f316558`)
+
+Replaced the static title-card Briefing with a beat-by-beat cinematic player. The TV now walks each chapter's authored `beats[]` one at a time on Continue; evidence-reveal chapters render `narration` as beat 0 and one beat per evidence exhibit (printable HTML iframe slide-in).
+
+What's in the architecture:
+
+- **Server-tracked beat cursor.** `sessions.current_beat_index` (nullable int, migration 0007). Null outside Briefing; 0 on Briefing entry; incremented on Continue; decremented on Back; reset on chapter boundary; nulled on phase exit. Realtime fans the row update so TV + every phone agree on the active beat.
+- **Beat enumeration helper** (`src/lib/briefing-beats.ts`): `enumerateBriefingBeats(chapter)`, `getBriefingBeatCount(chapter)`, `isBriefingBeatChapter(chapter)`, `resolveBeatBackdrop(beat, chapter, caseData)`. Pure functions shared between engine + UI.
+- **Engine wiring** (`src/lib/session-store.ts`):
+  - `getChapterScene` returns `"brief"` for round-1 narrative + evidence-reveal chapters; round-2+ evidence-reveal (`r2-evidence-drop`) keeps the legacy `case_board` path.
+  - New `advanceSessionBeat(session, chapter, direction)` — idempotent conditional UPDATE (`WHERE current_beat_index = $expected`) so two near-simultaneous Continue clicks can't double-advance.
+  - `advanceSessionChapter` now delegates to beat advance when inside Briefing on a beat-capable chapter with cursor not at end. On chapter rewind within Briefing, lands on the last beat of the previous chapter for smooth back-walking.
+  - `startSession`, `setSessionScene`, `transitionSessionPhase` keep `current_beat_index` aligned (0 on Briefing enter, null on phase exit).
+- **TV renderer** (`src/components/BriefingBeatPlayer.tsx`): three-layer 16:9 frame. Backdrop `<Image>` keyed to `beat.imageUrl → chapter.locationId → case.locations[id].imageUrl → /api/cases/[id]/hero` with bottom-up dark gradient. Speaker chyron pill (200ms fade-in, color-coded: Narrator ivory, CBI Officer warm amber, default muted). JS-driven typewriter (22ms/char, 8ms after sentence-end whitespace) with blinking `▎` cursor pinned at the active char. Crossfade between beats (300ms). Exhibit beats render the printable iframe with a 400ms ease-out slide-in. Pause behavior: typewriter freezes, cursor stops blinking.
+- **Skip-to-end on Continue mid-typewriter**: parent passes `briefingPlayerRef.fastForward()`; first click during typewriter fills the rest of the text; subsequent clicks bubble to advance.
+- **TV strip — Back button**: new outline-style button scoped to Briefing only, sits to the left of Continue. Hidden on first beat of first chapter (clamp at 0). Both Continue and Back POST `{action: "next" | "previous"}` to the existing `/api/sessions/[id]/scene` route — no API shape change.
+- **Phone (`BriefMode`)**: chapter dot row (`● ● ○ ○`) keyed to `current_beat_index / totalBeats`, active speaker label underneath. The existing "Watch the TV — the host is reading the next beat." copy stays. No transcript on phones — the TV is the stage.
+- **Content edit**: `cases/mussoorie/case.json` got one new field — `locationId: "vikrams-cottage"` on `r1-vikram-life` — so all five round-1 chapters have a backdrop. Existing assets in `cases/mussoorie/assets/locations/*.png` cover the rest (police-station for r1-arrival + r1-suspect-board, camels-back-road for r1-crime-scene, hero fallback for r1-anonymous-letter).
+
+Files added:
+- `src/components/BriefingBeatPlayer.tsx`
+- `src/lib/briefing-beats.ts`
+- `supabase/migrations/0007_briefing_beat_index.sql`
+
+Files modified:
+- `src/lib/session-store.ts` (getChapterScene + advanceSessionBeat + advance/start/transition + setScene)
+- `src/lib/supabase.ts` (`SessionRow.current_beat_index`)
+- `src/components/HostLobbyView.tsx` (swap BriefScene → BriefingBeatPlayer, Back button, hostControlAction union extension)
+- `src/components/PlayerLobbyView.tsx` (BriefMode dot row + speaker label + chapter props)
+- `cases/mussoorie/case.json` (locationId on r1-vikram-life)
+- `tests/phase-machine.test.mjs` (+6 cases: narrative enumeration, evidence-reveal narration+exhibits, narration-missing skip, non-briefing empty list, round-2 evidence-reveal rejection, backdrop fallback chain)
+
+**Verification (Swing #1 commit)**:
+- `npm run validate-cases` — 0 errors.
+- `npm test` — 135 pass / 0 fail / 1 skipped (+13 vs Phase 2h baseline).
+- `npm run eval:adjudicator -- all` — 103/104 (documented Bisht `secret:the-rifle` flake; unchanged).
+- `npm run eval:host` — 59/60 (documented `bisht-devraj-call` flake; unchanged).
+- `npm run lint` — clean.
+- `npm run build` — clean; routes unchanged.
+- `supabase db push --local` — 0007 applied locally.
+- `supabase db push --linked` — 0007 applied to hosted project (`nfpochmyqmttqirhflac`).
+
+Deferred follow-ups (named in `~/.claude/plans/a-lot-of-refactored-feigenbaum.md`):
+- **F1** — Audio bed via `Beat.musicCue` (~0.5d). Asset convention `cases/[id]/assets/audio/[cue].(mp3|ogg)`. Handle iOS Safari autoplay-unlock.
+- **F2** — Ken Burns motion on backdrop stills (~2h, CSS-only).
+- **F3** — Vikram's final-recording video as r1-arrival pre-beat (existing asset: `cases/mussoorie/assets/video/vikram-final-recording.mp4` + SRT). Strongly recommended cold-open (~0.5d).
+- **F4** — Chyron animation polish (slide-from-below) (~1h).
+- **F5** — `BriefScene` cleanup; delete once Swing #1 survives one playtest.
+- **F6** — Portrait thumbnail overlay on r1-suspect-board second beat (~2h).
 
 ### Phase 2h — Realtime infrastructure + token streaming
 
@@ -718,9 +775,46 @@ The old `/api/interview` route has been removed; all interview traffic flows thr
 
 ## Next Recommended Phase
 
-### Phase 2j — Pause / Resume
+The mainline roadmap split into two tracks after Phase 2h shipped:
 
-Phase 2h shipped Realtime infrastructure. Phase 2j builds the social-fabric layer on top: real Pause / Resume that survives a host page reload, a phone reconnect, or the whole session being closed and re-opened from a join URL later. Today's Pause is a `sessions.status = 'paused'` toggle that gates `askSuspect` LLM calls; the next step is making sessions feel like a saved game.
+- **Manifesto track** — five game-changer swings designed in `~/.claude/plans/a-lot-of-refactored-feigenbaum.md`. **Swing #1 (Beat-driven Briefing) shipped 2026-06-14.** Next up: Swing #2 (Theorize-Out-Loud).
+- **Infrastructure track** — Phase 2j (Pause / Resume). Brief retained below as the alternative if you'd rather harden session lifecycle before adding more swings.
+
+**Recommended order** (per manifesto sequencing):
+1. **Swing #5 — Suspect TTS** (~2d). Cheapest game-changer, highest emotional return; surfaces the existing `ttsVoiceId` data. Probably the next swing to land.
+2. **Swing #2 — Theorize-Out-Loud / Detective Huddle** (~5d). Brief below. Requires Swing #3 (pressure gauge) for full effect but can ship standalone with a softer suspect-reaction model.
+3. **Swing #3 — Pressure as a gauge** (~4d). Unblocks the wall-suspect problem (Bisht / Devraj / Anya) and gives the AI host a concrete "is the case solvable" signal.
+4. **Swing #4 — Verdict Room** (~5d). Caps the case with structured moral judgment; depends on the rest.
+5. Manifesto Swing #1 polish follow-ups (F1–F6) can interleave at any time.
+
+### Next: Swing #2 — Theorize-Out-Loud / Detective Huddle
+
+After the AI host fires the second anonymous letter (Thakur pivot), trigger a 90-second Detective Huddle:
+
+- TV goes dim with a 90s countdown.
+- Each phone gets a structured form: pick a suspect, pick a motive, pick one supporting evidence item.
+- When the timer ends, the TV reads theories aloud anonymously ("One detective thinks Anya is the killer because of the bus-ticket gap").
+- **The AI suspects see the theories.** Each suspect's system prompt gets enriched with a `playerTheories[]` array for the next round of interrogation. They deflect, mock, accidentally confirm, or — for the truly guilty — perform plausible deniability against the *wrong* theory.
+
+What this unlocks: the cast goes from reactive NPCs to adversarial roleplayers. Naina hearing "you killed him" and responding "I wish I had, then at least one of us would have done something that night" is the moment players photograph.
+
+**Likely files** (per plan):
+- New `theorize` phase value (migration 0008) + a `theories` table.
+- `src/components/HostLobbyView.tsx` — TheorizeScene (countdown, anonymized reveal).
+- `src/components/PlayerLobbyView.tsx` — TheorizeMode (form: suspect picker + motive textarea + evidence picker).
+- `src/lib/session-store.ts` — store theories, enrich askSuspect system prompt with `playerTheories[]`.
+- `src/lib/host-judgment.ts` — fire `transition-phase` to `theorize` after the second letter lands AND all six initial cooperation cues have fired.
+
+**Hard gate** before commit: same as always — `validate-cases && test && eval:adjudicator -- all && eval:host && lint && build`. Suspect-prompt evals may need a regression case showing the suspect addresses a theory.
+
+**Open design questions** for the implementer:
+- How long to keep theories alive? One round of interrogation, or all subsequent rounds?
+- Should theories be visible to other players (peer pressure) or stay anonymized to the room?
+- What happens if no players submit a theory in 90s? Default to a no-op suspect prompt, or auto-skip the phase?
+
+### Alternative: Phase 2j — Pause / Resume
+
+If you'd rather harden session lifecycle before adding more swings: Phase 2j builds the social-fabric layer on top of 2h's Realtime infrastructure — real Pause / Resume that survives a host page reload, a phone reconnect, or the whole session being closed and re-opened from a join URL later. Today's Pause is a `sessions.status = 'paused'` toggle that gates `askSuspect` LLM calls; the next step is making sessions feel like a saved game.
 
 Goal: A host can Pause a session, close the laptop, come back hours later, open the same session URL, and the TV picks up exactly where it left off — same phase, same chapter, same Interrogation transcripts, same unlocked evidence, same suspect picker state. Players re-join via the original join code and their phones rehydrate to the right scene.
 
@@ -737,7 +831,7 @@ Verify:
 
 - Pause an in-progress session. Close every browser tab. Re-open the host URL after a long delay. TV rehydrates to the same scene + chapter + unlocked evidence. Phones rejoining via the join code land on the right player row + scene.
 - Resume from Pause. AI host + Realtime + streaming all resume cleanly (no zombie subscriptions).
-- Hard gate stays green: `npm run validate-cases && npm test && npm run eval:adjudicator -- all && npm run eval:host && npm run lint && npm run build`.
+- Hard gate stays green.
 
 What NOT to do:
 
