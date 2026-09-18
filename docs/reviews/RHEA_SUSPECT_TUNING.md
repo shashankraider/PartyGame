@@ -81,6 +81,6 @@ Raw report: `output/evals/rhea-concealment-final.json`.
 
 Latest targeted run: 3 conversations, 12 answers, expected unlocks matched, no evaluation errors, no issues flagged by the independent grader. Earlier runs are retained: one invented an innocent reason for wiping before the motive was earned; the final reverse-order rerun instead refused to explain until both admissions were present.
 
-Unit tests verify the four admission combinations, reverse order, absence of motive in unearned contexts, invalid admission references and exclusion of private layers from public output. Unit suite: 161 passed, 1 skipped. Case validation, lint and production build passed; local server restarted. No production deployment.
+Unit tests verify the four admission combinations, reverse order, absence of motive in unearned contexts, invalid admission references and exclusion of private layers from public output. Unit suite: 161 passed, 1 skipped. Case validation, lint and production build passed; local server restarted. No deployment was performed during that focused tuning run. The later [September 18 release](../RELEASE_2026-09-18.md) includes these changes.
 
 This is a focused improvement, not certification of every answer. The same model/grader can still miss defects: the latest finances-first answer omitted the one-year duration despite that fixture requiring it. Missing phone records and the printable buyer mismatch remain separate open findings. Suspicion and evasiveness are intentional; invented innocent explanations and contradictory earned admissions are not.

@@ -194,6 +194,7 @@ The CBI now has two anonymous helpers — neither knows about the other. Both ar
 - **Secret**: Rhea had been embezzling revenue from the YouTube channel for over a year. She was also secretly negotiating to sell the channel to a Delhi media company — a deal that would make her rich but that Vikram would never have agreed to.
 - **What she did that night**: Nothing — she was home all evening (phone records confirm it). But at 5:00 AM the next morning, before the body was found, she entered Vikram's cottage with her spare key and wiped the memory card and deleted research files to destroy evidence of her embezzlement.
 - **Breaking point**: Building CCTV footage showing her entering Vikram's cottage at 5:00 AM. A draft email on her laptop showing the channel sale negotiation, dated two days before the murder.
+- **Playable posture**: Strongly guarded and self-protective. Financial exposure alone does not make her confess tampering; CCTV alone makes her admit entry/wiping while withholding motive. Once both admissions are earned, she explains that she was hiding the money and secret sale from Vikram. She maintains that she did not know he was dead and does not confess murder. The replacement account retracts her false morning arrival without erasing the claimed Delhi evening. Phone records are not currently an inspectable exhibit; this remains a content gap.
 - **Role in the story**: Evidence tamperer. Classic red herring — she inherits the channel, she destroyed evidence, she has financial motive. But she didn't kill anyone.
 
 ### 2. Inspector Devraj Khanna — the corrupt cop
@@ -286,7 +287,7 @@ Anya's confession completes the picture: the fifteen years of silence, the blood
 
 ## 9b. Interrogation scenario playbook (host reference)
 
-After Briefing, the case opens into the **Interrogation phase**. The free-choice suspect picker is on the TV at all times. The current interviewer (mic auto-rotates after 90 seconds of active time; early pass still works; each suspect has an eight-minute budget and host extensions of two minutes) can pick any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine. No human host advances the case — an AI host watches every transcript and decides when forensic evidence arrives.
+After Briefing, the case opens into the **Interrogation phase**. The free-choice suspect picker is on the TV at all times. The current interviewer (mic auto-rotates after 90 seconds of active time; early pass still works; each suspect has an eight-minute budget and host extensions of two minutes) can pick any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine. The human host opens research files, advances phases and may rescue stalled discoveries. The AI host reviews transcripts and can release eligible forensic evidence, but cannot advance the live phase.
 
 This playbook lists which handoffs actually *fire engine cues* in the early Interrogation arc (with only the opening evidence set in the locker), vs. which are deliberately stonewalled until the AI host has dropped the deeper forensic evidence later in the phase. Use it to set table expectations.
 
@@ -337,16 +338,11 @@ Even when no new cue fires on re-entry, the engine preserves prior transcripts. 
 
 ### Host fallback availability during early Interrogation
 
-`hostFallbackAfterTurns` thresholds are tuned per suspect:
-
-- **Naina**: 4–5 turns. Easy to crack; host rarely needs to step in.
-- **Rhea**: 8–10 turns. Players are supposed to work for this; only intervene if they're genuinely stuck.
-- **Kabir**: 4–5 turns. He wants to talk.
-- **Devraj, Bisht, Anya**: 999 in this stage (effectively never, because their conditions need Thakur-pivot or late-Interrogation evidence anyway — the host-fallback prompt won't appear until the AI host has surfaced that evidence).
+Authored `hostFallbackAfterTurns` values remain pacing hints, not permission gates or interview limits. The current host rescue is available for the next eligible discovery once its evidence gate is met, without requiring an AI stuck verdict. The new active-time clocks determine interview length.
 
 ### Phase transitions in and out of Interrogation
 
-The phase machine is: **Briefing → Interrogation → Accusation → Reveal.** Briefing still walks the opening cinematic chapters as a guided sequence. Interrogation is open-ended; the only "advance" the human host can do here is the social-fabric **Pause / Open accusation / End session** buttons on the TV strip. The AI host can also fire `transition-phase` verdicts itself when it judges the case is solvable, opening Accusation automatically. Once players vote and submit, the engine moves the session to Reveal, which renders the killer summary and the closing question.
+The phase machine is **Briefing → Interrogation → Accusation → Reveal → Finished**. The host advances briefing, opens Round 3–4 research files, and opens accusation when the group is ready. AI `transition-phase` suggestions are not applied. Once all detectives vote, the host begins the appropriate confrontation, advances the follow-up, reveals the truth and finishes the game. Pause cancels an unfinished answer; committed progress remains. During interviews the host can extend the current suspect by two minutes.
 
 ---
 
