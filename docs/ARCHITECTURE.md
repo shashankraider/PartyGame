@@ -88,7 +88,7 @@ sequenceDiagram
   API->>AI: Judge eligible cues
   API->>AI: Generate bounded draft from approved facts
   API->>AI: Validate draft before publication
-  API->>API: Repair rejected answer once; otherwise use authored fallback
+  API->>API: Repair rejected answer once or use authored fallback
   API->>AI: Judge forensic release and confirm any release
   API->>DB: Commit exchange, discoveries and handoff atomically
   DB-->>Screens: Realtime invalidation

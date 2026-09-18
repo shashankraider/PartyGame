@@ -7,6 +7,7 @@ Regenerate with `npm run docs:render`.
 | Source | Section | SVG |
 |---|---|---|
 | ARCHITECTURE.md (line 7) | System overview | [architecture-01-system-overview.svg](architecture-01-system-overview.svg) |
+| ARCHITECTURE.md (line 77) | Interview execution and realtime fan-out | [architecture-02-interview-execution-and-realtime-fan-out.svg](architecture-02-interview-execution-and-realtime-fan-out.svg) |
 | ARCHITECTURE.md (line 107) | Story boundaries and rescue | [architecture-03-story-boundaries-and-rescue.svg](architecture-03-story-boundaries-and-rescue.svg) |
 | ARCHITECTURE.md (line 129) | Lifecycle and ending | [architecture-04-lifecycle-and-ending.svg](architecture-04-lifecycle-and-ending.svg) |
 | INTERVIEW_LANGGRAPH.md (line 7) | Flow | [interview-langgraph-01-flow.svg](interview-langgraph-01-flow.svg) |

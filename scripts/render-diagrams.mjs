@@ -112,6 +112,7 @@ async function main() {
 
   const manifest = [];
   let totalRendered = 0;
+  let failures = 0;
 
   for (const mdPath of mdFiles) {
     const docSlug = slugify(basename(mdPath, extname(mdPath)));
@@ -145,6 +146,7 @@ async function main() {
         });
         totalRendered++;
       } catch (e) {
+        failures++;
         console.error(`  FAILED ${baseName}: ${e.message}`);
       }
     }
@@ -173,6 +175,7 @@ async function main() {
 
   console.log(`\nRendered ${totalRendered} diagram(s) -> docs/diagrams/`);
   console.log(`Manifest: docs/diagrams/INDEX.md`);
+  if (failures) throw new Error(`${failures} documentation diagram(s) failed to render`);
 }
 
 main().catch((e) => {
