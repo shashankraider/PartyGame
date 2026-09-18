@@ -3,12 +3,12 @@ import type { Evidence } from "@/engine/types";
 /** Basename only; must stay inside the case `printables/` folder. */
 const PRINTABLE_HTML_BASENAME = /^[A-Za-z0-9][A-Za-z0-9._-]*\.html$/;
 
-export function getEvidencePrintableUrl(caseId: string, evidence: Evidence): string | null {
+export function getEvidencePrintableUrl(caseId: string, evidence: Pick<Evidence, "printableHtml">, sessionId?: string): string | null {
   const file = evidence.printableHtml?.trim();
   if (!file || !PRINTABLE_HTML_BASENAME.test(file)) {
     return null;
   }
   const safeCase = encodeURIComponent(caseId);
   const safeFile = encodeURIComponent(file);
-  return `/api/cases/${safeCase}/printables/${safeFile}`;
+  return `/api/cases/${safeCase}/printables/${safeFile}${sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : ""}`;
 }

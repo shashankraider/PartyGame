@@ -117,49 +117,49 @@
       "id": "camels-back-road",
       "name": "Camel's Back Road",
       "description": "A 3-km loop walking path that snakes around the hill, named for a camel-shaped rock formation. The sharp bend near Gun Hill point is the murder site — old rusted railing, steep drop into a ravine, no streetlights, heavy mist after sunset.",
-      "imageUrl": "assets/locations/camels-back-road.png"
+      "imageUrl": "assets/locations/camels-back-road-final.png"
     },
     {
       "id": "thakur-cottage",
       "name": "Thakur Cottage, Landour",
       "description": "An abandoned colonial bungalow. Ransacked rooms frozen in time since the 2011 robbery. The empty mount in the Brigadier's study where a British-era Enfield rifle once hung is still visible in the unfaded wallpaper.",
-      "imageUrl": "assets/locations/thakur-cottage.png"
+      "imageUrl": "assets/locations/thakur-cottage-illustrated.png"
     },
     {
       "id": "vikrams-cottage",
       "name": "Vikram's Cottage",
       "description": "A modest rented cottage down the road from Thakur Cottage. Where Anya cleaned, where the laptop sat open, where Rhea entered at 5 AM the morning after the murder.",
-      "imageUrl": "assets/locations/vikrams-cottage.png"
+      "imageUrl": "assets/locations/vikrams-cottage-final.png"
     },
     {
       "id": "royal-pines",
       "name": "Royal Pines Hotel",
       "description": "Mussoorie's most successful luxury hotel, owned by Mr. Bisht. Built on land that once belonged to the Thakur estate. The private office behind reception has a British-era rifle mounted on the wall — a 'collection piece'.",
-      "imageUrl": "assets/locations/royal-pines.png"
+      "imageUrl": "assets/locations/royal-pines-illustrated.png"
     },
     {
       "id": "lovely-omelette",
       "name": "Lovely Omelette Centre",
       "description": "A cramped, beloved chai shop on Mall Road. Where Vikram and Kabir argued at 6:30 PM. The owner remembers it.",
-      "imageUrl": "assets/locations/lovely-omelette.png"
+      "imageUrl": "assets/locations/lovely-omelette-illustrated.png"
     },
     {
       "id": "police-station",
       "name": "Mussoorie Police Station",
       "description": "A small hill-town police station. Inspector Devraj Khanna logged himself as 'on duty all evening' on the night of Vikram's death. The Thakur case file has gathered dust in a back cupboard for fifteen years.",
-      "imageUrl": "assets/locations/police-station.png"
+      "imageUrl": "assets/locations/police-station-arrival.png"
     },
     {
       "id": "bus-stand",
       "name": "Mussoorie Bus Stand",
       "description": "Where Anya caught the 9:15 PM bus home. The stub of her ticket is one of the threads that doesn't quite tie up.",
-      "imageUrl": "assets/locations/bus-stand.png"
+      "imageUrl": "assets/locations/bus-stand-illustrated.png"
     },
     {
       "id": "cedar-grove",
       "name": "The Cedar Grove Shortcut",
       "description": "A narrow path through cedar trees connecting Landour to Camel's Back Road. Only locals know it. Cedar needles found on Vikram's jacket are a small but telling thread.",
-      "imageUrl": "assets/locations/cedar-grove.png"
+      "imageUrl": "assets/locations/cedar-grove-illustrated.png"
     }
   ],
 
@@ -324,7 +324,7 @@
     {
       "id": "devraj",
       "name": "Inspector Devraj Khanna",
-      "shortDescription": "The local cop who closed both cases. Tired-looking, pragmatic. Profoundly compromised.",
+      "shortDescription": "The local cop who closed both cases. Tired-looking, pragmatic, and defensive.",
       "portraitUrl": "assets/portraits/devraj.png",
       "persona": "Inspector Devraj Khanna is in his late 40s, tired-eyed, a Mussoorie lifer. Sub-inspector when the Thakur family was murdered fifteen years ago — full inspector now, a career built on burying one specific file. He's pragmatic, deferential, performs the role of an overworked small-town cop doing his best with limited resources. Underneath, he is profoundly nervous. The CBI questioning is the moment he has dreaded for fifteen years.",
       "voice": "Hindi-English mix, formal police register. Says 'sir' and 'ma'am' to the CBI. Short, clipped sentences. Resents the implication that local police missed anything. Becomes monosyllabic when cornered, then breaks suddenly when betrayed.",
@@ -583,7 +583,7 @@
     {
       "id": "bisht",
       "name": "Mr. Rajveer Bisht",
-      "shortDescription": "Mussoorie's most successful hotelier. Charming. Composed. Mastermind.",
+      "shortDescription": "Mussoorie's most successful hotelier. Charming, composed, and careful with his words.",
       "portraitUrl": "assets/portraits/bisht.png",
       "persona": "Rajveer Bisht is in his mid-50s, immaculately tailored, the kind of man whose hand on your shoulder feels both warm and unsettling. Owner of the Royal Pines Hotel, the largest in Mussoorie. He performs the role of philanthropist and town benefactor with practised charm. Underneath: a man who waited fifteen years to avenge his father, who built a hotel empire on murdered land, and who has just had to order a second murder to protect the first.",
       "voice": "Polished Indian English with the faintest Garhwali undertone. Speaks slowly, deliberately. Loves a philosophical observation when a hard question is asked. Never raises his voice. Pivots with phrases like 'You see…' and 'Let me put it this way…'. When pressed, becomes more articulate, not less.",
@@ -657,7 +657,7 @@
           "unlockBehavior": {
             "tier": "compound",
             "evidenceIds": ["wall-mount-photo", "office-rifle-photo"],
-            "cooperationCue": "The interviewer has presented both rifle photographs and asks Bisht to explain why the distinctive British-era rifle missing from Thakur Cottage appears mounted in his office, or directly challenges his 'collector's piece' explanation. Showing only one photograph, asking about antiques generally, or accusing him of murder without connecting the two rifle images should not fire.",
+            "cooperationCue": "Both rifle photographs must already be presented. With that evidence gate satisfied, EITHER question qualifies: (1) asks why the distinctive rifle missing from Thakur Cottage is mounted in Bisht's office, OR (2) directly challenges his claim that the rifle is merely a collector's piece. Option 2 does not have to repeat the Thakur connection or describe the photographs again. Showing only one photograph, asking about antiques generally, or accusing him of murder without challenging the rifle explanation should not fire.",
             "pressureThreshold": 4,
             "hostFallbackAfterTurns": 999
           }
@@ -722,7 +722,7 @@
     {
       "id": "anya",
       "name": "Anya Devi",
-      "shortDescription": "Vikram's housekeeper. The witness. The trigger. The Grey Lady. The anonymous tipster.",
+      "shortDescription": "Vikram's housekeeper. Quiet, observant, and reluctant to speak.",
       "portraitUrl": "assets/portraits/anya.png",
       "persona": "Anya Devi is in her early 50s, a Garhwali housekeeper. Weathered, quiet, looks at the floor when spoken to. She is the most layered character in the case: bystander to a fifteen-year-old crime, silenced by money for her son's education, accidentally the woman who triggered Vikram's murder by warning Bisht, the Grey Lady of Camel's Back Road, AND the writer of the anonymous letter that brought the CBI. Carries fifteen years of guilt in her body.",
       "voice": "Garhwali-Hindi-accented English, simple direct words, brief sentences. Looks down often. Occasional flashes of fierce protectiveness — especially when her son Rohan is mentioned. Polite to a fault. Says 'saab' and 'madam'. Voice catches when she talks about the Thakurs.",
@@ -848,7 +848,7 @@
     {
       "id": "kabir",
       "name": "Prof. Kabir Iyer",
-      "shortDescription": "Vikram's college friend. Anxious. Hiding a plagiarised PhD.",
+      "shortDescription": "Vikram's college friend. An anxious academic with a reputation to protect.",
       "portraitUrl": "assets/portraits/kabir.png",
       "persona": "Prof. Kabir Iyer is in his mid-30s, a professor at a mid-tier Bangalore university. Round glasses, anxious smile, talks too much when nervous. Old college friend of Vikram's. His career is built on a PhD thesis that Vikram helped him write — and which is now about to be exposed in Vikram's upcoming video. He came to Mussoorie to beg Vikram to leave him out of the exposé. After Vikram's death, his conscience drove him to write the second anonymous letter.",
       "voice": "South Indian academic Indian English. Professorial register but anxious — over-explains, qualifies, hedges. Gets visibly defensive when his 'research' is mentioned. Voice flattens out when he tells the truth.",
@@ -988,7 +988,7 @@
       "title": "The Anonymous Letter (to the CBI)",
       "category": "letter",
       "description": "Typed, no signature, postmark Dehradun. Names Inspector Devraj as a suspect and demands an independent investigation.",
-      "loreText": "The letter that brought the CBI to Mussoorie. Typed on a standard office printer. Unsigned. Single paragraph: 'Vikram Singh's death was not accidental. The investigating officer, Inspector Devraj Khanna, is himself a suspect with motive to bury the case. Request independent investigation.' Postmark from Dehradun, posted two weeks after the death. Writer unknown at this stage — the players will eventually learn this was Anya.",
+      "loreText": "The letter that brought the CBI to Mussoorie. Typed on a standard office printer. Unsigned. Its central allegation: 'Vikram Singh's death was not accidental. The investigating officer, Inspector Devraj Khanna, is himself a suspect with motive to bury the case. Request independent investigation.' Postmark from Dehradun, posted two weeks after the death. The writer’s identity is unknown.",
       "revealedInRound": 1,
       "unlockedAtChapter": "r1-anonymous-letter"
     },
@@ -1063,7 +1063,7 @@
       "title": "Vikram's Working Wall — Cottage Study",
       "category": "photo",
       "description": "CBI scene photographs of a corkboard covering one wall of Vikram's study. Three names on the spine. One name in the corner. Red string between some. Question marks over others.",
-      "loreText": "Four overlapping crime-scene photographs of the cottage's back wall. The board is the standard set-up of a working investigative journalist — pinned printouts, marker scribbles, Instagram screenshots dry-mounted with masking tape, lengths of red cotton thread connecting pins. Three names are written in block capitals across the top of the main panel: BISHT. DEVRAJ. ANYA. Under each, one or two pieces of pinned material and a phrase in Vikram's handwriting. Under BISHT: a long-lens photograph of an antique rifle mounted on a wall and the words 'TROPHY?? — see thakur'; pinned next to it, a newspaper cutting headlined 'THAKUR FAMILY MURDERED IN COTTAGE ROBBERY — Doon Echo, Dec 2011'. Under DEVRAJ: a photocopy of the three-page police report with one paragraph circled and 'why so thin' in the margin; a second pinned cutting on Devraj's promotion to inspector in 2014. Red string runs from BISHT to the Doon Echo cutting and from DEVRAJ to the same cutting — but no string runs between BISHT and DEVRAJ themselves. Vikram had not yet found the 8 PM call. Under ANYA: a single Instagram still of the Grey Lady and a fat question mark in marker; no string at all. The marginalia under her name reads only 'won't sit'. To the right of the main panel, separated by a thin line of black tape, is a smaller corner of the board labelled in pencil 'LOOSE THREADS'. Inside this corner: KABIR's name on a sticky note, next to a screenshot of an academic-misconduct policy and the words 'thesis — decide'. There is no string from the corner to anything else. The wall is a working document, not an answer key. The Thakur spine is three names solid; Kabir is a maybe; the connection between the two men who actually killed Vikram is the one line Vikram never drew.",
+      "loreText": "Four overlapping crime-scene photographs of the cottage's back wall. The board is the standard set-up of a working investigative journalist — pinned printouts, marker scribbles, Instagram screenshots dry-mounted with masking tape, lengths of red cotton thread connecting pins. Three names are written in block capitals across the top of the main panel: BISHT. DEVRAJ. ANYA. Under each, one or two pieces of pinned material and a phrase in Vikram's handwriting. Under BISHT: a long-lens photograph of an antique rifle mounted on a wall and the words 'TROPHY?? — see thakur'; pinned next to it, a newspaper cutting headlined 'THAKUR FAMILY MURDERED IN COTTAGE ROBBERY — Doon Echo, Dec 2011'. Under DEVRAJ: a photocopy of the three-page police report with one paragraph circled and 'why so thin' in the margin; a second pinned cutting on Devraj's promotion to inspector in 2014. Red string runs from BISHT to the Doon Echo cutting and from DEVRAJ to the same cutting — but no string runs between BISHT and DEVRAJ themselves. Vikram had not yet found the 8 PM call. Under ANYA: a single Instagram still of the Grey Lady and a fat question mark in marker; no string at all. The marginalia under her name reads only 'won't sit'. To the right of the main panel, separated by a thin line of black tape, is a smaller corner of the board labelled in pencil 'LOOSE THREADS'. Inside this corner: KABIR's name on a sticky note, next to a screenshot of an academic-misconduct policy and the words 'thesis — decide'. There is no string from the corner to anything else. The wall is a working document, not an answer key. The Thakur spine is three names solid; Kabir is a maybe; there is no direct line connecting Bisht and Devraj.",
       "revealedInRound": 1,
       "unlockedAtChapter": "r1-vikram-life",
       "relatesToSuspectIds": ["bisht", "devraj", "anya", "kabir"]
@@ -1159,7 +1159,7 @@
       "title": "The Second Anonymous Letter",
       "category": "letter",
       "description": "Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.'",
-      "loreText": "A second anonymous letter received at the CBI Dehradun office, three weeks into the investigation. Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.' Different envelope, different printer than the first letter. Postmark from Bangalore. Sender unknown at this stage — the players will eventually learn this was Kabir.",
+      "loreText": "A second anonymous letter received at the CBI Dehradun office, three weeks into the investigation. Three lines. 'You're looking at the wrong suspects. Ask who benefits from the Thakur estate.' Different envelope, different printer than the first letter. Postmark from Bangalore. Sender unknown.",
       "revealedInRound": 3,
       "unlockedAtChapter": "r3-second-letter",
       "arrivesWhen": "Reveal this only after the host state lists Naina, Rhea, and Kabir as opened up to the players, and the Thakur family, Thakur estate, or 2011 Thakur murders have been mentioned at least twice across the interview transcripts by either players or suspects. Do NOT infer opened-up status from unlocked evidence. Do NOT fire if any of Naina, Rhea, or Kabir is still guarded. Do NOT fire from cooperation alone if the Thakur thread has not been raised."
@@ -1262,7 +1262,7 @@
       "loreText": "Telecom records pulled under CBI warrant. Show a 47-second call from Rajveer Bisht's personal mobile to Inspector Devraj Khanna's personal mobile at exactly 8:00 PM on the night of the murder. Both phones are personal numbers, not the hotel or station landlines. The call's start time aligns precisely with the start of the unexplained 'maintenance gap' in the Royal Pines CCTV.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
-      "arrivesWhen": "Reveal this once the Bisht motive trail is established through the family-history record and land-registry trail, and the players explicitly ask about Bisht and Devraj acting together on the murder night, the Royal Pines CCTV maintenance gap, why Devraj would protect Bisht now, or what happened around 8:00 PM. Do NOT fire for old Thakur-case questions alone, including questions about whether Bisht influenced Devraj in 2011. Do NOT fire for generic friendship, corruption, station activity, or hotel-security questions unless the present-day 8:00 PM gap or present-day Bisht-Devraj coordination is part of the thread.",
+      "arrivesWhen": "Prerequisites: bisht-family-history AND land-registry are already unlocked in the case file. No suspect confession or opened-up state is required. With those prerequisites satisfied, reveal when the players ask about ANY ONE of: Bisht and Devraj coordinating on the murder night; the Royal Pines CCTV maintenance gap that night; why Devraj would protect Bisht now; or what happened around 8:00 PM that night. Do NOT fire for old Thakur-case questions alone, including questions about whether Bisht influenced Devraj in 2011. Do NOT fire for generic friendship, corruption, station activity, or hotel-security questions unless the present-day 8:00 PM gap or present-day Bisht-Devraj coordination is part of the thread.",
       "relatesToSuspectIds": ["bisht", "devraj"]
     },
     {
@@ -1390,7 +1390,8 @@
         "vikram-working-wall"
       ],
       "narration": "Back at Vikram's cottage, the dead man starts to become more than a body on a road. Thirty-two years old. Mussoorie born. Four hundred thousand subscribers following his channel, Hidden Mussoorie. His next video was titled 'The Truth About Mussoorie', and the wall above his desk shows a story still unfinished when he died.",
-      "printablePrompt": "Open Case File 3 — Vikram's Instagram, the channel page, and the photographs of his working wall."
+      "printablePrompt": "Open Case File 3 — Vikram's Instagram, the channel page, and the photographs of his working wall.",
+      "locationId": "vikrams-cottage"
     },
     {
       "type": "narrative",
@@ -1549,7 +1550,7 @@
       "roundNumber": 4,
       "prerequisites": ["r3-recap"],
       "phoneOwner": "Vikram Singh",
-      "intro": "Vikram's phone, recovered from the ravine, was sent to the CBI's cyber unit. The unit returns it now with access to call logs, recent messages, and notes app. The team has fifteen minutes before the phone is sealed back into evidence. Look quickly.",
+      "intro": "Vikram's phone, recovered from the ravine, was sent to the CBI's cyber unit. The unit returns it now with access to call logs, recent messages, and notes app. Review the recovered files together before returning the phone to evidence.",
       "messages": [
         {
           "from": "Rhea",

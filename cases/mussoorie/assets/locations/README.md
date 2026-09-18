@@ -1,6 +1,8 @@
 # Locations
 
-One wide image (~1920×1080) per location, used as the TV backdrop when a chapter is set there:
+**Current status:** `police-station-arrival.png` is finished artwork (1672×941), connected to the opening TV and phone briefing. See [generation prompt and provenance](ARRIVAL_ART.md). The eight original filenames below are still 1×1 placeholders, not finished artwork.
+
+Planned location artwork:
 
 - `camels-back-road.png` — misty road, sharp bend near Gun Hill, rusted railing
 - `thakur-cottage.png` — abandoned colonial bungalow in Landour, overgrown garden

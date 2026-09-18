@@ -1,5 +1,7 @@
 "use client";
 
+import { gameFetch } from "@/lib/game-fetch";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -23,7 +25,7 @@ export function HostLobbyLauncher({ caseId }: HostLobbyLauncherProps) {
     setIsCreating(true);
     setError(null);
 
-    const response = await fetch("/api/sessions", {
+    const response = await gameFetch("/api/sessions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,21 +45,21 @@ export function HostLobbyLauncher({ caseId }: HostLobbyLauncherProps) {
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6">
-      <h2 className="text-2xl font-semibold">Create TV lobby</h2>
+    <div className="lobby-panel">
+      <p className="case-eyebrow">Your host station</p><h2 className="case-serif text-3xl mt-3">Gather your detectives.</h2>
       <p className="mt-3 text-sm leading-6 text-[#cfc8ba]">
-        This creates a persisted Supabase session, generates a join code, and opens the host display.
+        Create your lobby to get a private game code and QR. Start the investigation when everyone has joined.
       </p>
       <button
         type="button"
         onClick={createLobby}
         disabled={isCreating}
-        className="mt-6 w-full rounded-full bg-[#c8a46a] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+        className="case-button case-button--gold lobby-full mt-6"
       >
         {isCreating ? "Creating lobby..." : "Create lobby"}
       </button>
       {error ? (
-        <p className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
+        <p role="alert" className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
           {error}
         </p>
       ) : null}

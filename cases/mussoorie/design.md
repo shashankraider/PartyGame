@@ -4,7 +4,7 @@
 **For 6–8 Players | Ages 10+**
 **Designed by Shashank Mendiratta · May 2026 · Version 1.0**
 
-> **Spoiler warning**: This document contains the full solution. For player-facing materials, see `printables/`. The canonical source is also kept as `Game_Bible.docx` alongside this file.
+> **Spoiler warning**: This document contains the full solution. For player-facing materials, see `printables/`. This Markdown file is the canonical narrative reference; `Game_Bible.docx` is an earlier snapshot. Runtime status and remaining product gaps are tracked in [P1 delivery](../../docs/P1_DELIVERY.md).
 
 ---
 

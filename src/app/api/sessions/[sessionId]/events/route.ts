@@ -1,27 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSessionEvents, SessionStoreError } from "@/lib/session-store";
-
-type EventsRouteContext = {
-  params: Promise<{
-    sessionId: string;
-  }>;
-};
-
-export async function GET(request: Request, context: EventsRouteContext) {
-  const { sessionId } = await context.params;
-  const type = new URL(request.url).searchParams.get("type") ?? undefined;
-
-  try {
-    const events = await getSessionEvents(sessionId, { type });
-    return NextResponse.json({ events });
-  } catch (error) {
-    if (error instanceof SessionStoreError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code, details: error.details },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json({ error: "Could not load events" }, { status: 500 });
-  }
+import { requireSessionAccess } from "@/lib/session-auth";
+import { apiError } from "@/lib/api-errors";
+type Context = { params: Promise<{ sessionId: string }> };
+const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+import { getSessionEvents } from "@/lib/session-store";
+export async function GET(request: Request, context: Context) {
+  try { const { sessionId } = await context.params; await requireSessionAccess(sessionId);
+    return json({ events: await getSessionEvents(sessionId, { type: new URL(request.url).searchParams.get('type') ?? undefined }) });
+  } catch(error) { return apiError(error); }
 }

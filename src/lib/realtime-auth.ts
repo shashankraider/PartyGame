@@ -37,7 +37,7 @@ export function hasRealtimeAuthEnv(): boolean {
 
 export async function mintSessionRealtimeToken(
   sessionId: string,
-  options: { ttlSeconds?: number; deviceId?: string } = {},
+  options: { ttlSeconds?: number; deviceId?: string; sessionExpiresAt?: string } = {},
 ): Promise<RealtimeTokenPayload> {
   const secret = process.env.SUPABASE_JWT_SECRET;
   if (!secret) {
@@ -49,13 +49,15 @@ export async function mintSessionRealtimeToken(
 
   const ttl = Math.max(60, options.ttlSeconds ?? DEFAULT_TTL_SECONDS);
   const nowSeconds = Math.floor(Date.now() / 1000);
-  const expiresAt = nowSeconds + ttl;
+  const expiresAt = Math.min(nowSeconds + ttl, options.sessionExpiresAt ? Math.floor(Date.parse(options.sessionExpiresAt) / 1000) : Infinity);
+  if (!Number.isFinite(expiresAt) || expiresAt <= nowSeconds) throw new RealtimeAuthError("Session expired", "mint_failed");
   const subject = options.deviceId ? `${sessionId}:${options.deviceId}` : sessionId;
 
   const key = new TextEncoder().encode(secret);
   const token = await new SignJWT({
     role: "authenticated",
     session_id: sessionId,
+    session_expires_at: options.sessionExpiresAt ?? new Date(expiresAt * 1000).toISOString(),
   })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setIssuer("mystery-engine")

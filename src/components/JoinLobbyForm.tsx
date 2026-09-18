@@ -1,5 +1,6 @@
 "use client";
 
+import { gameFetch } from "@/lib/game-fetch";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -70,7 +71,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/join", {
+      const response = await gameFetch("/api/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +126,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
 
   const joinLobby = useCallback(async () => {
     const form = formRef.current;
-    if (!form) return;
+    if (!form || isJoining) return;
 
     const raw = String(new FormData(form).get("playerName") ?? "");
     const name = raw.trim();
@@ -135,7 +136,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
     }
 
     await connectPlayer(name);
-  }, [connectPlayer]);
+  }, [connectPlayer, isJoining]);
 
   useEffect(() => {
     const activeSession = readActivePlayerSession(window.localStorage, joinCode);
@@ -147,7 +148,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
   }, [connectPlayer, joinCode]);
 
   return (
-    <div className="mt-10">
+    <div className="mt-5">
       {savedSession ? (
         <section className="mb-4 rounded-3xl border border-[#c8a46a]/30 bg-[#c8a46a]/10 p-6">
           <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">Active investigation</p>
@@ -159,7 +160,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
             type="button"
             disabled={isJoining}
             onClick={() => void connectPlayer(savedSession.playerName, true)}
-            className="mt-5 w-full rounded-full bg-[#c8a46a] px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+            className="case-button case-button--gold lobby-full mt-5"
           >
             {isJoining ? "Returning..." : "Return to game"}
           </button>
@@ -168,7 +169,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
 
       <form
         ref={formRef}
-        className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6"
+        className="lobby-panel"
         onSubmit={(event) => {
           // Never allow a native GET/POST navigation (e.g. iOS Safari, failed hydration).
           // Join must go through /api/join only.
@@ -191,7 +192,7 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
         spellCheck={false}
         autoCorrect="off"
         autoCapitalize="words"
-        className="mt-3 w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-lg outline-none transition placeholder:text-[#736f68] focus:border-[#c8a46a]"
+        className="lobby-input"
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -203,12 +204,12 @@ export function JoinLobbyForm({ joinCode }: JoinLobbyFormProps) {
         type="button"
         disabled={isJoining}
         onClick={() => void joinLobby()}
-        className="mt-5 w-full rounded-full bg-[#c8a46a] px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
+        className="case-button case-button--gold lobby-full mt-5"
       >
         {isJoining ? "Joining..." : "Join as detective"}
       </button>
       {error ? (
-        <p className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
+        <p role="alert" className="mt-4 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
           {error}
         </p>
       ) : null}

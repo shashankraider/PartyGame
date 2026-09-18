@@ -5,6 +5,7 @@ const eslintConfig = [
   {
     ignores: [
       ".next/**",
+      ".claude/**",
       "node_modules/**",
       "docs/diagrams/**",
       "src/engine/types.ts",

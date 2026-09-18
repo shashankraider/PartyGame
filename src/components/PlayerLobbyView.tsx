@@ -1,11 +1,19 @@
 "use client";
 
+import { gameFetch, newRequestId } from "@/lib/game-fetch";
+
+import { VisualCaseBoard, EvidenceGallery, ExhibitDetail, RecoveredPhone, VisualEnding, GameStatus, caseAsset } from "./InvestigationVisuals";
+import { CaseArtwork } from "./CaseArtwork";
 import Image from "next/image";
+import { CrimeSceneReveal, hasCrimeScene } from "@/components/CrimeSceneReveal";
+import { LetterReveal, getOpeningLetter } from "@/components/LetterReveal";
+import { OpeningBriefing } from "@/components/OpeningBriefing";
+import { DetectiveBadge } from "@/components/DetectiveBadge";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Case, Chapter, Evidence, Round, Suspect } from "@/engine/types";
+import type { Chapter } from "@/engine/types";
+import type { PublicCase as Case, PublicSuspect as Suspect } from "@/lib/public-case";
 import type { LobbyState } from "@/lib/session-store";
 import { writeActivePlayerSession } from "@/lib/player-session";
-import { getEvidencePrintableUrl } from "@/lib/printables";
 import {
   useInterviewTranscriptRealtime,
   useSessionLobbyRealtime,
@@ -36,7 +44,7 @@ const sceneTitles: Record<SessionScene, string> = {
   brief: "Case briefing",
   case_board: "Case board",
   interview: "Live interview",
-  phone_hack: "Phone hack",
+  phone_hack: "Recovered phone",
   accusation: "Accusation",
   reveal: "The reveal",
 };
@@ -76,11 +84,12 @@ function getPresentableEvidence(caseData: Case, chapter: Chapter | null, unlocke
   return unlockedEvidence.filter((evidence) => allowed.has(evidence.id));
 }
 
-export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobbyViewProps) {
+export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playerId }: PlayerLobbyViewProps) {
   const { lobby, error: realtimeError, applySnapshot } = useSessionLobbyRealtime(
     initialLobby.session.id,
     initialLobby,
   );
+  const caseData = lobby.caseData ?? initialCaseData;
   const [localError, setLocalError] = useState<string | null>(null);
   const error = localError ?? realtimeError;
   const setError = setLocalError;
@@ -133,7 +142,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
 
   return (
     <section className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6">
-      <Header player={player} scene={lobby.session.current_scene} />
+      {lobby.session.current_scene !== "lobby" ? <Header player={player} scene={lobby.session.current_scene} /> : null}
 
       {error ? (
         <p className="mt-5 rounded-2xl border border-red-400/30 bg-red-950/30 px-4 py-3 text-sm leading-6 text-red-100">
@@ -141,7 +150,9 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
         </p>
       ) : null}
 
-      <div className="mt-6">
+      <GameStatus paused={lobby.session.status === "paused"} pending={lobby.turnPending} error={realtimeError} activeName={lobby.players.find(p=>p.id===lobby.session.current_interviewer_player_id)?.name}/>
+
+      <fieldset disabled={lobby.session.status === 'paused' || Boolean(lobby.turnPending)} className="mt-6 min-w-0">
         {lobby.session.current_scene === "lobby" ? (
           <LobbyMode lobby={lobby} player={player} detectives={detectives} />
         ) : null}
@@ -172,7 +183,7 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
         ) : null}
 
         {lobby.session.current_scene === "phone_hack" ? (
-          <PhoneHackMode chapter={chapter} />
+          <RecoveredPhone key={chapter?.id} chapter={chapter} />
         ) : null}
 
         {lobby.session.current_scene === "accusation" ? (
@@ -187,9 +198,9 @@ export function PlayerLobbyView({ initialLobby, caseData, playerId }: PlayerLobb
         ) : null}
 
         {lobby.session.current_scene === "reveal" ? (
-          <RevealMode caseData={caseData} player={player} />
+          <VisualEnding caseData={caseData} lobby={lobby} playerId={player.id} />
         ) : null}
-      </div>
+      </fieldset>
 
       {hasStarted && lobby.session.current_scene !== "case_board" ? (
         <DigitalCaseFile
@@ -228,422 +239,25 @@ function LobbyMode({
   const hasStarted = lobby.session.status !== "lobby";
 
   return (
-    <div>
-      <p className="text-base leading-7 text-[#cfc8ba]">
-        {player.is_observer
-          ? "The lobby is full or the game has started — you'll follow along as an observer."
-          : hasStarted
-            ? "The host has started the game. Watch the TV for the briefing."
-            : "Stay on this screen while the host starts the game on the TV."}
-      </p>
-
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold">Joined detectives</h2>
-        <div className="mt-3 grid gap-2">
-          {detectives.length === 0 ? (
-            <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-[#a6a29a]">
-              No detectives have joined yet.
-            </p>
-          ) : (
-            detectives.map((detective) => (
-              <div
-                key={detective.id}
-                className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3"
-              >
-                <span>{detective.name}</span>
-                <span className="text-xs uppercase tracking-[0.2em] text-[#a6a29a]">
-                  Seat {detective.seat_number}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+    <div className="case-shell lobby-player-wait">
+      <div className="lobby-credential"><DetectiveBadge name={player.name} seat={player.seat_number} observer={player.is_observer} /><div><p className="case-eyebrow">{player.is_observer ? "Observer pass" : "Detective credential"}</p><h1 className="case-serif">You’re in, {player.name}.</h1><p>Game {lobby.session.join_code}</p></div></div>
+      <p role="status" className="lobby-wait-status">{player.is_observer ? "You’re following as an observer. Watch the shared screen as the case unfolds." : hasStarted ? "The investigation has begun. Watch the shared screen for your briefing." : "Waiting for the host to begin. Keep this page open — your briefing will appear automatically."}</p>
+      <div className="lobby-roster-heading"><h3 className="case-serif">Your fellow detectives</h3><span>{detectives.length} joined</span></div>
+      <div className="lobby-phone-roster">{detectives.map(detective => <div className="lobby-seat" key={detective.id}><DetectiveBadge name={detective.name} seat={detective.seat_number} /><div><strong>{detective.name}{detective.id === player.id ? " (you)" : ""}</strong><span>Seat {detective.seat_number}</span></div></div>)}</div>
+      <p className="lobby-small">Your phone is your case file. Questions and evidence will appear here as you investigate.</p>
     </div>
   );
 }
 
 function BriefMode({ caseData, player }: { caseData: Case; player: PlayerRow }) {
-  const openingRound = caseData.rounds[0];
-  const openingBeats = openingRound?.introNarration ?? [];
-
-  return (
-    <div>
-      <p className="text-sm uppercase tracking-[0.24em] text-[#a6a29a]">{caseData.meta.setting}</p>
-      <h2 className="mt-2 text-2xl font-semibold">{caseData.meta.title}</h2>
-      <p className="mt-4 text-base leading-7 text-[#cfc8ba]">{caseData.meta.tagline}</p>
-      {openingBeats.length ? (
-        <div className="mt-6 rounded-2xl border border-[#c8a46a]/25 bg-black/25 px-4 py-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#c8a46a]">Your assignment</p>
-          <div className="mt-3 grid gap-3">
-            {openingBeats.map((beat, index) => (
-              <div key={`${beat.speaker ?? "brief"}-${index}`}>
-                {beat.speaker ? (
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
-                    {beat.speaker}
-                  </p>
-                ) : null}
-                <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">{beat.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-      <p className="mt-6 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
-        {player.is_observer
-          ? "Watch the TV for the opening narration. You're spectating this case."
-          : "Watch the TV for the opening narration. You'll act when the host hands control to phones."}
-      </p>
-    </div>
-  );
+  return <OpeningBriefing caseData={caseData} compact observer={player.is_observer} />;
 }
 
-type EvidenceRoundGroup = { round: Round; items: Evidence[] };
-
-function buildEvidenceByRound(caseData: Case, unlockedSet: Set<string>): EvidenceRoundGroup[] {
-  return caseData.rounds
-    .map((round) => ({
-      round,
-      items: caseData.evidence.filter(
-        (e) => e.revealedInRound === round.number && unlockedSet.has(e.id),
-      ),
-    }))
-    .filter(({ items }) => items.length > 0);
-}
-
-function EvidenceInspector({
-  caseData,
-  evidence,
-  onClose,
-  variant,
-}: {
-  caseData: Case;
-  evidence: Evidence;
-  onClose: () => void;
-  variant: "embedded" | "sheet";
-}) {
-  const printableSrc = useMemo(
-    () => getEvidencePrintableUrl(caseData.id, evidence),
-    [caseData.id, evidence],
-  );
-  const [detailTab, setDetailTab] = useState<"notes" | "exhibit">(
-    printableSrc ? "exhibit" : "notes",
-  );
-
-  useEffect(() => {
-    if (variant !== "sheet") return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [variant]);
-
-  const showExhibit = Boolean(printableSrc && detailTab === "exhibit");
-  const showNotes = !printableSrc || detailTab === "notes";
-
-  const notesBlock = (
-    <div>
-      {printableSrc ? (
-        <p className="text-[10px] uppercase tracking-[0.22em] text-[#c8a46a]">Investigator notes</p>
-      ) : null}
-      <p className={`text-sm leading-7 text-[#f5f2ea] ${printableSrc ? "mt-2" : ""}`}>{evidence.loreText}</p>
-      {evidence.relatesToSuspectIds?.length ? (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {evidence.relatesToSuspectIds.map((suspectId) => {
-            const suspect = caseData.suspects.find((item) => item.id === suspectId);
-            return (
-              <span
-                key={suspectId}
-                className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]"
-              >
-                {suspect?.name ?? suspectId}
-              </span>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-
-  const exhibitBlock = printableSrc ? (
-    <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-[#2a2520] shadow-inner">
-      <iframe
-        key={evidence.id}
-        title={evidence.title}
-        src={printableSrc}
-        className="h-[min(52dvh,440px)] w-full border-0 sm:h-[min(58vh,520px)]"
-        sandbox="allow-same-origin allow-scripts"
-      />
-    </div>
-  ) : null;
-
-  const header = (
-    <div className="flex items-start justify-between gap-4 border-b border-white/10 px-4 pb-3 pt-4 sm:px-5 sm:pt-5">
-      <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-[0.22em] text-[#c8a46a]">
-          {printableSrc ? "Evidence" : "Case file"}
-        </p>
-        <h3 className="mt-1 text-lg font-semibold text-[#f5f2ea]">{evidence.title}</h3>
-      </div>
-      <button
-        type="button"
-        onClick={onClose}
-        className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#e6bd77] transition hover:border-[#c8a46a]"
-      >
-        Close
-      </button>
-    </div>
-  );
-
-  const tabBar = printableSrc ? (
-    <div className="flex gap-2 px-4 pt-3 sm:px-5">
-      <button
-        type="button"
-        onClick={() => setDetailTab("notes")}
-        className={`flex-1 rounded-full py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
-          detailTab === "notes"
-            ? "bg-[#c8a46a] text-zinc-950"
-            : "border border-white/10 text-[#cfc8ba] hover:border-[#c8a46a]/50"
-        }`}
-      >
-        Notes
-      </button>
-      <button
-        type="button"
-        onClick={() => setDetailTab("exhibit")}
-        className={`flex-1 rounded-full py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
-          detailTab === "exhibit"
-            ? "bg-[#c8a46a] text-zinc-950"
-            : "border border-white/10 text-[#cfc8ba] hover:border-[#c8a46a]/50"
-        }`}
-      >
-        Prop sheet
-      </button>
-    </div>
-  ) : null;
-
-  const scrollBody = (
-    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5 pt-3 sm:px-5">
-      {showNotes ? notesBlock : null}
-      {showExhibit ? exhibitBlock : null}
-    </div>
-  );
-
-  if (variant === "sheet") {
-    return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
-        <button
-          type="button"
-          className="absolute inset-0 bg-black/75 backdrop-blur-[1px]"
-          onClick={onClose}
-          aria-label="Close evidence"
-        />
-        <div className="relative z-10 flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-zinc-950 shadow-2xl sm:max-h-[85vh] sm:rounded-3xl">
-          {header}
-          {tabBar}
-          {scrollBody}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <article className="mt-5 flex max-h-[min(82dvh,720px)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/80">
-      {header}
-      {tabBar}
-      {scrollBody}
-    </article>
-  );
-}
-
-function EvidenceRoundPicker({
-  evidenceByRound,
-  selectedId,
-  onSelect,
-  newIds,
-  justUnlockedIds,
-}: {
-  evidenceByRound: EvidenceRoundGroup[];
-  selectedId: string | null;
-  onSelect: (id: string) => void;
-  newIds: Set<string>;
-  justUnlockedIds: Set<string>;
-}) {
-  return (
-    <div className="space-y-5">
-      {evidenceByRound.map(({ round, items }) => (
-        <section key={round.number}>
-          <p className="text-[10px] uppercase tracking-[0.22em] text-[#a6a29a]">
-            Round {round.number} · {round.title}
-          </p>
-          <div className="mt-2 grid gap-2">
-            {items.map((evidence) => {
-              const isSelected = selectedId === evidence.id;
-              const isNew = newIds.has(evidence.id) || justUnlockedIds.has(evidence.id);
-              return (
-                <button
-                  key={evidence.id}
-                  type="button"
-                  onClick={() => onSelect(evidence.id)}
-                  className={`rounded-2xl border px-4 py-3 text-left transition ${
-                    isSelected
-                      ? "border-[#c8a46a] bg-[#c8a46a]/10"
-                      : isNew
-                        ? "border-[#c8a46a]/60 bg-[#c8a46a]/5"
-                        : "border-white/10 hover:border-[#c8a46a]/60"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a6a29a]">
-                      {evidence.category}
-                    </span>
-                    {isNew ? (
-                      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
-                        New
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-1 text-sm font-semibold text-[#f5f2ea]">{evidence.title}</p>
-                  <p className="mt-1 text-xs leading-5 text-[#cfc8ba]">{evidence.description}</p>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
-function CaseBoardTabs({
-  caseData,
-  chapter,
-  unlocked,
-}: {
-  caseData: Case;
-  chapter: Chapter | null;
-  unlocked: string[];
-}) {
-  const [surfaceTab, setSurfaceTab] = useState<"brief" | "evidence">("brief");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [initialUnlocked] = useState(() => new Set(unlocked));
-
-  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
-  const justUnlockedIds = useMemo(() => {
-    if (chapter?.type !== "evidence-reveal") return new Set<string>();
-    return new Set(chapter.evidenceIds.filter((id) => unlockedSet.has(id)));
-  }, [chapter, unlockedSet]);
-  const newIds = useMemo(
-    () => new Set(unlocked.filter((id) => !initialUnlocked.has(id))),
-    [unlocked, initialUnlocked],
-  );
-  const evidenceByRound = useMemo(
-    () => buildEvidenceByRound(caseData, unlockedSet),
-    [caseData, unlockedSet],
-  );
-
-  const selectedEvidence = selectedId
-    ? (caseData.evidence.find((e) => e.id === selectedId) ?? null)
-    : null;
-
-  return (
-    <div>
-      <div className="mb-5 flex gap-2 rounded-2xl border border-white/10 bg-black/25 p-1">
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedId(null);
-            setSurfaceTab("brief");
-          }}
-          className={`flex-1 rounded-xl py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition ${
-            surfaceTab === "brief"
-              ? "bg-[#c8a46a] text-zinc-950"
-              : "text-[#a6a29a] hover:text-[#f5f2ea]"
-          }`}
-        >
-          Brief
-        </button>
-        <button
-          type="button"
-          onClick={() => setSurfaceTab("evidence")}
-          className={`flex-1 rounded-xl py-2.5 text-xs font-bold uppercase tracking-[0.14em] transition ${
-            surfaceTab === "evidence"
-              ? "bg-[#c8a46a] text-zinc-950"
-              : "text-[#a6a29a] hover:text-[#f5f2ea]"
-          }`}
-        >
-          <span className="inline-flex items-center justify-center gap-2">
-            Evidence
-            {newIds.size > 0 ? (
-              <span className="rounded-full bg-zinc-950/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c8a46a]">
-                {newIds.size} new
-              </span>
-            ) : null}
-          </span>
-        </button>
-      </div>
-
-      {surfaceTab === "brief" ? (
-        <div>
-          {chapter ? (
-            <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
-              Round {chapter.roundNumber} · {chapter.type.replace("-", " ")}
-            </p>
-          ) : null}
-          <h2 className="mt-2 text-2xl font-semibold">{chapter?.title ?? "Case board"}</h2>
-          {chapter?.type === "narrative" ? (
-            <div className="mt-4 grid gap-3">
-              {chapter.beats.map((beat, index) => (
-                <div key={`${beat.speaker ?? "beat"}-${index}`} className="border-l border-[#c8a46a]/35 pl-3">
-                  {beat.speaker ? (
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#a6a29a]">
-                      {beat.speaker}
-                    </p>
-                  ) : null}
-                  <p className="mt-1 text-sm leading-6 text-[#f5f2ea]">{beat.text}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-          {chapter?.type === "evidence-reveal" ? (
-            <p className="mt-4 rounded-2xl border border-[#c8a46a]/25 bg-black/20 px-4 py-3 text-sm leading-6 text-[#f5f2ea]">
-              {chapter.narration}
-            </p>
-          ) : null}
-          <p className="mt-3 text-sm text-[#cfc8ba]">
-            Follow the TV. When something unlocks, open the <span className="text-[#e6bd77]">Evidence</span>{" "}
-            tab — tap an item to read notes and view the prop sheet one step at a time.
-          </p>
-        </div>
-      ) : (
-        <div className="relative">
-          {unlocked.length === 0 ? (
-            <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-[#a6a29a]">
-              No evidence unlocked yet. Stay on Brief until the host advances.
-            </p>
-          ) : (
-            <EvidenceRoundPicker
-              evidenceByRound={evidenceByRound}
-              selectedId={selectedId}
-              onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
-              newIds={newIds}
-              justUnlockedIds={justUnlockedIds}
-            />
-          )}
-          {selectedEvidence ? (
-            <EvidenceInspector
-              key={selectedEvidence.id}
-              variant="sheet"
-              caseData={caseData}
-              evidence={selectedEvidence}
-              onClose={() => setSelectedId(null)}
-            />
-          ) : null}
-        </div>
-      )}
-    </div>
-  );
+function CaseBoardTabs({ caseData, chapter, unlocked }: { caseData: Case; chapter: Chapter | null; unlocked: string[] }) {
+  if (hasCrimeScene(caseData, chapter, unlocked) && chapter) return <CrimeSceneReveal caseData={caseData} chapter={chapter} compact />;
+  const letter = getOpeningLetter(caseData, chapter, unlocked);
+  if (letter && chapter) return <LetterReveal key={letter.id} caseData={caseData} evidence={letter} chapter={chapter} compact />;
+  return <VisualCaseBoard caseData={caseData} chapter={chapter} />;
 }
 
 function InterviewMode({
@@ -730,7 +344,7 @@ function InterviewMode({
     setIsClaiming(true);
     onError(null);
 
-    const response = await fetch(`/api/sessions/${session.id}/interviewer`, {
+    const response = await gameFetch(`/api/sessions/${session.id}/interviewer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ playerId: targetPlayerId }),
@@ -747,6 +361,7 @@ function InterviewMode({
     setIsClaiming(false);
   }
 
+  const pendingQuestion = useRef<{ key: string; id: string } | null>(null);
   async function askSuspect() {
     const trimmed = question.trim();
     if (!trimmed || !suspect) return;
@@ -760,12 +375,15 @@ function InterviewMode({
     setIsAsking(true);
     onError(null);
 
-    const response = await fetch(`/api/sessions/${session.id}/interview`, {
+    const requestKey = JSON.stringify([session.id, suspect.id, trimmed, selectedEvidence]);
+    if (pendingQuestion.current?.key !== requestKey) pendingQuestion.current = { key: requestKey, id: newRequestId() };
+    const response = await gameFetch(`/api/sessions/${session.id}/interview`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         playerId: player.id,
         question: trimmed,
+        requestId: pendingQuestion.current.id,
         presentedEvidenceId: selectedEvidence,
       }),
     });
@@ -786,6 +404,7 @@ function InterviewMode({
       onSession(payload.session);
     }
 
+    pendingQuestion.current = null;
     setQuestion("");
     setSelectedEvidence(null);
     setIsEvidencePickerOpen(false);
@@ -829,7 +448,7 @@ function InterviewMode({
         ) : null}
         <p className="mt-4 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
           {session.current_interviewer_player_id
-            ? "Another detective is leading the interview. Watch the TV — you'll get a turn next."
+            ? ` ${players.find(p=>p.id===session.current_interviewer_player_id)?.name ?? "Another detective"} is leading the interview. Watch the TV — you’ll get a turn next.`
             : "No interviewer yet. Any detective can take the lead."}
         </p>
         <button
@@ -929,6 +548,7 @@ function InterviewMode({
         <p className="mt-2 text-xs text-red-300">{speech.error}</p>
       ) : null}
 
+      {selectedEvidenceItem && <details><summary>Preview selected exhibit</summary><ExhibitDetail caseData={caseData} evidence={selectedEvidenceItem}/></details>}
       {presentable.length > 0 ? (
         <div className="relative mt-5">
           <p className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">Present evidence</p>
@@ -1083,7 +703,7 @@ function SwitchSuspectControl({
     if (busyChapterId) return;
     setBusyChapterId(chapterId);
     onError(null);
-    const response = await fetch(`/api/sessions/${sessionId}/scene`, {
+    const response = await gameFetch(`/api/sessions/${sessionId}/scene`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "set", scene: "interview", chapterId }),
@@ -1202,40 +822,6 @@ function Transcript({
   );
 }
 
-function PhoneHackMode({ chapter }: { chapter: Chapter | null }) {
-  if (!chapter || chapter.type !== "phone-hack") {
-    return (
-      <div>
-        <h2 className="text-2xl font-semibold">Phone hack</h2>
-        <p className="mt-3 text-sm text-[#cfc8ba]">Watch the TV for instructions.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
-        Round {chapter.roundNumber} · phone hack
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold">{chapter.title}</h2>
-      <p className="mt-3 text-sm text-[#cfc8ba]">
-        Device owner: <span className="font-semibold">{chapter.phoneOwner}</span>
-      </p>
-      {chapter.intro ? (
-        <p className="mt-4 rounded-2xl border border-white/10 px-4 py-3 text-sm leading-6 text-[#cfc8ba]">
-          {chapter.intro}
-        </p>
-      ) : null}
-      <button
-        type="button"
-        disabled
-        className="mt-6 w-full rounded-full bg-white/10 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#a6a29a]"
-      >
-        Open hack minigame (Phase 5)
-      </button>
-    </div>
-  );
-}
 
 function AccusationMode({
   caseData,
@@ -1273,7 +859,7 @@ function AccusationMode({
     setSubmittingId(suspectId);
     onError(null);
 
-    const response = await fetch(`/api/sessions/${lobby.session.id}/accusation`, {
+    const response = await gameFetch(`/api/sessions/${lobby.session.id}/accusation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ suspectId, playerId: player.id }),
@@ -1318,6 +904,7 @@ function AccusationMode({
             <button
               key={suspect.id}
               type="button"
+              aria-pressed={selected}
               onClick={() => vote(suspect.id)}
               disabled={submittingId !== null}
               className={`rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-70 ${
@@ -1326,7 +913,7 @@ function AccusationMode({
                   : "border-white/15 hover:border-[#c8a46a]"
               }`}
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="phone-ballot-portrait"><CaseArtwork src={caseAsset(caseData,suspect.portraitUrl)} alt={suspect.name} portrait/></div><div className="flex items-center justify-between gap-3">
                 <p className="font-semibold">{suspect.name}</p>
                 <span className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
                   {count} vote{count === 1 ? "" : "s"}
@@ -1351,205 +938,13 @@ function AccusationMode({
   );
 }
 
-function RevealMode({ caseData, player }: { caseData: Case; player: PlayerRow }) {
-  return (
-    <div>
-      <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">The truth</p>
-      <h2 className="mt-2 text-2xl font-semibold">{caseData.meta.title}</h2>
-      <p className="mt-3 text-sm leading-6 text-[#cfc8ba]">
-        {player.is_observer
-          ? "Watch the TV for the full reveal."
-          : "Great work, detective. Watch the TV for the full reveal."}
-      </p>
-      <div className="mt-5 grid gap-2">
-        {caseData.solution.killerSuspectIds.map((suspectId) => {
-          const suspect = caseData.suspects.find((item) => item.id === suspectId);
-          return (
-            <div
-              key={suspectId}
-              className="rounded-2xl border border-[#c8a46a]/30 bg-[#c8a46a]/10 p-4"
-            >
-              <p className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
-                {caseData.solution.killerRoles?.[suspectId] ?? "Responsible"}
-              </p>
-              <p className="mt-1 text-lg font-semibold">{suspect?.name ?? suspectId}</p>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+
+function DigitalCaseFile({ caseData }: {caseData:Case;unlocked:string[];currentChapter:Chapter|null}) {
+  return <details className="phone-interview-locker"><summary>Digital case file · {caseData.evidence.length} released exhibits</summary><EvidenceGallery caseData={caseData}/></details>;
 }
 
-function DigitalCaseFile({
-  caseData,
-  unlocked,
-  currentChapter,
-}: {
-  caseData: Case;
-  unlocked: string[];
-  currentChapter: Chapter | null;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [initialUnlocked] = useState<Set<string>>(() => new Set(unlocked));
-  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
-  const justUnlockedIds = useMemo(() => {
-    if (currentChapter?.type !== "evidence-reveal") return new Set<string>();
-    return new Set(currentChapter.evidenceIds.filter((id) => unlockedSet.has(id)));
-  }, [currentChapter, unlockedSet]);
-  const newIds = useMemo(
-    () => new Set(unlocked.filter((id) => !initialUnlocked.has(id))),
-    [unlocked, initialUnlocked],
-  );
-  const selectedEvidence = selectedId
-    ? (caseData.evidence.find((evidence) => evidence.id === selectedId) ?? null)
-    : null;
-
-  const evidenceByRound = useMemo(
-    () => buildEvidenceByRound(caseData, unlockedSet),
-    [caseData, unlockedSet],
-  );
-
-  return (
-    <aside className="mt-8 rounded-3xl border border-[#c8a46a]/25 bg-black/25">
-      <button
-        type="button"
-        onClick={() => setExpanded((value) => !value)}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-      >
-        <span>
-          <span className="block text-xs uppercase tracking-[0.24em] text-[#c8a46a]">
-            Digital case file
-          </span>
-          <span className="mt-1 block text-sm text-[#cfc8ba]">
-            {unlocked.length} unlocked evidence item{unlocked.length === 1 ? "" : "s"}
-          </span>
-        </span>
-        <span className="flex items-center gap-2">
-          {newIds.size > 0 ? (
-            <span className="rounded-full bg-[#c8a46a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-950">
-              {newIds.size} new
-            </span>
-          ) : null}
-          <span className="text-sm text-[#a6a29a]">{expanded ? "Hide" : "Open"}</span>
-        </span>
-      </button>
-
-      {expanded ? (
-        <div className="border-t border-white/10 p-4">
-          {unlocked.length === 0 ? (
-            <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-[#a6a29a]">
-              Evidence will appear here as soon as the host or an interview unlocks it.
-            </p>
-          ) : (
-            <EvidenceRoundPicker
-              evidenceByRound={evidenceByRound}
-              selectedId={selectedId}
-              onSelect={(id) => setSelectedId((prev) => (prev === id ? null : id))}
-              newIds={newIds}
-              justUnlockedIds={justUnlockedIds}
-            />
-          )}
-
-          {selectedEvidence ? (
-            <EvidenceInspector
-              key={selectedEvidence.id}
-              variant="embedded"
-              caseData={caseData}
-              evidence={selectedEvidence}
-              onClose={() => setSelectedId(null)}
-            />
-          ) : null}
-        </div>
-      ) : null}
-    </aside>
-  );
-}
-
-/**
- * Collapsible list of evidence in the player's locker, surfaced inside an
- * interview view so the interviewer doesn't have to leave the conversation
- * to consult what they have. Tracks "newly arrived during this interview"
- * via a ref on mount and badges those rows.
- */
-function InterviewEvidencePanel({
-  caseData,
-  unlocked,
-}: {
-  caseData: Case;
-  unlocked: string[];
-}) {
-  const [expanded, setExpanded] = useState(false);
-
-  // Snapshot the unlocked set at the moment this panel mounts; anything that
-  // unlocks later in this interview counts as "new." useState initializer
-  // captures mount-time data without triggering re-renders.
-  const [initialUnlocked] = useState<Set<string>>(() => new Set(unlocked));
-
-  const unlockedSet = useMemo(() => new Set(unlocked), [unlocked]);
-  const items = useMemo(
-    () => caseData.evidence.filter((evidence) => unlockedSet.has(evidence.id)),
-    [caseData.evidence, unlockedSet],
-  );
-  const newIds = useMemo(
-    () => new Set(unlocked.filter((id) => !initialUnlocked.has(id))),
-    [unlocked, initialUnlocked],
-  );
-
-  if (items.length === 0 && newIds.size === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-5 rounded-2xl border border-white/10 bg-black/20">
-      <button
-        type="button"
-        onClick={() => setExpanded((value) => !value)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
-      >
-        <span className="text-xs uppercase tracking-[0.22em] text-[#c8a46a]">
-          Evidence locker
-        </span>
-        <span className="flex items-center gap-2">
-          {newIds.size > 0 ? (
-            <span className="rounded-full bg-[#c8a46a] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-950">
-              {newIds.size} new
-            </span>
-          ) : null}
-          <span className="text-xs text-[#a6a29a]">
-            {items.length} item{items.length === 1 ? "" : "s"} {expanded ? "▾" : "▸"}
-          </span>
-        </span>
-      </button>
-      {expanded ? (
-        <div className="grid gap-2 border-t border-white/10 p-3">
-          {items.map((evidence) => {
-            const isNew = newIds.has(evidence.id);
-            return (
-              <div
-                key={evidence.id}
-                className={`rounded-2xl border px-4 py-3 ${
-                  isNew ? "border-[#c8a46a]/60 bg-[#c8a46a]/10" : "border-white/10"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#a6a29a]">
-                    {evidence.category}
-                  </p>
-                  {isNew ? (
-                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e6bd77]">
-                      New
-                    </span>
-                  ) : null}
-                </div>
-                <p className="mt-1 text-base font-semibold">{evidence.title}</p>
-                <p className="mt-1 text-sm leading-6 text-[#cfc8ba]">{evidence.description}</p>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
+function InterviewEvidencePanel({ caseData, unlocked }: { caseData: Case; unlocked: string[] }) {
+  const [initial] = useState(() => new Set(unlocked));
+  const fresh = unlocked.filter(id=>!initial.has(id));
+  return <details className="phone-interview-locker" open={fresh.length>0 || undefined}><summary>Inspect evidence · {caseData.evidence.length} exhibits{fresh.length ? ` · ${fresh.length} new` : ""}</summary><EvidenceGallery caseData={caseData} focusIds={fresh}/></details>;
 }

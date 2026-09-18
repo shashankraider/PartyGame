@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PlayerLobbyView } from "@/components/PlayerLobbyView";
-import { loadCase } from "@/engine/case-loader";
-import { getLobbyState, SessionStoreError } from "@/lib/session-store";
+import { requireSessionAccess } from "@/lib/session-auth";
+import { getPublicLobbyState, SessionStoreError } from "@/lib/session-store";
 
 type PlayerSessionPageProps = {
   params: Promise<{
@@ -12,7 +12,8 @@ type PlayerSessionPageProps = {
 
 export default async function PlayerSessionPage({ params }: PlayerSessionPageProps) {
   const { sessionId, playerId } = await params;
-  const lobby = await getLobbyState(sessionId).catch((error) => {
+  await requireSessionAccess(sessionId, { playerId }).catch(() => notFound());
+  const lobby = await getPublicLobbyState(sessionId).catch((error) => {
     if (error instanceof SessionStoreError && error.status === 404) {
       notFound();
     }
@@ -25,12 +26,7 @@ export default async function PlayerSessionPage({ params }: PlayerSessionPagePro
     notFound();
   }
 
-  const caseData = await loadCase(lobby.session.case_id).catch(() => null);
-
-  if (!caseData) {
-    notFound();
-  }
-
+  const caseData = lobby.caseData;
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col overflow-x-hidden px-0 py-8 sm:py-10">
       <p className="mx-4 mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a] sm:mx-6">

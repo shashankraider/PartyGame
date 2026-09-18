@@ -1,9 +1,22 @@
-# Mussoorie — adjudicator evals
+# Mussoorie — live model evaluations
 
 Per-suspect test cases for the Phase 2g adjudicator. Each `<suspect>.eval.json`
 file pins the expected behavior of every `unlockBehavior` condition on that
 suspect (secrets, breaking points, related evidence). The eval script runs
 each test case through the real `judgeUnlock()` and reports pass/fail.
+
+## Latest recorded status — September 17, 2026
+
+- Adjudicator: **103/104**. The original Bisht rifle failure passed after clarification; the latest full run missed the Anya Grey Lady positive cue. The host can rescue eligible discoveries.
+- Host: **60/60** after trigger clarification and independent verification before forensic releases.
+- Story boundaries: **9/9**, including injection, unsupported revelations, and retained admissions.
+
+These calls use the real provider, incur usage, and vary between runs. They are separate from the default CI checks. See [P1 delivery](../../../docs/P1_DELIVERY.md) for scope and limitations.
+
+```sh
+npm run eval:host
+npm run eval:boundaries
+```
 
 ## Running
 

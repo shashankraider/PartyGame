@@ -1,0 +1,7 @@
+# Crime-scene overview
+
+`ravine-overview.png` (1672×941) was generated using the built-in image-generation tool. It is illustrative scenery, not a measured forensic reconstruction. No body or event is depicted. The image is served only through the authenticated evidence-image route after `crime-scene-summary` unlocks, never through the public asset route.
+
+## Final prompt
+
+Use case: illustration-story. Asset type: wide 16:9 crime-scene environment for a family-friendly illustrated detective game set in Mussoorie, India. Establishing illustration of Camel's Back Road at a sharp bend near Gun Hill, at misty dawn. Narrow wet stone walking path bending around a steep cedar-covered ravine; old dark iron colonial railing following the ravine edge, one clearly broken section twisted outward over the drop on the right foreground. Mist obscures the bottom of the ravine. No streetlights. Graphic novel illustration with fine ink contours and textured painterly shading, misty desaturated blue-green and charcoal colors, restrained pale dawn light. Keep the railing damage visually legible; substantial width of winding path visible on left. No people, no body, no blood, no weapon, no vehicle, no shoe, no tripod, no evidence markers, no text, no symbols or labels. Do not depict the event or imply who caused the damage. The image is an illustrative scene overview, not a forensic reconstruction.

@@ -516,7 +516,7 @@ async function runRepl() {
         console.log(
           paint(
             "green",
-            `  Manually fired ${conditionId} (subject=${result.outcome.subject}).`,
+            `  Manually fired ${conditionId}.`,
           ),
         );
         if (result.systemMessage) {

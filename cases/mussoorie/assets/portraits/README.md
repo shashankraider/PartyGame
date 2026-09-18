@@ -1,8 +1,10 @@
 # Portraits
 
+**Status — September 17, 2026:** Six suspect portraits and `vikram.png` are present. Backstory/atmospheric portraits listed below are planned, not supplied.
+
 One PNG (preferably ~512×768, 2:3 portrait) per character, in a consistent Mussoorie-noir style:
 
-**Suspects (interactive — will be referenced from `case.json`):**
+**Suspects (interactive — referenced from `case.json`):**
 - `rhea.png` — Rhea Bhatia, business partner
 - `devraj.png` — Inspector Devraj Khanna
 - `naina.png` — Naina Kapoor, ex-fiancée

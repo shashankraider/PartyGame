@@ -23,7 +23,7 @@ import { createClient, type RealtimeChannel, type SupabaseClient } from "@supaba
 
 const REFRESH_MARGIN_SECONDS = 60;
 
-let memoizedClient: SupabaseClient | null = null;
+const clients = new Map<string, SupabaseClient>();
 
 type RealtimeTokenResponse = {
   token: string;
@@ -37,11 +37,11 @@ function getEnv(): { url: string; anonKey: string } | null {
   return { url, anonKey };
 }
 
-function getBaseClient(): SupabaseClient | null {
-  if (memoizedClient) return memoizedClient;
+function getBaseClient(sessionId: string): SupabaseClient | null {
+  if (clients.has(sessionId)) return clients.get(sessionId)!;
   const env = getEnv();
   if (!env) return null;
-  memoizedClient = createClient(env.url, env.anonKey, {
+  const client = createClient(env.url, env.anonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -52,7 +52,8 @@ function getBaseClient(): SupabaseClient | null {
       },
     },
   });
-  return memoizedClient;
+  clients.set(sessionId,client);
+  return client;
 }
 
 async function fetchRealtimeToken(sessionId: string): Promise<RealtimeTokenResponse | null> {
@@ -84,7 +85,7 @@ export type SessionRealtimeClient = {
 export async function createSessionRealtimeClient(
   sessionId: string,
 ): Promise<SessionRealtimeClient | null> {
-  const client = getBaseClient();
+  const client = getBaseClient(sessionId);
   if (!client) return null;
 
   const initial = await fetchRealtimeToken(sessionId);
@@ -101,7 +102,8 @@ export async function createSessionRealtimeClient(
     const refreshIn = Math.max(30, expiresAt - nowSeconds - REFRESH_MARGIN_SECONDS);
     refreshTimer = setTimeout(async () => {
       const next = await fetchRealtimeToken(sessionId);
-      if (!next || disposed) return;
+      if (disposed) return;
+      if (!next) { scheduleRefresh(Math.floor(Date.now() / 1000) + 30); return; }
       client!.realtime.setAuth(next.token);
       scheduleRefresh(next.expiresAt);
     }, refreshIn * 1000);

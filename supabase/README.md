@@ -1,54 +1,25 @@
-# Supabase
+# Database setup
 
-Database schema, Row-Level Security policies, and Realtime publications for the Mystery Engine.
+Use the Supabase CLI with Docker. `supabase start` initializes a new local database from the checked-in migrations. For an existing database, inspect migration history and apply only pending migrations; never reset a shared database to install a feature. Other worktrees may have additional migrations that must be preserved.
 
-## Local development
+Hosted rollout is separate from local development: review pending migrations before using `supabase db push --linked`. This change was verified on an isolated local database, not deployed to a hosted project.
 
-Install the Supabase CLI:
+## Access model
 
-```bash
-brew install supabase/tap/supabase
-```
+The server issues a signed HttpOnly device cookie. Private `session_memberships` bind that device to host privileges and/or a player. Every session API and page checks membership; mutations additionally check the actor and game lifecycle. The server holds the service-role key. An anon key or known session/player ID is not an identity credential.
 
-Start a local Supabase stack:
+Members can obtain a short-lived realtime JWT scoped to their session and capped by session expiry. RLS uses its signed claims. Only safe public rows/columns are directly readable. Memberships, turn records, and private adjudication state are inaccessible to browser roles. Clients cannot execute the mutation RPCs or garbage collection.
 
-```bash
-supabase start
-```
+## Mutation integrity
 
-This brings up Postgres, Auth, Realtime, and Studio (the local dashboard). Migrations in `supabase/migrations/` apply automatically.
+`create_game_session` and `join_game_session` allocate the lobby and seats atomically. `begin_interview_turn` reserves one pending answer per session. Each attempt has a lease and a fencing token; an expired worker cannot commit over its replacement. `commit_game_update` locks the session and checks its revision, then commits messages, discoveries, votes, events, and microphone handoff together. Pausing or ending cancels pending turns. Completed turn retries return the saved result.
 
-## Applying migrations to a hosted project
+`20260918023306_p1_game_integrity.sql` adds these functions, tables, grants, and ending state. Existing games cannot be assigned an authenticated host safely from their historical public device IDs; create fresh lobbies after rollout. Do not automatically claim old games for the first visitor.
 
-```bash
-supabase link --project-ref <your-project-ref>
-supabase db push --linked
-```
+## Retention
 
-## Migration files
+Successful game actions update activity and extend expiry by seven days. API reads/joins/actions reject expired sessions; realtime token expiry is capped. `pg_cron` runs `public.gc_expired_sessions()` hourly at minute 17 under the database job owner's privileges. Browser roles cannot execute the function. Review the existing retention timestamps before applying a schedule to a database containing historical games.
 
-| File | What it does |
-|---|---|
-| `0001_initial.sql` | Creates `sessions`, `players`, `messages`, `events` tables. Sets up enums (mode/status/scene/role). Enables RLS with session-scoped read policies. Adds all four tables to the `supabase_realtime` publication. |
+## Verification
 
-## RLS strategy
-
-- The **Next.js server** holds the service-role key and bypasses RLS for trusted server-side mutations through API routes (this is where game logic and validation live).
-- **Clients** (TV, phones) use the anon key plus a signed cookie that sets `app.session_id`. The RLS policies use `current_setting('app.session_id')` to scope every read to that session only.
-- No INSERT/UPDATE/DELETE policies are exposed to the anon role. Clients never write directly; all mutations flow through the server.
-
-This keeps the attack surface minimal: a leaked anon key gives someone read-only access to one session at most, and only if they also know its id.
-
-## Garbage collection
-
-The `gc_expired_sessions()` function deletes sessions past their `expires_at`. Call it manually for now:
-
-```sql
-select gc_expired_sessions();
-```
-
-In production we'll schedule it via `pg_cron`:
-
-```sql
-select cron.schedule('gc-expired-sessions', '0 * * * *', $$ select gc_expired_sessions(); $$);
-```
+See `tests/integration/game.mjs` and `scripts/with-local-supabase.mjs`. These require local URLs, test a running production app, and clean up only their own sessions. The integration suite covers separate device cookies, RLS, concurrent joins/votes, turn replay/fencing, provider failure, host assistance, pause, expiry, and both endings.

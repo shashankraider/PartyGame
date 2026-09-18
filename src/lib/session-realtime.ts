@@ -25,6 +25,8 @@ export type LobbySnapshot = {
   session: SessionRow;
   players: PlayerRow[];
   accusationVotes: AccusationVoteRow[];
+  caseData?: import("./public-case").PublicCase;
+  turnPending?: boolean;
 };
 
 type LobbyApiResponse = LobbySnapshot & { error?: string };
@@ -51,6 +53,8 @@ async function refetchLobby(sessionId: string): Promise<LobbySnapshot | null> {
     session: payload.session,
     players: payload.players ?? [],
     accusationVotes: payload.accusationVotes ?? [],
+    caseData: payload.caseData,
+    turnPending: payload.turnPending,
   };
 }
 
@@ -74,7 +78,8 @@ export function useSessionLobbyRealtime(
   const [error, setError] = useState<string | null>(null);
 
   function applySnapshot(next: Partial<LobbySnapshot>) {
-    setLobby((current) => ({ ...current, ...next }));
+    setLobby((current) => next.session && (next.session.revision ?? 0) < (current.session.revision ?? 0) ? current : ({ ...current, ...next }));
+    if (!next.caseData) void refetchLobby(sessionId).then(snapshot => { if (snapshot) setLobby(current => (snapshot.session.revision ?? 0) >= (current.session.revision ?? 0) ? snapshot : current); });
   }
 
   useEffect(() => {
@@ -100,7 +105,7 @@ export function useSessionLobbyRealtime(
             return;
           }
           setError(null);
-          setLobby(next);
+          setLobby(current => (next.session.revision ?? 0) >= (current.session.revision ?? 0) ? next : current);
         }, LOBBY_POLL_MS);
         return;
       }
@@ -108,7 +113,7 @@ export function useSessionLobbyRealtime(
       const refresh = async () => {
         const next = await refetchLobby(sessionId);
         if (cancelled || !next) return;
-        setLobby(next);
+        setLobby(current => (next.session.revision ?? 0) >= (current.session.revision ?? 0) ? next : current);
         setError(null);
       };
 
@@ -135,7 +140,10 @@ export function useSessionLobbyRealtime(
           refresh,
         );
 
+      pollHandle = setInterval(refresh, LOBBY_POLL_MS);
+      void refresh();
       channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") void refresh();
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
           // Realtime degraded — keep the channel but layer a slow poll on top
           // so the UI stays current. Cheap insurance.
@@ -221,7 +229,9 @@ export function useInterviewTranscriptRealtime(
           },
         );
 
+      pollHandle = setInterval(load, 4000);
       channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") void load();
         if ((status === "CHANNEL_ERROR" || status === "TIMED_OUT") && !pollHandle) {
           pollHandle = setInterval(load, TRANSCRIPT_POLL_MS);
         }
@@ -303,7 +313,9 @@ export function useCaseStatusRealtime(
           },
         );
 
+      pollHandle = setInterval(load, 4000);
       channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") void load();
         if ((status === "CHANNEL_ERROR" || status === "TIMED_OUT") && !pollHandle) {
           pollHandle = setInterval(load, CASE_STATUS_POLL_MS);
         }
@@ -392,7 +404,9 @@ export function useHostFallbackRealtime(
           },
         );
 
+      pollHandle = setInterval(load, 4000);
       channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") void load();
         if ((status === "CHANNEL_ERROR" || status === "TIMED_OUT") && !pollHandle) {
           pollHandle = setInterval(load, HOST_FALLBACK_POLL_MS);
         }

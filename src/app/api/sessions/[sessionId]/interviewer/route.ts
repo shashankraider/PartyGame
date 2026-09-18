@@ -1,38 +1,17 @@
 import { NextResponse } from "next/server";
-import { SessionStoreError, setSessionInterviewer } from "@/lib/session-store";
-
-type InterviewerRouteContext = {
-  params: Promise<{
-    sessionId: string;
-  }>;
-};
-
-type InterviewerRequest = {
-  playerId?: string | null;
-};
-
-export async function POST(request: Request, context: InterviewerRouteContext) {
-  const { sessionId } = await context.params;
-  const body = (await request.json().catch(() => ({}))) as InterviewerRequest;
-
-  if (body.playerId !== null && typeof body.playerId !== "string") {
-    return NextResponse.json({ error: "playerId is required (string or null)" }, { status: 400 });
-  }
-
+import { requireSessionAccess, checkRequestOrigin, AccessError } from "@/lib/session-auth";
+import { apiError } from "@/lib/api-errors";
+type Context = { params: Promise<{ sessionId: string }> };
+const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+import { setSessionInterviewer, getLobbyState, getPublicLobbyState } from "@/lib/session-store";
+export async function POST(request: Request, context: Context) {
   try {
-    const session = await setSessionInterviewer({
-      sessionId,
-      playerId: body.playerId,
-    });
-    return NextResponse.json({ session });
-  } catch (error) {
-    if (error instanceof SessionStoreError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code, details: error.details },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json({ error: "Could not update interviewer" }, { status: 500 });
-  }
+    checkRequestOrigin(request); const { sessionId } = await context.params;
+    const actor = await requireSessionAccess(sessionId);
+    const { playerId } = await request.json();
+    if (playerId !== null && typeof playerId !== 'string') throw new AccessError('playerId must be a string or null',400);
+    const { session } = await getLobbyState(sessionId);
+    if (!actor.isHost && !(actor.playerId && (session.current_interviewer_player_id === actor.playerId || (!session.current_interviewer_player_id && actor.playerId === playerId)))) throw new AccessError('Only the active detective can pass the microphone');
+    await setSessionInterviewer({ sessionId, playerId, actorPlayerId: actor.isHost ? undefined : actor.playerId! }); return json(await getPublicLobbyState(sessionId));
+  } catch(error) { return apiError(error); }
 }

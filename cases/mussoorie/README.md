@@ -1,6 +1,8 @@
 # Murder in Mussoorie
 
-**The first case shipped with the Mystery Engine.**
+**The first implemented case for the Mystery Engine prototype.**
+
+Status reconciled September 17, 2026. See [P1 delivery](../../docs/P1_DELIVERY.md) for test results and pending rollout.
 6–8 players · ages 10+ · ~3 hours · 4 rounds · cooperative whodunit · LLM-driven suspect interrogation.
 
 A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a CBI special team investigating the death of a popular YouTuber that the local police have ruled accidental — and discover that the case unlocks a fifteen-year-old cold case underneath.
@@ -11,20 +13,19 @@ A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a 
 |---|---|
 | `design.md` | **The Game Bible** — full plot, suspects, solution, evidence list, two-path endgame, guilt map. The canonical, spoiler-heavy source of truth for this case. |
 | `Game_Bible.docx` | Earlier Word-document snapshot of the bible content. `design.md` is now the source of truth; the `.docx` may lag behind in-flight rewrites. Regenerate from `design.md` when needed. |
-| `case.json` | *(coming in Phase 1)* The structured data fed to the engine — schema-validated, references all assets and printables. |
+| `case.json` | The implemented structured data fed to the engine — schema-validated, references all assets and printables. |
 | `printables/` | Player-facing HTML exhibits, one standalone file per evidence item, plus print-all-round source bundles. |
 | `assets/portraits/` | Suspect, victim, and backstory-character portraits. |
 | `assets/locations/` | Wide images of the 8 key locations. |
-| `assets/crime-scene/` | Scene photos used in evidence cards. |
-| `assets/audio/` | 5-cue noir soundtrack. |
-| `assets/ui/` | Iconography and theming. |
+| `assets/crime-scene/` | Planned scene-photo inventory; no images supplied yet. |
+| `assets/audio/` | Planned five-cue soundtrack; no soundtrack files supplied yet. |
+| `assets/ui/` | Cover image present; other listed UI assets are planned. |
+| `assets/video/` | Local final-recording media and source files; playback is not integrated. |
 
 ## Story structure (4 rounds)
 
-1. **Round 1 — The Scene** — CBI arrives. Scene briefing, anonymous letter, victim's background, Grey Lady setup. Evidence items 1–5.
-2. **Round 2 — Suspects' Stories Crack** — First-pass interviews. Each suspect's surface story collapses under one piece of evidence. Items 6–12.
-3. **Round 3 — The Thakur Connection** — A second anonymous letter and an old newspaper clipping pivot the case into the 15-year-old cold case. Items 13–20.
-4. **Round 4 — The Solve** — Hard evidence implicates Bisht and Devraj. Two-path endgame depending on who is confronted first. Final reveal, guilt-map discussion. Items 21–26.
+The case contains **30 evidence items, 19 chapters, four content rounds, eight locations and two authored ending branches**. Round groups contain 6, 9, 9 and 6 exhibits respectively. The live engine walks the opening briefing, then uses free-form interrogation across the later evidence groups, followed by accusation and staged reveal; it does not force a linear playthrough of all 19 chapters.
+
 
 ## Cast (6 suspects)
 
@@ -41,12 +42,12 @@ See `design.md` Section 7 for each suspect's full sheet (public story, secret, b
 
 ## Status
 
-- ✅ Game Bible v1.0 — locked
-- ✅ Printables (HTML) — drafted across 4 rounds
-- ✅ `case.json` — translated from the Game Bible, validates green, pin-tested in CI
-- ⏳ Portraits, location art, crime-scene images — pending Phase 4
-- ⏳ Soundtrack cues — pending Phase 4
+- Implemented: structured case, all six suspect cue sets, HTML exhibits and both confrontation branches.
+- Assets present: six suspect portraits, victim portrait, eight location images and cover art.
+- Pending: dedicated crime-scene/backstory art, soundtrack, final video integration and playable phone hack.
+- Latest recorded checks: case validation and all 30 printable synchronization checks passed. Live host 60/60; adjudicator 103/104 with a recoverable Anya cue miss; story boundaries 9/9. These are dated observations, not guaranteed future model results.
+
 
 ## A note on spoilers
 
-`design.md` and `Game_Bible.docx` are **for the game designer's eyes only** — they contain the full solution. Players see only what's exposed by the engine, the live LLM interviews, and the printables in `printables/`.
+This README, `case.json`, `design.md`, and `Game_Bible.docx` are **for the game designer's eyes only** — they contain the full solution. Players see only what's exposed by the engine, the live LLM interviews, and the printables in `printables/`.

@@ -1,5 +1,7 @@
 # Audio
 
+**Status — September 17, 2026:** Planning inventory only; these soundtrack files and playback are not implemented.
+
 Royalty-free or AI-generated noir soundtrack cues. MP3, ~30-90 seconds each, loopable where noted.
 
 - `main-theme.mp3` — title and case briefing (loopable)

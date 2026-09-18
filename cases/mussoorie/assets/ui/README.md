@@ -1,5 +1,7 @@
 # UI assets
 
+**Status — September 17, 2026:** `cover.png` is present. The assets listed below remain planned.
+
 Iconography and branding for the Mussoorie case theme. Reserved for Phase 2 polish.
 
 - `cbi-seal.svg` — CBI special-team seal (used in headers and the anonymous letter)

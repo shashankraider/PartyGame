@@ -4,7 +4,9 @@ Player-facing evidence exhibits designed in HTML with print styles (CBI vintage 
 
 Each evidence item has its own self-contained HTML file. The app renders that standalone file when the evidence is revealed, so detectives cannot scroll into unrevealed evidence from the same round.
 
-The four `RoundN_*.html` files remain the editable source bundles and print-all-round versions. Run `npm run printables:split` after changing a source bundle to regenerate the 30 standalone exhibits. CI can verify they are current with `npm run printables:check`.
+The four `RoundN_*.html` files remain the editable source bundles and print-all-round versions. Run `npm run printables:split` after changing a source bundle to regenerate the 30 standalone exhibits. CI verifies they are current with `npm run printables:check`.
+
+The app serves only standalone exhibits unlocked for an authenticated session. Round source bundles are for local author/host preparation and are not served through the player printable route. PDF export is not part of the implemented pipeline.
 
 ## Source bundles
 

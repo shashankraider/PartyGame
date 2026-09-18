@@ -1,31 +1,15 @@
 import { NextResponse } from "next/server";
-import { joinSessionByCode, SessionStoreError } from "@/lib/session-store";
-
-type JoinRequest = {
-  joinCode?: string;
-  name?: string;
-  deviceId?: string;
-};
-
+import { joinSessionByCode } from "@/lib/session-store";
+import { ensureDevice, setDeviceCookie, checkRequestOrigin } from "@/lib/session-auth";
+import { apiError } from "@/lib/api-errors";
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => ({}))) as JoinRequest;
-
   try {
-    const result = await joinSessionByCode({
-      joinCode: body.joinCode ?? "",
-      name: body.name ?? "",
-      deviceId: body.deviceId ?? "",
-    });
-
-    return NextResponse.json(result, { status: result.existing ? 200 : 201 });
-  } catch (error) {
-    if (error instanceof SessionStoreError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code, details: error.details },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json({ error: "Could not join session" }, { status: 500 });
-  }
+    checkRequestOrigin(request);
+    const body = await request.json();
+    const deviceId = await ensureDevice();
+    const result = await joinSessionByCode({ joinCode: body.joinCode ?? '', name: body.name ?? '', deviceId });
+    const response = NextResponse.json(result, { status: result.existing ? 200 : 201, headers: { 'Cache-Control': 'no-store' } });
+    await setDeviceCookie(response, deviceId, request);
+    return response;
+  } catch(error) { return apiError(error); }
 }

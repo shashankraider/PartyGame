@@ -1,5 +1,7 @@
 # Schema notes — implications of the Mussoorie Game Bible
 
+> Historical schema proposal from before case authoring. Many additions below are now implemented. Use `src/engine/schema/case.schema.json` and [current architecture](../../docs/ARCHITECTURE.md) for the present contract and runtime gaps; this is not a pending implementation checklist.
+
 The story in `design.md` is significantly richer than the schema sketched in `docs/ARCHITECTURE.md` § 5.1. This document lists every schema addition or change implied by the Game Bible. These need to land in `case.schema.json` during **Phase 0a** before we author `case.json`.
 
 This is the bridge document between the story and the engine.

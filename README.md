@@ -1,80 +1,66 @@
-# Mystery Engine — a cooperative whodunit framework
+# Mystery Engine
 
-A reusable engine for cooperative murder-mystery party games, with the first case shipped as **Murder in Mussoorie** — a family-friendly noir mystery set in the Indian hill town, designed for 6–8 players, ages 10+.
+A cooperative murder-mystery game with a shared TV display and phone controllers. The first case, **Murder in Mussoorie**, contains six suspects, 30 exhibits, and two confrontation endings.
 
-Inspired by [Murder in Prague](https://murderinprague.com/). Evolved with **live LLM-driven suspect interrogation**, **multi-device play** (TV display + player phones), and a **JSON case format** so new cases can be authored (by humans or AI) without touching engine code.
+The multiplayer flow includes lobby creation, briefing, live suspect interviews, evidence discovery, host assistance, voting, confrontation, reveal, and a finished state. Solo is a preview; the phone-hack minigame remains a placeholder. This is a prototype under integration hardening, not a claim of production readiness.
 
-## Status
+## Run locally
 
-Pre-alpha. **Phases 0 and 1 complete** — framework contract is locked, tested, and Mussoorie is fully structured:
+1. Use Node **22.22.0** (`nvm use`), then `npm ci`.
+2. Start Docker and run `supabase start` for a new local database. Existing databases need the new migrations; do not reset a database containing games you want to keep.
+3. Copy `.env.example` to `.env.local`. Set both Supabase URLs, the anon key, and the server-only service-role key from `supabase status`. Add the matching JWT secret for realtime and an OpenRouter key for live interviews. Keep server keys out of `NEXT_PUBLIC_` variables.
+4. Run `npm run dev`, open the multiplayer case page on the host, then join using the displayed code on each phone. Use the same browser and hostname when returning to a game.
 
-### Phase 0 — Framework
-- ✅ JSON Schema (`src/engine/schema/case.schema.json`) covering Case, Suspect, Evidence, Chapter, UnlockCondition, Solution, Round, Location, BackstoryEvent, AtmosphericThread, EndgameDefinition
-- ✅ Auto-generated TypeScript types (`src/engine/types.ts`)
-- ✅ CLI validator with schema + cross-reference checks (`npm run validate-case <id>`)
-- ✅ Case template scaffold (`cases/_template/`)
-- ✅ Authoring guide (`docs/authoring-guide.md`)
-- ✅ Supabase schema (sessions, players, messages, events) + RLS + Realtime in `supabase/migrations/0001_initial.sql`
+The session membership migration is a security boundary: old lobbies have no verifiable host credentials. Create new lobbies after migrating. Existing rows are retained until their normal expiry. Never backfill host ownership from public device IDs.
 
-### Phase 1 — Mussoorie case data
-- ✅ Game Bible (`cases/mussoorie/design.md`) — canonical narrative source
-- ✅ `cases/mussoorie/case.json` — 6 suspects, 26 evidence items, 19 chapters, 4 rounds, 8 locations, Thakur backstory, Grey Lady atmospheric thread, two-path endgame, multi-killer solution. Validates green.
-- ✅ Round 1–4 HTML printables under `cases/mussoorie/printables/`
+## Play
 
-### Tests
-- ✅ **72 tests across 5 files, all passing** (`npm test`) — includes a pin test that fails CI if Mussoorie ever stops validating
+Start after detectives join. Continue through the briefing, choose a suspect, and let a detective take the microphone. Answers are shown after validation and committed together with discoveries and microphone rotation. The host can help with stalled revelations or request the next forensic update. Pause cancels an unfinished answer; resume permits a retry.
 
-**Next: Phase 2** — build the Next.js app (scaffold, lobby, TV/phone modes, engine UI, LLM interview, boundary enforcement, pause/resume).
+Open accusation when the group is ready. After every detective votes, select **Begin confrontation**, **Continue confrontation**, **Reveal the truth**, then **Finish game**. Among the two confrontation suspects, the larger vote total selects the branch; ties, including neither receiving a vote, select the first authored branch.
 
-## Scripts
+Sessions expire after seven days without a successful game action. An hourly database job removes expired games. Clearing browser cookies loses that device's identity; join codes do not grant host access.
 
-```bash
-npm test                   # run the test suite
-npm run validate-case <id> # validate one case
-npm run validate-cases     # validate every case
-npm run types:generate     # regenerate src/engine/types.ts from the schema
-npm run docs:render        # render mermaid diagrams in docs/ to SVG
+## Checks
+
+```sh
+npm run lint
+npm test
+npm run validate-cases
+npm run printables:check
+npm run build
+npm audit --omit=dev
 ```
 
-## Documentation
+Database/API integration checks create their own games in a **local** database and delete only those games. Apply migrations first. Run the app and test harness against the same database:
 
-- [`docs/PRD.md`](docs/PRD.md) — Product Requirements: vision, goals, user scenarios, gameplay flow diagrams, functional & non-functional requirements (2 diagrams)
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — System architecture: stack, data model, streaming, display modes, lobby, LLM boundaries, session state machine (7 diagrams)
-- [`docs/diagrams/INDEX.md`](docs/diagrams/INDEX.md) — All 9 diagrams rendered as standalone SVGs, regenerable via `npm run docs:render`
-- [`docs/authoring-guide.md`](docs/authoring-guide.md) — How to author a new case, by hand or with an LLM
-- [`cases/mussoorie/`](cases/mussoorie/) — The first case (Game Bible, printables, schema notes)
-- [`supabase/`](supabase/) — Database migrations, RLS, Realtime setup
-
-### Rendering the diagrams
-
-The markdown files contain `mermaid` code blocks that render inline in Cursor's markdown preview and on GitHub. To export them as standalone SVG files (e.g., for embedding in slides or external docs):
-
-```bash
-npm install        # one-time
-npm run docs:render
+```sh
+node scripts/with-local-supabase.mjs npm run build
+node scripts/with-local-supabase.mjs npm run start -- --port 3100
+# In another terminal:
+npm run test:integration:local
 ```
 
-Output lands in `docs/diagrams/` with descriptive filenames.
+Set `SUPABASE_WORKDIR` to an isolated Supabase project directory when working alongside another checkout. Do not reset the shared database. `INTEGRATION_BASE_URL` overrides the default `http://localhost:3100`.
 
-## How it plays (short version)
+Live evaluations use OpenRouter and incur provider usage:
 
-1. Open the app, pick a case, and choose **Solo** or **Multiplayer** mode.
-2. In Multiplayer: TV shows a join code + QR. Players scan with their phones, enter a name, take a seat.
-3. The case unfolds in chapters on the TV: case briefing, evidence reveals, suspect interviews, a phone-hack minigame.
-4. During interviews, one **designated interviewer** at a time types questions on their phone. Suspects answer live (via LLM), in character, never revealing more than they should.
-5. The interviewer can **present evidence** mid-conversation to crack alibis, and can **pass control** to anyone at any time.
-6. After all the interviews and twists, the group votes for the killer. The TV reveals the truth.
-7. Pause anytime; resume within ~7 days from the same join code.
+```sh
+npm run eval:adjudicator -- all
+npm run eval:host
+npm run eval:boundaries
+```
 
-## Architecture at a glance
+CI runs lint, unit tests, case/printable checks, audit, production build, and local database/API integration checks. Live model evaluations and the browser playthrough are separate checks; model results can vary between runs.
 
-- **Frontend / API**: Next.js 14 (App Router) + TypeScript + Tailwind, deployed on Vercel
-- **Backend**: Supabase (Postgres + Realtime) for session state, persistence, and cross-device sync
-- **LLM**: OpenRouter (model-swappable via env var) for live suspect interrogation
-- **Engine vs cases**: code is case-agnostic; cases are JSON files in `cases/<id>/case.json` plus assets
+## Project guides
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for diagrams and details.
+- [Project assessment](docs/PROJECT_ASSESSMENT.md): baseline findings and priorities.
+- [P1 delivery and verification](docs/P1_DELIVERY.md): fixes, evidence, and rollout limits.
+- [Authoring guide](docs/authoring-guide.md): case format and validation.
+- [Supabase setup](supabase/README.md): migrations and access model.
+- [Architecture](docs/ARCHITECTURE.md): current data flow, authorization, turns and lifecycle.
+- [Development handoff](docs/CLAUDE_HANDOFF.md): pickup instructions, verified status and next priorities.
+- [PRD](docs/PRD.md): product targets with an implementation-status map.
 
-## License
-
-TBD.
+License: TBD.

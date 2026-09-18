@@ -1,32 +1,24 @@
-import { redirect } from "next/navigation";
+import { ActiveGames } from "@/components/ActiveGames";
+import Link from "next/link";
 import { CaseCard } from "@/components/CaseCard";
 import { loadConfiguredCaseSummaries } from "@/engine/case-loader";
 
 export default async function Home() {
   const cases = await loadConfiguredCaseSummaries();
-
-  if (process.env.CASE_ID && cases.length === 1) {
-    redirect(`/case/${cases[0].id}`);
-  }
-
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-12">
-      <section className="max-w-3xl py-16">
-        <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[#c8a46a]">Mystery Engine</p>
-        <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
-          Choose tonight&apos;s case.
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-[#cfc8ba]">
-          Phase 2 starts with a runnable case picker backed by the same JSON case files the
-          validator already protects.
-        </p>
+    <main className="case-shell">
+      <header className="case-masthead"><span className="case-brand">M / E <span>Mystery Engine</span></span><Link href="/join" className="case-back">Join a game →</Link></header>
+      <ActiveGames />
+      <section className="case-picker-intro">
+        <p className="case-eyebrow">An evening of questions. A room full of detectives.</p>
+        <h1 className="case-serif">Every town has secrets.<br /><em>Choose yours.</em></h1>
+        <p>Gather your people. Examine the evidence. Find the truth together.</p>
       </section>
-
-      <section className="grid gap-5 md:grid-cols-2">
-        {cases.map((caseSummary) => (
-          <CaseCard key={caseSummary.id} caseSummary={caseSummary} />
-        ))}
+      <section aria-label="Available cases" className={`case-collection${cases.length === 1 ? " case-collection--single" : ""}`}>
+        {cases.map((caseSummary) => <CaseCard key={caseSummary.id} caseSummary={caseSummary} />)}
+        {!cases.length ? <p className="case-description">No case files are available yet. Check back soon.</p> : null}
       </section>
+      <footer className="case-footer"><span>One shared screen. Your phones. Your collective instincts.</span><span>No one solves it alone.</span></footer>
     </main>
   );
 }

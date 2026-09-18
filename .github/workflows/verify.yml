@@ -1,0 +1,30 @@
+name: Verify game
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint && npm test && npm run validate-cases && npm run printables:check
+      - run: npm audit --omit=dev
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.98.2
+      - run: supabase start -x studio,postgres-meta,storage-api,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor
+      - run: node scripts/with-local-supabase.mjs npm run build
+      - name: Verify the running app and database
+        run: |
+          node scripts/with-local-supabase.mjs npm run start -- --port 3100 > /tmp/game-server.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://localhost:3100/ > /dev/null; then break; fi
+            sleep 1
+          done
+          npm run test:integration:local
+      - if: always()
+        run: supabase stop --no-backup

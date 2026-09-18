@@ -1,10 +1,31 @@
 # Product Requirements Document — Mystery Engine + "Murder in Mussoorie"
 
-**Status**: Draft v1
+**Status**: Product target with implementation status below
 **Owner**: Shashank Mendiratta
-**Last updated**: 2026-05-14
+**Requirements baseline**: 2026-05-14
+**Status reconciled**: 2026-09-17
 
 ---
+
+## Implementation status — September 17, 2026
+
+The requirements below retain the original product target, including unimplemented features. They are not a release checklist marked complete. [Architecture](ARCHITECTURE.md) describes the current implementation; [P1 delivery](P1_DELIVERY.md) records verification and pending database rollout.
+
+| Area / original requirement | Current implementation or gap |
+| --- | --- |
+| Multiplayer lobby, TV/phone views, evidence, interviews, voting and ending | Implemented and exercised through a browser playthrough; both ending branches covered by database/API tests. |
+| F-LOB-4 / NFR-SEC-3 identity | Signed HttpOnly device cookie plus private membership; session/expiry JWT claims scope realtime reads. Public IDs are not credentials. |
+| F-LLM-1/2, NFR-PERF-2 streaming | Superseded in the current implementation by validation before publication and an atomic completed exchange. No token stream or two-second latency guarantee. |
+| F-BND-2/4 unlocks and validation | Live unlocks use `unlockBehavior`; not all legacy gates are executed. Rejected/unavailable validation uses authored text or a safe deflection, without a regeneration loop. |
+| F-TV-2 automatic progression | Host advances briefing, accusation and staged reveal. The AI cannot change the live phase. |
+| F-LLM-4 handoff / F-PHONE-4 voting | Detective handoff occurs between completed turns; observers cannot receive the microphone or vote. |
+| F-LLM-5 conversation reset | No normal host reset-conversation control. |
+| Pause, finish, retention | Guarded lifecycle, cancellation of pending answers, seven-day activity renewal and hourly GC are implemented in the pending migration. |
+| Solo, phone hack, observer promotion, host transfer | Solo preview and minigame placeholder only; no observer promotion or host-transfer flow. |
+| Media and performance | Portrait/location/cover art exists; soundtrack, TTS and final video playback are not integrated. Cost, latency, accessibility and physical multi-device acceptance targets remain unverified. |
+| Release | P1 changes verified locally; migration not applied to shared/hosted database and no hosted deployment claimed. |
+
+The original workflow diagrams below show the intended product breadth, including the unimplemented phone-hack/solo paths. Use the current architecture diagrams for the running system.
 
 ## 1. Vision
 
@@ -75,7 +96,7 @@ The audience for *gameplay* is family-friendly (ages 10+); the audience for *cas
 
 ### S5 — Author drafting a new case
 
-> The product creator wants to add a second case set in Goa. They copy `cases/_template/`, open `case.json`, and use Cursor with the `$schema` reference to autocomplete the structure. For long prose (suspect personas, narrative beats), they paste the schema into Gemini and have the LLM draft the JSON. They run `pnpm validate-case goa` — the validator catches three broken evidence references and a missing breaking point. They fix and re-validate. The case appears in the picker.
+> The product creator wants to add a second case set in Goa. They copy `cases/_template/`, open `case.json`, and use Cursor with the `$schema` reference to autocomplete the structure. For long prose (suspect personas, narrative beats), they paste the schema into Gemini and have the LLM draft the JSON. They run `npm run validate-case goa` — the validator catches three broken evidence references and a missing breaking point. They fix and re-validate. The case appears in the picker.
 
 ---
 
@@ -162,7 +183,7 @@ In **Solo mode** the host's screen is also the player's screen — the right-han
 
 - **F-AUTH-1**: A `cases/_template/` scaffold MUST exist with a minimal valid `case.json` containing TODO markers.
 - **F-AUTH-2**: An authoring guide (`docs/authoring-guide.md`) MUST describe how to draft cases by hand or with an LLM, including a copy-paste prompt for LLM authoring.
-- **F-AUTH-3**: A CLI script (`pnpm validate-case <id>`) MUST validate a case and exit non-zero on any error.
+- **F-AUTH-3**: A CLI script (`npm run validate-case <id>`) MUST validate a case and exit non-zero on any error.
 - **F-AUTH-4**: Case JSON MUST support a `$schema` reference for IDE autocomplete and inline validation.
 
 ### 6.3 Lobby and player registration (Multiplayer mode)

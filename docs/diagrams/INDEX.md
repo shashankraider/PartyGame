@@ -6,12 +6,10 @@ Regenerate with `npm run docs:render`.
 
 | Source | Section | SVG |
 |---|---|---|
-| ARCHITECTURE.md (line 14) | System overview | [architecture-01-system-overview.svg](architecture-01-system-overview.svg) |
-| ARCHITECTURE.md (line 75) | Engine vs cases | [architecture-02-engine-vs-cases.svg](architecture-02-engine-vs-cases.svg) |
-| ARCHITECTURE.md (line 313) | Streaming and realtime fan-out | [architecture-03-streaming-and-realtime-fan-out.svg](architecture-03-streaming-and-realtime-fan-out.svg) |
-| ARCHITECTURE.md (line 372) | Prompt composition | [architecture-04-prompt-composition.svg](architecture-04-prompt-composition.svg) |
-| ARCHITECTURE.md (line 419) | Boundary enforcement (defense in depth) | [architecture-05-boundary-enforcement-defense-in-depth.svg](architecture-05-boundary-enforcement-defense-in-depth.svg) |
-| ARCHITECTURE.md (line 472) | Lobby and player registration | [architecture-06-lobby-and-player-registration.svg](architecture-06-lobby-and-player-registration.svg) |
-| ARCHITECTURE.md (line 514) | Pause and resume | [architecture-07-pause-and-resume.svg](architecture-07-pause-and-resume.svg) |
-| PRD.md (line 88) | End-to-end workflow | [prd-01-end-to-end-workflow.svg](prd-01-end-to-end-workflow.svg) |
-| PRD.md (line 116) | Host vs Player journey | [prd-02-host-vs-player-journey.svg](prd-02-host-vs-player-journey.svg) |
+| ARCHITECTURE.md (line 7) | System overview | [architecture-01-system-overview.svg](architecture-01-system-overview.svg) |
+| ARCHITECTURE.md (line 75) | Interview execution and realtime fan-out | [architecture-02-interview-execution-and-realtime-fan-out.svg](architecture-02-interview-execution-and-realtime-fan-out.svg) |
+| ARCHITECTURE.md (line 105) | Story boundaries and rescue | [architecture-03-story-boundaries-and-rescue.svg](architecture-03-story-boundaries-and-rescue.svg) |
+| ARCHITECTURE.md (line 125) | Lifecycle and ending | [architecture-04-lifecycle-and-ending.svg](architecture-04-lifecycle-and-ending.svg) |
+| PRD.md (line 109) | End-to-end workflow | [prd-01-end-to-end-workflow.svg](prd-01-end-to-end-workflow.svg) |
+| PRD.md (line 137) | Host vs Player journey | [prd-02-host-vs-player-journey.svg](prd-02-host-vs-player-journey.svg) |
+| authoring-guide.md (line 55) | The mental model | [authoring-guide-01-the-mental-model.svg](authoring-guide-01-the-mental-model.svg) |

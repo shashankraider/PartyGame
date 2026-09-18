@@ -17,7 +17,7 @@ If you want the engine internals, read [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 2. Open `cases/your-case-id/case.json` in Cursor / VS Code. The `$schema` line at the top gives you **autocomplete, hover docs, and inline validation** for every field.
 
-3. Edit fields. The minimum to ship a playable case is:
+3. Edit fields. Start with these schema fields, then test the complete game flow; schema validity alone does not establish playability:
 
    - `meta` — title, tagline, setting, age rating
    - 3+ suspects, each with a portrait, persona, alibi, true timeline, ≥1 breaking point
@@ -38,31 +38,31 @@ If you want the engine internals, read [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
    - `portraits/` — one per suspect (recommended ~512×768 portrait)
    - `locations/` — one wide image per named location (~1920×1080)
-   - `crime-scene/` — scene photos for evidence cards
-   - `audio/` — soundtrack cues (mp3, royalty-free or AI-generated)
+   - `crime-scene/` — planned scene-photo assets; the general asset route does not currently expose this folder
+   - `audio/` — planned soundtrack cues; playback is not integrated
    - `ui/` — optional cover image and theme assets
 
 6. Add printables to `cases/your-case-id/printables/` (HTML files that the host prints or shows on-screen between rounds).
 
-7. Run validation again. Once it's clean, the case will appear in the engine's case picker.
+7. Run validation again and rehearse the case. The picker discovers case folders independently of validation (or shows only `CASE_ID` when configured). Do not assume appearing in the picker proves the content is valid.
 
 ---
 
 ## 2. The mental model
 
-A case is a **JSON document plus assets**. The engine reads it, validates it, and renders it. There is **no code per case**.
+A case is a **JSONC document plus assets**. Run the CLI validator explicitly before playing: the current runtime loader parses/casts without validation. Case independence is a design goal; existing round/phase assumptions and unsupported legacy gates still need a second-case integration test. See [current architecture](ARCHITECTURE.md).
 
 ```mermaid
 flowchart LR
   Author[Author writes case.json] --> Schema[case.schema.json validates]
-  Schema --> Validator[CLI plus runtime validator]
+  Schema --> Validator[CLI validator]
   Validator --> Engine[Engine renders to TV and phones]
 ```
 
 Two big ideas the schema captures:
 
-- **Surface vs truth** — every suspect has a `publicAlibi` (what they say) and a `trueTimeline` (what they actually did). The LLM sees both, but is told to maintain the lie unless an unlock condition fires.
-- **Phase gating** — the case lays out exactly which facts/secrets/breaking-points are visible at which point. The engine never sends the killer's identity to the LLM, and only adds a secret to the prompt once its `revealOnlyIf` condition is met.
+- **Surface vs truth** — every suspect has a `publicAlibi` (what they say) and a `trueTimeline` (what they actually did). Roleplay receives the public alibi and approved admissions, not the private true timeline.
+- **Phase gating** — the case lays out exactly which facts/secrets/breaking-points are visible at which point. The solution object stays out of roleplay. Live discoveries use `unlockBehavior`; legacy `revealOnlyIf` alone is not executed by that pipeline. Authored admitted text enters the prompt only after the discovery is earned or the host uses assistance.
 
 ---
 
@@ -88,30 +88,30 @@ Named places. Every chapter and evidence item can optionally reference a `locati
 
 The heart of the case. For each one:
 
-- `persona` — a 2–3 sentence character description fed to the LLM. Make it vivid; include attitude and emotional state.
+- `persona` — private author character reference; not passed to current roleplay. Keep `shortDescription`, `voice` and `knownFacts` free of unreleased secrets because they supply public/approved context.
 - `voice` — speaking-style guidance. E.g., *"clipped British English, dry sarcasm, rarely more than two sentences."*
 - `publicAlibi` — the story they tell publicly. Always in the LLM context.
-- `trueTimeline` — an ordered list of what they actually did. Each beat is gated by an optional `revealCondition`; ungated beats stay private until the suspect breaks.
-- `lies` — for each lie, give the topic, what they say, and what's actually true. The model is told **both**, so it can maintain the lie naturally and admit the truth when broken.
-- `secrets` — hidden information unlocked by a chapter or evidence condition. Each has a `revealedText` (what they admit) and an optional `hint` (a vague tease when pressed before unlock).
+- `trueTimeline` — an ordered list of what they actually did. This remains private reference data; author a supported unlock behavior and admitted text for anything that should enter live dialogue.
+- `lies` — for each lie, give the topic, what they say, and what's actually true. These are private references; current roleplay uses the public alibi and earned admissions rather than both sides of each lie.
+- `secrets` — hidden information; add `unlockBehavior` for current runtime discovery. Each has a `revealedText` (what they admit) and an optional `hint` (a vague tease when pressed before unlock).
 - `breakingPoints` — evidence/chapter triggers that crack the suspect. Every suspect needs at least one. The `reaction` text becomes part of the LLM context after the trigger fires.
-- `neverReveal` — explicit forbidden topics. The killer's identity is always implicitly added.
+- `neverReveal` — private author reference. The current roleplay prompt excludes this list rather than revealing forbidden facts to the model.
 - `guiltCategory` — for the guilt-map reveal. One of: `mastermind`, `executor`, `accomplice`, `accessory`, `tamperer`, `moral-cowardice`, `moral-bystander`, `innocent`.
 
 ### `evidence`
 
 Each item has a `revealedInRound` (which round it appears in) and an `unlockedAtChapter` (the chapter that puts it in the locker). Items can reference suspects via `relatesToSuspectIds` (the UI highlights those suspects on the board).
 
-Use `triggersChapter` for evidence that's also a plot beat (anonymous letters, key documents). When that evidence is unlocked, the engine auto-advances to the specified chapter.
+`triggersChapter` is schema metadata, not a current runtime auto-advance mechanism. Use `unlockBehavior` for interview discoveries and `arrivesWhen` for host forensic releases. Phase changes remain explicit host actions.
 
 ### `chapters`
 
 Discriminated union by `type`:
 
-- `narrative` — a sequence of voiced beats on the TV
+- `narrative` — authored text beats on the TV; narration audio is not integrated
 - `evidence-reveal` — unlocks one or more evidence items; optionally with a `printablePrompt` ("Open Case File 3 now.")
 - `interview` — a live LLM chat with `suspectId`. The `intro` is shown before the chat begins.
-- `phone-hack` — a structured phone-UI minigame with messages, call log, and notes (used to surface specific clues)
+- `phone-hack` — schema support for a planned minigame; the current screen is a placeholder
 - `accusation` — the group votes
 - `reveal` — the killer is revealed; runs the `endgame` and `solution` reveal narration
 
@@ -119,7 +119,7 @@ Each chapter has `prerequisites` — a list of chapter ids that must be complete
 
 ### `atmosphericThreads`
 
-Slow-burn narrative threads that span multiple chapters and resolve late (e.g., Mussoorie's "Grey Lady"). The case board can show open threads as a reminder; they auto-close with the `resolutionText` when their resolving evidence or chapter triggers.
+Slow-burn narrative threads that span multiple chapters and resolve late (e.g., Mussoorie's "Grey Lady"). These are authoring metadata; automatic thread tracking/resolution is not implemented.
 
 ### `backstory`
 
@@ -127,13 +127,13 @@ Optional layer of events that happened **before** the game starts (e.g., a cold 
 
 ### `endgame`
 
-The final confrontation can branch based on which suspect the players confront first. Each `EndgamePath` has a `triggerSuspectId` and a `scriptedSuspectLine` — the canonical opening line that the LLM should anchor on for that branch. Useful when you want a specific dramatic beat (the mastermind's framed defence, the executor's panicked confession).
+The final confrontation uses the highest vote total among the authored branch suspects, with ties selecting the first path. Each `EndgamePath` has a `triggerSuspectId` and a `scriptedSuspectLine` — the canonical opening line displayed directly by the staged reveal. Useful when you want a specific dramatic beat (the mastermind's framed defence, the executor's panicked confession).
 
 ### `solution`
 
-`killerSuspectIds` is a list (can be one or many). For multi-killer cases, use `killerRoles` to label each (`mastermind`, `executor`, `accomplice`). The accusation step accepts a single answer but the reveal explains the full structure. Players who name one of multiple killers get a "you got part of it" reveal.
+`killerSuspectIds` is a list (can be one or many). For multi-killer cases, use `killerRoles` to label each (`mastermind`, `executor`, `accomplice`). The accusation step accepts a single answer but the reveal explains the full structure. The current reveal shows all responsible suspects; personalized partial-credit scoring is not implemented.
 
-`closingQuestion` is the discussion prompt shown to the group after the reveal — the game's moral payoff.
+`closingQuestion` is authored discussion metadata; it is not currently projected/rendered by the reveal UI.
 
 ---
 
@@ -143,7 +143,7 @@ The file `src/engine/schema/case.schema.json` is the authoritative contract. Thr
 
 1. **Inline IDE help** — VS Code / Cursor use the `$schema` reference at the top of each `case.json` for autocomplete and hover docs.
 2. **TypeScript types** — `src/engine/types.ts` is auto-generated. Run `npm run types:generate` after editing the schema.
-3. **Runtime + CLI validator** — `npm run validate-case <id>` uses ajv to validate against the schema, plus cross-reference checks.
+3. **CLI validator** — `npm run validate-case <id>` uses ajv to validate against the schema, plus cross-reference checks.
 
 If you ever feel the schema is in the way of your case, **change the schema** — don't work around it. Then regenerate types and re-run the validator everywhere.
 
@@ -151,13 +151,13 @@ If you ever feel the schema is in the way of your case, **change the schema** �
 
 ## 5. Writing for the LLM
 
-The engine sends the suspect's character sheet to the LLM as part of the system prompt. A few rules of thumb:
+The engine sends approved public context and admitted facts, not the whole character sheet. A few rules of thumb:
 
 - **Be concrete.** Vague personas produce vague characters. "Defensive when pressed" is good; "complex" is not.
 - **Write voice prescriptively.** Sentence length, register, dialect quirks. The LLM follows these closely.
-- **Give the LLM both the lie and the truth.** Don't be afraid of "spoiling" the model — the engine relies on the model knowing the truth to maintain the lie consistently.
+- **Keep private truth out of public prose.** Use `revealedText` or breaking-point `reaction` for earned admissions. Do not put the answer in a suspect description or voice instruction.
 - **Use breaking points to push drama.** When the players present `cctv-still-camels-back`, the suspect doesn't just confirm — they "drop the alibi and admit they were walking." Make these reactions specific.
-- **Use `neverReveal` defensively.** List anything the suspect could plausibly *not* know or shouldn't reveal even under pressure. The killer's identity is added automatically; you don't need to repeat it.
+- **Treat `neverReveal` as author guidance.** It is not an enforcement mechanism. The runtime relies on approved-context filtering and reply validation; keep authored fallback revelations family-friendly too.
 
 ---
 

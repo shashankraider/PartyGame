@@ -1,85 +1,27 @@
 import { NextResponse } from "next/server";
-import {
-  advanceSessionChapter,
-  endSession,
-  pauseSession,
-  resumeSession,
-  SessionStoreError,
-  setSessionScene,
-  transitionSessionPhase,
-} from "@/lib/session-store";
-import type { SessionScene } from "@/lib/supabase";
-
-type SceneRouteContext = {
-  params: Promise<{
-    sessionId: string;
-  }>;
-};
-
-type SceneRequest =
-  | {
-      action: "next" | "previous";
-    }
-  | {
-      action: "set";
-      scene: SessionScene;
-      chapterId?: string | null;
-    }
-  | {
-      action: "pause" | "resume" | "open-accusation" | "end-session";
-    };
-
-export async function POST(request: Request, context: SceneRouteContext) {
-  const { sessionId } = await context.params;
-  const body = (await request.json().catch(() => ({}))) as Partial<SceneRequest>;
-
+import { requireSessionAccess, checkRequestOrigin, AccessError } from "@/lib/session-auth";
+import { apiError } from "@/lib/api-errors";
+type Context = { params: Promise<{ sessionId: string }> };
+const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+import { advanceInvestigationFile, advanceSessionChapter, endSession, pauseSession, resumeSession, setSessionScene, transitionSessionPhase, getPublicLobbyState, getLobbyState } from "@/lib/session-store";
+export async function POST(request: Request, context: Context) {
   try {
-    if (body.action === "next" || body.action === "previous") {
-      const session = await advanceSessionChapter(sessionId, body.action);
-      return NextResponse.json({ session });
+    checkRequestOrigin(request);
+    const { sessionId } = await context.params;
+    const actor = await requireSessionAccess(sessionId);
+    const body = await request.json();
+    const { session } = await getLobbyState(sessionId);
+    if (!actor.isHost && !(actor.playerId && actor.playerId === session.current_interviewer_player_id && body.action === 'set' && body.scene === 'interview')) throw new AccessError('Only the host or active interviewer can do that');
+    switch(body.action) {
+      case 'next-file': await advanceInvestigationFile(sessionId); break;
+      case 'next': case 'previous': await advanceSessionChapter(sessionId,body.action); break;
+      case 'set': await setSessionScene({ sessionId, scene: body.scene, chapterId: body.chapterId, actorPlayerId: actor.isHost ? undefined : actor.playerId! }); break;
+      case 'pause': await pauseSession(sessionId); break;
+      case 'resume': await resumeSession(sessionId); break;
+      case 'open-accusation': await transitionSessionPhase({ sessionId, targetPhase: 'accusation' }); break;
+      case 'end-session': await endSession(sessionId); break;
+      default: throw new AccessError('Invalid scene action',400);
     }
-
-    if (body.action === "set" && body.scene) {
-      const session = await setSessionScene({
-        sessionId,
-        scene: body.scene,
-        chapterId: "chapterId" in body ? body.chapterId : undefined,
-      });
-      return NextResponse.json({ session });
-    }
-
-    if (body.action === "pause") {
-      const session = await pauseSession(sessionId);
-      return NextResponse.json({ session });
-    }
-
-    if (body.action === "resume") {
-      const session = await resumeSession(sessionId);
-      return NextResponse.json({ session });
-    }
-
-    if (body.action === "open-accusation") {
-      const session = await transitionSessionPhase({
-        sessionId,
-        targetPhase: "accusation",
-      });
-      return NextResponse.json({ session });
-    }
-
-    if (body.action === "end-session") {
-      const session = await endSession(sessionId);
-      return NextResponse.json({ session });
-    }
-
-    return NextResponse.json({ error: "Invalid scene action" }, { status: 400 });
-  } catch (error) {
-    if (error instanceof SessionStoreError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code, details: error.details },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json({ error: "Could not update scene" }, { status: 500 });
-  }
+    return json(await getPublicLobbyState(sessionId));
+  } catch(error) { return apiError(error); }
 }

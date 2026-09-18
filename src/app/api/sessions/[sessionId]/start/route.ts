@@ -1,26 +1,10 @@
 import { NextResponse } from "next/server";
-import { SessionStoreError, startSession } from "@/lib/session-store";
-
-type StartRouteContext = {
-  params: Promise<{
-    sessionId: string;
-  }>;
-};
-
-export async function POST(_request: Request, context: StartRouteContext) {
-  const { sessionId } = await context.params;
-
-  try {
-    const session = await startSession(sessionId);
-    return NextResponse.json({ session });
-  } catch (error) {
-    if (error instanceof SessionStoreError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code, details: error.details },
-        { status: error.status },
-      );
-    }
-
-    return NextResponse.json({ error: "Could not start session" }, { status: 500 });
-  }
+import { requireSessionAccess, checkRequestOrigin } from "@/lib/session-auth";
+import { apiError } from "@/lib/api-errors";
+type Context = { params: Promise<{ sessionId: string }> };
+const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+import { startSession, getPublicLobbyState } from "@/lib/session-store";
+export async function POST(request: Request, context: Context) {
+  try { checkRequestOrigin(request); const { sessionId } = await context.params; await requireSessionAccess(sessionId, { host: true }); await startSession(sessionId); return json(await getPublicLobbyState(sessionId)); }
+  catch(error) { return apiError(error); }
 }

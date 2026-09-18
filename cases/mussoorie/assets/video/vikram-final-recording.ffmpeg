@@ -1,0 +1,16 @@
+[0:v]
+scale=2200:1238,
+crop=1920:1080:x='140+8*sin(t*2.7)+3*sin(t*9.1)':y='79+5*sin(t*2.1)',
+noise=alls=2:allf=t,
+drawbox=x=46:y=42:w=18:h=18:color=red@0.95:t=fill,
+fade=t=out:st=25.05:d=0.25,
+format=yuv420p
+[v];
+
+[1:a]volume=1.25[voice];
+[2:a]lowpass=f=1700,volume=0.12[amb];
+[3:a]highpass=f=1400,volume='if(between(t,24.9,25.25),0.75,0)':eval=frame[glitch];
+[voice][amb][glitch]
+amix=inputs=3:duration=longest:normalize=0,
+afade=t=out:st=25.05:d=0.2
+[a]

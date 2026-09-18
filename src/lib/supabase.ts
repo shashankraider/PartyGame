@@ -30,6 +30,9 @@ export type SessionRow = {
   updated_at: string;
   last_activity_at: string;
   expires_at: string;
+  revision?: number;
+  endgame_path_id?: string | null;
+  reveal_step?: number;
 };
 
 export type PlayerRow = {
@@ -39,7 +42,7 @@ export type PlayerRow = {
   seat_number: number;
   is_host: boolean;
   is_observer: boolean;
-  device_id: string;
+  device_id?: string;
   joined_at: string;
   last_seen_at: string;
 };

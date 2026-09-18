@@ -1,5 +1,7 @@
+import { randomUUID } from "node:crypto";
+import { toPublicCase, type PublicCase } from "./public-case";
 import { loadCase } from "@/engine/case-loader";
-import type { Case, Chapter, Evidence, Suspect } from "@/engine/types";
+import type { Case, Chapter, Suspect } from "@/engine/types";
 import {
   MAX_SESSION_EVENTS,
   type SessionEventRow,
@@ -21,6 +23,8 @@ export type LobbyState = {
   session: SessionRow;
   players: PlayerRow[];
   accusationVotes: AccusationVoteRow[];
+  caseData?: PublicCase;
+  turnPending?: boolean;
 };
 
 export type SessionStoreErrorCode =
@@ -54,24 +58,6 @@ function assertSupabaseConfigured() {
 
 function toPublicJoinCode(joinCode: string) {
   return normalizeJoinCode(joinCode).slice(0, 8);
-}
-
-function getNextSeatNumber(players: PlayerRow[], maxDetectives: number, isObserver: boolean) {
-  if (isObserver) {
-    return Math.max(0, ...players.map((player) => player.seat_number)) + 1;
-  }
-
-  const occupiedDetectiveSeats = new Set(
-    players.filter((player) => !player.is_observer).map((player) => player.seat_number),
-  );
-
-  for (let seat = 1; seat <= maxDetectives; seat += 1) {
-    if (!occupiedDetectiveSeats.has(seat)) {
-      return seat;
-    }
-  }
-
-  return Math.max(maxDetectives, ...players.map((player) => player.seat_number)) + 1;
 }
 
 function getChapterScene(chapter: Chapter): SessionScene {
@@ -202,1648 +188,267 @@ function getUnlockedEvidenceForChapter(caseData: Case, chapter: Chapter, current
   return Array.from(unlocked);
 }
 
-export async function createSession(caseId: string, mode: "solo" | "multiplayer" = "multiplayer") {
+export function assertSessionActive(session: SessionRow, statuses: SessionRow['status'][] = ['in_progress']) {
+  if (Date.parse(session.expires_at) <= Date.now()) throw new SessionStoreError('invalid_request', 'This game has expired', 410);
+  if (!statuses.includes(session.status)) throw new SessionStoreError('invalid_request', `Game is ${session.status.replace('_', ' ')}`, 409);
+}
+
+function databaseError(error: { code?: string; message?: string } | null): never {
+  const status = error?.code === 'P0002' ? 404 : error?.code === 'P0003' ? 410 : ['P0001', 'PT409', '23505'].includes(error?.code ?? '') ? 409 : 500;
+  throw new SessionStoreError(status === 404 ? 'session_not_found' : 'database_error', status < 500 ? error?.message ?? 'Game changed. Please try again.' : 'Could not save game', status, error);
+}
+
+export type GameMessage = Pick<MessageRow, 'suspect_id' | 'role' | 'content'> & Partial<Pick<MessageRow, 'asked_by_player_id' | 'presented_evidence_id'>>;
+export async function commitGameUpdate(session: SessionRow, options: {
+  patch?: Partial<SessionRow>;
+  messages?: GameMessage[];
+  states?: import('./supabase').InterviewUnlockStateRow[];
+  events?: { type: string; payload?: Record<string, unknown> }[];
+  vote?: { player_id: string; suspect_id: string | null };
+  turnId?: string;
+  attemptId?: string;
+  cancelTurn?: boolean;
+}): Promise<{ session: SessionRow; messages: MessageRow[] }> {
+  const { data, error } = await createSupabaseServerClient().rpc('commit_game_update', {
+    p_session: session.id, p_revision: session.revision ?? 0,
+    p_patch: options.patch ?? {}, p_messages: options.messages ?? [], p_states: options.states ?? [],
+    p_events: options.events ?? [{ type: 'session.changed', payload: {} }],
+    p_attempt: options.attemptId ?? null, p_vote: options.vote ?? null, p_turn: options.turnId ?? null, p_cancel_turn: options.cancelTurn ?? false,
+  });
+  if (error || !data) databaseError(error);
+  return data;
+}
+
+export async function createSession(caseId: string, mode: 'solo' | 'multiplayer' = 'multiplayer', deviceId?: string) {
   assertSupabaseConfigured();
-
+  if (!deviceId) throw new SessionStoreError('invalid_request', 'Host identity is required', 401);
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(caseId)) throw new SessionStoreError('case_not_found', 'Unknown case', 404);
   const caseData = await loadCase(caseId).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${caseId}`, 404);
+  if (!caseData) throw new SessionStoreError('case_not_found', 'Unknown case', 404);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const { data, error } = await createSupabaseServerClient().rpc('create_game_session', {
+      p_case_id: caseData.id, p_case_version: caseData.version, p_join_code: createJoinCode(8),
+      p_mode: mode === 'solo' ? 'solo' : 'multi', p_device: deviceId,
+    });
+    if (!error && data) return data as SessionRow;
+    if (error?.code !== '23505') databaseError(error);
   }
-
-  const supabase = createSupabaseServerClient();
-  const dbMode = mode === "solo" ? "solo" : "multi";
-
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const joinCode = createJoinCode();
-    const { data, error } = await supabase
-      .from("sessions")
-      .insert({
-        case_id: caseData.id,
-        case_version: caseData.version,
-        join_code: joinCode,
-        mode: dbMode,
-      })
-      .select("*")
-      .single();
-
-    if (!error && data) {
-      await supabase.from("events").insert({
-        session_id: data.id,
-        type: "session.created",
-        payload: { caseId: caseData.id, mode: dbMode },
-      });
-
-      return data;
-    }
-
-    if (error?.code !== "23505") {
-      throw new SessionStoreError("database_error", "Could not create session", 500, error);
-    }
-  }
-
-  throw new SessionStoreError("database_error", "Could not create a unique join code", 500);
+  throw new SessionStoreError('database_error', 'Could not create a unique game code', 503);
 }
 
 export async function getLobbyState(sessionId: string): Promise<LobbyState> {
   assertSupabaseConfigured();
-
-  const supabase = createSupabaseServerClient();
-  const { data: session, error: sessionError } = await supabase
-    .from("sessions")
-    .select("*")
-    .eq("id", sessionId)
-    .single();
-
-  if (sessionError || !session) {
-    throw new SessionStoreError("session_not_found", "Session not found", 404, sessionError);
-  }
-
-  const { data: players, error: playersError } = await supabase
-    .from("players")
-    .select("*")
-    .eq("session_id", session.id)
-    .order("seat_number", { ascending: true });
-
-  if (playersError) {
-    throw new SessionStoreError("database_error", "Could not load players", 500, playersError);
-  }
-
-  const { data: accusationVotes, error: votesError } = await supabase
-    .from("accusation_votes")
-    .select("*")
-    .eq("session_id", session.id);
-
-  if (votesError) {
-    throw new SessionStoreError(
-      "database_error",
-      "Could not load accusation votes",
-      500,
-      votesError,
-    );
-  }
-
-  return {
-    session,
-    players: players ?? [],
-    accusationVotes: accusationVotes ?? [],
-  };
+  const db = createSupabaseServerClient();
+  const { data: session, error } = await db.from('sessions').select('*').eq('id', sessionId).single();
+  if (error || !session) throw new SessionStoreError('session_not_found', 'Session not found', 404);
+  assertSessionActive(session, ['lobby', 'in_progress', 'paused', 'finished']);
+  const [players, votes, turns] = await Promise.all([
+    db.from('players').select('id,session_id,name,seat_number,is_host,is_observer,joined_at,last_seen_at').eq('session_id', sessionId).order('seat_number'),
+    db.from('accusation_votes').select('*').eq('session_id', sessionId),
+    db.from('interview_turns').select('id').eq('session_id', sessionId).eq('status', 'pending').gt('lease_until', new Date().toISOString()),
+  ]);
+  if (players.error || votes.error || turns.error) databaseError(players.error ?? votes.error ?? turns.error);
+  return { session, players: players.data ?? [], accusationVotes: votes.data ?? [], turnPending: Boolean(turns.data?.length) };
 }
 
-export async function getSessionEvents(
-  sessionId: string,
-  options: { type?: string; limit?: number } = {},
-): Promise<SessionEventRow[]> {
-  assertSupabaseConfigured();
+export async function getPublicLobbyState(sessionId: string): Promise<LobbyState & { caseData: PublicCase }> {
+  const lobby = await getLobbyState(sessionId);
+  const caseData = await loadCase(lobby.session.case_id);
+  return { ...lobby, caseData: toPublicCase(caseData, lobby.session) };
+}
 
-  const limit = options.limit ?? MAX_SESSION_EVENTS;
-  const supabase = createSupabaseServerClient();
-
-  const { data: session, error: sessionError } = await supabase
-    .from("sessions")
-    .select("id")
-    .eq("id", sessionId)
-    .single();
-
-  if (sessionError || !session) {
-    throw new SessionStoreError("session_not_found", "Session not found", 404, sessionError);
-  }
-
-  let query = supabase
-    .from("events")
-    .select("*")
-    .eq("session_id", sessionId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (options.type) {
-    query = query.eq("type", options.type);
-  }
-
+export async function getSessionEvents(sessionId: string, options: { type?: string; limit?: number } = {}): Promise<SessionEventRow[]> {
+  await getLobbyState(sessionId);
+  let query = createSupabaseServerClient().from('events').select('*').eq('session_id', sessionId)
+    .order('created_at', { ascending: false }).limit(Math.min(options.limit ?? MAX_SESSION_EVENTS, MAX_SESSION_EVENTS));
+  if (options.type) query = query.eq('type', options.type);
   const { data, error } = await query;
-
-  if (error) {
-    throw new SessionStoreError("database_error", "Could not load events", 500, error);
-  }
-
-  return (data ?? []) as SessionEventRow[];
+  if (error) databaseError(error);
+  // AI explanations and internal error details can name undiscovered evidence.
+  return (data ?? []).map(row => ({ ...row, payload: { reason: row.type === 'interview.host_judgment_failed' ? 'The host can help if your investigation gets stuck.' : 'Keep comparing evidence and asking questions.' } }));
 }
 
-export async function pauseSession(sessionId: string): Promise<SessionRow> {
+export async function joinSessionByCode(input: { joinCode: string; name: string; deviceId: string }) {
   assertSupabaseConfigured();
-
-  const { session } = await getLobbyState(sessionId);
-
-  if (session.status === "finished") {
-    throw new SessionStoreError("invalid_request", "Session has already ended", 400);
-  }
-
-  if (session.status === "lobby") {
-    throw new SessionStoreError("invalid_request", "Game has not started yet", 400);
-  }
-
-  if (session.status === "paused") {
-    return session;
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: "paused",
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not pause session", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.paused",
-    payload: {},
-  });
-
-  return data;
-}
-
-export async function resumeSession(sessionId: string): Promise<SessionRow> {
-  assertSupabaseConfigured();
-
-  const { session } = await getLobbyState(sessionId);
-
-  if (session.status === "finished") {
-    throw new SessionStoreError("invalid_request", "Session has already ended", 400);
-  }
-
-  if (session.status !== "paused") {
-    return session;
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: "in_progress",
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not resume session", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.resumed",
-    payload: {},
-  });
-
-  return data;
-}
-
-export async function endSession(sessionId: string): Promise<SessionRow> {
-  assertSupabaseConfigured();
-
-  const { session } = await getLobbyState(sessionId);
-
-  if (session.status === "finished") {
-    return session;
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: "finished",
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not end session", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.ended",
-    payload: { previousStatus: session.status },
-  });
-
-  return data;
-}
-
-export function tallyAccusations(votes: AccusationVoteRow[]) {
-  const counts = new Map<string, number>();
-
-  for (const vote of votes) {
-    counts.set(vote.suspect_id, (counts.get(vote.suspect_id) ?? 0) + 1);
-  }
-
-  return counts;
-}
-
-export async function joinSessionByCode(input: {
-  joinCode: string;
-  name: string;
-  deviceId: string;
-}) {
-  assertSupabaseConfigured();
-
-  const joinCode = toPublicJoinCode(input.joinCode);
+  if (typeof input.joinCode !== 'string' || typeof input.name !== 'string' || typeof input.deviceId !== 'string') throw new SessionStoreError('invalid_request', 'Code and name are required', 400);
+  const code = toPublicJoinCode(input.joinCode);
   const name = input.name.trim().slice(0, 40);
-  const deviceId = input.deviceId.trim().slice(0, 128);
-
-  if (!joinCode || !name || !deviceId) {
-    throw new SessionStoreError("invalid_request", "joinCode, name, and deviceId are required", 400);
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: session, error: sessionError } = await supabase
-    .from("sessions")
-    .select("*")
-    .eq("join_code", joinCode)
-    .single();
-
-  if (sessionError || !session) {
-    throw new SessionStoreError("join_code_not_found", "Join code not found", 404, sessionError);
-  }
-
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const { data: existingPlayer } = await supabase
-    .from("players")
-    .select("*")
-    .eq("session_id", session.id)
-    .eq("device_id", deviceId)
-    .maybeSingle();
-
-  if (existingPlayer) {
-    const { data: updatedPlayer, error: updateError } = await supabase
-      .from("players")
-      .update({ name, last_seen_at: new Date().toISOString() })
-      .eq("id", existingPlayer.id)
-      .select("*")
-      .single();
-
-    if (updateError || !updatedPlayer) {
-      throw new SessionStoreError("database_error", "Could not update player", 500, updateError);
-    }
-
-    return { session, player: updatedPlayer, existing: true };
-  }
-
-  const { data: players, error: playersError } = await supabase
-    .from("players")
-    .select("*")
-    .eq("session_id", session.id)
-    .order("seat_number", { ascending: true });
-
-  if (playersError) {
-    throw new SessionStoreError("database_error", "Could not inspect lobby seats", 500, playersError);
-  }
-
-  const currentPlayers = players ?? [];
-  const detectiveCount = currentPlayers.filter((player) => !player.is_observer).length;
-  const maxDetectives = caseData.meta.recommendedPlayers.max;
-  const isObserver = session.status !== "lobby" || detectiveCount >= maxDetectives;
-  const seatNumber = getNextSeatNumber(currentPlayers, maxDetectives, isObserver);
-
-  const { data: player, error: insertError } = await supabase
-    .from("players")
-    .insert({
-      session_id: session.id,
-      name,
-      device_id: deviceId,
-      seat_number: seatNumber,
-      is_observer: isObserver,
-    })
-    .select("*")
-    .single();
-
-  if (insertError || !player) {
-    throw new SessionStoreError("database_error", "Could not join lobby", 500, insertError);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: isObserver ? "player.observer_joined" : "player.joined",
-    payload: { playerId: player.id, name: player.name, seatNumber: player.seat_number },
-  });
-
-  return { session, player, existing: false };
+  if (!name || !code || !input.deviceId) throw new SessionStoreError('invalid_request', 'Code and name are required', 400);
+  const db = createSupabaseServerClient();
+  const { data: session } = await db.from('sessions').select('case_id').eq('join_code', code).maybeSingle();
+  if (!session) throw new SessionStoreError('join_code_not_found', 'Join code not found', 404);
+  const caseData = await loadCase(session.case_id);
+  const { data, error } = await db.rpc('join_game_session', { p_join_code: code, p_name: name, p_device: input.deviceId, p_max_players: caseData.meta.recommendedPlayers.max });
+  if (error || !data) databaseError(error);
+  return data as { session: SessionRow; player: PlayerRow; existing: boolean };
 }
 
 export async function startSession(sessionId: string) {
-  assertSupabaseConfigured();
-
-  const { session } = await getLobbyState(sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const firstChapterId = caseData.chapters[0]?.id ?? null;
-  const firstChapter = firstChapterId
-    ? caseData.chapters.find((chapter) => chapter.id === firstChapterId)
-    : undefined;
-  const unlockedEvidence = firstChapter
-    ? getUnlockedEvidenceForChapter(caseData, firstChapter, session.unlocked_evidence)
-    : session.unlocked_evidence;
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: "in_progress",
-      phase: "briefing",
-      current_scene: "brief",
-      current_chapter_id: firstChapterId,
-      unlocked_evidence: unlockedEvidence,
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not start session", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.started",
-    payload: { currentScene: "brief", currentChapterId: data.current_chapter_id },
-  });
-
-  return data;
+  const { session, players } = await getLobbyState(sessionId);
+  assertSessionActive(session, ['lobby']);
+  if (!players.some(p => !p.is_observer)) throw new SessionStoreError('invalid_request', 'At least one detective must join first', 409);
+  const caseData = await loadCase(session.case_id);
+  const chapter = caseData.chapters[0];
+  return (await commitGameUpdate(session, { patch: {
+    status: 'in_progress', phase: 'briefing', current_scene: 'brief', current_chapter_id: chapter.id,
+    unlocked_evidence: getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence),
+  }, events: [{ type: 'session.started' }] })).session;
 }
 
-export async function transitionSessionPhase(input: {
-  sessionId: string;
-  targetPhase: SessionPhase;
-  chapterId?: string | null;
-}) {
-  assertSupabaseConfigured();
+export async function pauseSession(sessionId: string) {
+  const { session } = await getLobbyState(sessionId);
+  assertSessionActive(session, ['in_progress', 'paused']);
+  if (session.status === 'paused') return session;
+  return (await commitGameUpdate(session, { patch: { status: 'paused' }, cancelTurn: true, events: [{ type: 'session.paused' }] })).session;
+}
+export async function resumeSession(sessionId: string) {
+  const { session } = await getLobbyState(sessionId);
+  assertSessionActive(session, ['paused']);
+  return (await commitGameUpdate(session, { patch: { status: 'in_progress' }, events: [{ type: 'session.resumed' }] })).session;
+}
+export async function endSession(sessionId: string) {
+  const { session } = await getLobbyState(sessionId);
+  assertSessionActive(session, ['in_progress', 'paused']);
+  return (await commitGameUpdate(session, { patch: { status: 'finished' }, cancelTurn: true, events: [{ type: 'session.ended' }] })).session;
+}
 
+export async function transitionSessionPhase(input: { sessionId: string; targetPhase: SessionPhase; chapterId?: string | null }) {
   const { session } = await getLobbyState(input.sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const currentPhase = getSessionPhase(session);
-  assertValidSessionPhaseTransition(currentPhase, input.targetPhase);
-
-  const chapter =
-    input.chapterId === undefined
-      ? input.targetPhase === "interrogation"
-        ? getInterrogationEntryChapter(caseData)
-        : caseData.chapters.find((item) => getChapterPhase(item) === input.targetPhase) ?? null
-      : input.chapterId
-        ? caseData.chapters.find((item) => item.id === input.chapterId) ?? null
-        : null;
-
-  if (input.chapterId && !chapter) {
-    throw new SessionStoreError("invalid_request", `Unknown chapter id: ${input.chapterId}`, 400);
-  }
-
-  if (chapter && getChapterPhase(chapter) !== input.targetPhase) {
-    throw new SessionStoreError(
-      "invalid_request",
-      `Chapter "${chapter.id}" does not belong to phase "${input.targetPhase}".`,
-      400,
-    );
-  }
-
-  const unlockedEvidence = chapter
-    ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
-    : session.unlocked_evidence;
-  const scene = chapter ? getChapterScene(chapter) : session.current_scene;
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: "in_progress",
-      phase: input.targetPhase,
-      current_scene: scene,
-      current_chapter_id: chapter?.id ?? session.current_chapter_id,
-      current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
-      unlocked_evidence: unlockedEvidence,
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not transition session phase", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.phase_transitioned",
-    payload: {
-      fromPhase: currentPhase,
-      toPhase: data.phase,
-      currentScene: data.current_scene,
-      currentChapterId: data.current_chapter_id,
-    },
-  });
-
-  return data;
+  assertSessionActive(session);
+  assertValidSessionPhaseTransition(getSessionPhase(session), input.targetPhase);
+  // Reveal must use the vote-completion path, never a free-form phase setter.
+  if (input.targetPhase === 'reveal') return revealSession(input.sessionId);
+  const caseData = await loadCase(session.case_id);
+  const chapter = input.chapterId ? caseData.chapters.find(c => c.id === input.chapterId)
+    : input.targetPhase === 'interrogation' ? getInterrogationEntryChapter(caseData)
+      : caseData.chapters.find(c => getChapterPhase(c) === input.targetPhase);
+  if (!chapter || getChapterPhase(chapter) !== input.targetPhase) throw new SessionStoreError('invalid_request', 'Invalid phase chapter', 400);
+  return (await commitGameUpdate(session, { patch: { phase: input.targetPhase, current_scene: getChapterScene(chapter), current_chapter_id: chapter.id,
+    current_interview_suspect_id: chapter.type === 'interview' ? chapter.suspectId : null,
+    unlocked_evidence: getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence),
+  } })).session;
 }
 
-export async function setSessionScene(input: {
-  sessionId: string;
-  scene: SessionScene;
-  chapterId?: string | null;
-}) {
-  assertSupabaseConfigured();
-
+export async function setSessionScene(input: { sessionId: string; scene: SessionScene; chapterId?: string | null; actorPlayerId?: string }) {
   const { session } = await getLobbyState(input.sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const chapter = input.chapterId
-    ? caseData.chapters.find((item) => item.id === input.chapterId)
-    : null;
-
-  if (input.chapterId && !chapter) {
-    throw new SessionStoreError("invalid_request", `Unknown chapter id: ${input.chapterId}`, 400);
-  }
-
-  const currentPhase = getSessionPhase(session);
-  const targetPhase = chapter ? getChapterPhase(chapter) : currentPhase;
-  if (targetPhase !== currentPhase) {
-    assertValidSessionPhaseTransition(currentPhase, targetPhase);
-  }
-
-  const supabase = createSupabaseServerClient();
-  const unlockedEvidence = chapter
-    ? getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence)
-    : session.unlocked_evidence;
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      status: input.scene === "lobby" ? "lobby" : "in_progress",
-      phase: targetPhase,
-      current_scene: input.scene,
-      current_chapter_id: input.chapterId ?? session.current_chapter_id,
-      current_interview_suspect_id: chapter?.type === "interview" ? chapter.suspectId : null,
-      unlocked_evidence: unlockedEvidence,
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not update scene", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "session.scene_changed",
-    payload: {
-      currentScene: data.current_scene,
-      currentChapterId: data.current_chapter_id,
-    },
-  });
-
-  return data;
+  assertSessionActive(session);
+  if (input.actorPlayerId && session.current_interviewer_player_id !== input.actorPlayerId) throw new SessionStoreError('invalid_request', 'The microphone has moved', 403);
+  const caseData = await loadCase(session.case_id);
+  const chapter = caseData.chapters.find(c => c.id === (input.chapterId ?? session.current_chapter_id));
+  if (!chapter || getChapterPhase(chapter) !== session.phase || getChapterScene(chapter) !== input.scene) throw new SessionStoreError('invalid_request', 'Scene does not belong to the active phase', 409);
+  if (session.phase === 'reveal' || session.phase === 'accusation') throw new SessionStoreError('invalid_request', 'Use the ending controls', 409);
+  if (session.phase === 'briefing' && !isChapterUnlocked(caseData, chapter, session.current_chapter_id)) throw new SessionStoreError('invalid_request', 'Finish the preceding chapter first', 409);
+  if (session.phase === 'interrogation' && chapter.type !== 'interview' && chapter.id !== getInterrogationEntryChapter(caseData)?.id) throw new SessionStoreError('invalid_request', 'Choose an available interview', 409);
+  return (await commitGameUpdate(session, { patch: { current_scene: input.scene, current_chapter_id: chapter.id,
+    current_interview_suspect_id: chapter.type === 'interview' ? chapter.suspectId : null,
+    unlocked_evidence: getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence),
+  } })).session;
 }
 
-export async function setSessionInterviewer(input: {
-  sessionId: string;
-  playerId: string | null;
-}) {
-  assertSupabaseConfigured();
-
-  const { session, players } = await getLobbyState(input.sessionId);
-
-  if (input.playerId !== null) {
-    const player = players.find((item) => item.id === input.playerId);
-
-    if (!player) {
-      throw new SessionStoreError("invalid_request", "Player is not part of this session", 400);
-    }
-
-    if (player.is_observer) {
-      throw new SessionStoreError("invalid_request", "Observers cannot interview", 400);
-    }
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("sessions")
-    .update({
-      current_interviewer_player_id: input.playerId,
-      last_activity_at: new Date().toISOString(),
-    })
-    .eq("id", session.id)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    throw new SessionStoreError("database_error", "Could not update interviewer", 500, error);
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: input.playerId ? "session.interviewer_set" : "session.interviewer_cleared",
-    payload: { playerId: input.playerId },
-  });
-
-  return data;
-}
-
-export async function setAccusationVote(input: {
-  sessionId: string;
-  playerId: string;
-  suspectId: string | null;
-}) {
-  assertSupabaseConfigured();
-
-  const { session, players } = await getLobbyState(input.sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const player = players.find((item) => item.id === input.playerId);
-
-  if (!player) {
-    throw new SessionStoreError("invalid_request", "Player is not part of this session", 400);
-  }
-
-  if (player.is_observer) {
-    throw new SessionStoreError("invalid_request", "Observers cannot vote", 400);
-  }
-
-  if (input.suspectId !== null) {
-    const suspect = caseData.suspects.find((item) => item.id === input.suspectId);
-
-    if (!suspect) {
-      throw new SessionStoreError("invalid_request", `Unknown suspect id: ${input.suspectId}`, 400);
-    }
-  }
-
-  const supabase = createSupabaseServerClient();
-
-  if (input.suspectId === null) {
-    const { error } = await supabase
-      .from("accusation_votes")
-      .delete()
-      .eq("session_id", session.id)
-      .eq("player_id", input.playerId);
-
-    if (error) {
-      throw new SessionStoreError("database_error", "Could not clear accusation", 500, error);
-    }
-  } else {
-    const { error } = await supabase.from("accusation_votes").upsert(
-      {
-        session_id: session.id,
-        player_id: input.playerId,
-        suspect_id: input.suspectId,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "session_id,player_id" },
-    );
-
-    if (error) {
-      throw new SessionStoreError("database_error", "Could not record accusation", 500, error);
-    }
-  }
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: input.suspectId ? "session.accusation_set" : "session.accusation_cleared",
-    payload: { suspectId: input.suspectId, playerId: input.playerId },
-  });
-
-  return getLobbyState(input.sessionId);
-}
-
-export async function advanceSessionChapter(sessionId: string, direction: "next" | "previous") {
-  assertSupabaseConfigured();
-
+/** Host-directed research sequence, independent of free-choice suspect interviews. */
+export async function advanceInvestigationFile(sessionId: string) {
   const { session } = await getLobbyState(sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
-  }
-
-  const currentPhase = getSessionPhase(session);
-  if (shouldNoopChapterAdvance(session)) {
-    return session;
-  }
-
-  const currentIndex = getChapterIndex(caseData, session.current_chapter_id);
-  const nextIndex =
-    direction === "next"
-      ? Math.min(currentIndex + 1, caseData.chapters.length - 1)
-      : Math.max(currentIndex - 1, 0);
-  const nextChapter = caseData.chapters[nextIndex] ?? caseData.chapters[0];
-
-  if (
-    direction === "next" &&
-    !isChapterUnlocked(caseData, nextChapter, session.current_chapter_id)
-  ) {
-    throw new SessionStoreError(
-      "invalid_request",
-      `Chapter "${nextChapter.id}" is gated by prerequisites that have not been visited.`,
-      400,
-    );
-  }
-
-  const nextPhase = getChapterPhase(nextChapter);
-  if (nextPhase !== currentPhase) {
-    if (direction !== "next") {
-      throw new SessionStoreError(
-        "invalid_request",
-        `Cannot move backward from ${currentPhase} to ${nextPhase}.`,
-        400,
-      );
-    }
-    return transitionSessionPhase({
-      sessionId,
-      targetPhase: nextPhase,
-      chapterId: nextPhase === "interrogation" ? getInterrogationEntryChapter(caseData)?.id : nextChapter.id,
-    });
-  }
-
-  return setSessionScene({
-    sessionId,
-    scene: getChapterScene(nextChapter),
-    chapterId: nextChapter.id,
-  });
+  assertSessionActive(session);
+  if (session.phase !== 'interrogation') throw new SessionStoreError('invalid_request', 'Research is available during investigation', 409);
+  const source = await loadCase(session.case_id);
+  const current = getChapterIndex(source, session.current_chapter_id);
+  const chapter = source.chapters.find((item, index) => index > current && item.roundNumber >= 3 && getChapterPhase(item) === 'interrogation' && item.type !== 'interview');
+  if (!chapter) throw new SessionStoreError('invalid_request', 'All investigation files have been opened', 409);
+  return (await commitGameUpdate(session, { patch: { current_scene: getChapterScene(chapter), current_chapter_id: chapter.id, current_interview_suspect_id: null,
+    unlocked_evidence: getUnlockedEvidenceForChapter(source, chapter, session.unlocked_evidence) } })).session;
 }
 
-export type InterviewContext = {
-  session: SessionRow;
-  caseData: Case;
-  chapter: Chapter & { type: "interview" };
-  suspect: Suspect;
-  messages: MessageRow[];
-};
-
-export async function getInterviewContext(sessionId: string): Promise<InterviewContext> {
-  assertSupabaseConfigured();
-
+export async function advanceSessionChapter(sessionId: string, direction: 'next' | 'previous') {
   const { session } = await getLobbyState(sessionId);
-  const caseData = await loadCase(session.case_id).catch(() => null);
-
-  if (!caseData) {
-    throw new SessionStoreError("case_not_found", `Unknown case id: ${session.case_id}`, 404);
+  assertSessionActive(session);
+  if (shouldNoopChapterAdvance(session)) return session;
+  if (session.phase === 'reveal') {
+    if (direction !== 'next') throw new SessionStoreError('invalid_request', 'The ending only moves forward', 409);
+    const step = session.reveal_step ?? 0;
+    return (await commitGameUpdate(session, { patch: step < 2 ? { reveal_step: step + 1 } : { status: 'finished' } })).session;
   }
-
-  const chapter = caseData.chapters.find((item) => item.id === session.current_chapter_id);
-
-  if (!chapter || chapter.type !== "interview") {
-    throw new SessionStoreError(
-      "invalid_request",
-      "Current chapter is not an interview chapter",
-      400,
-    );
-  }
-
-  const suspect = caseData.suspects.find((item) => item.id === chapter.suspectId);
-
-  if (!suspect) {
-    throw new SessionStoreError(
-      "invalid_request",
-      `Suspect "${chapter.suspectId}" not found in case`,
-      400,
-    );
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data: messages, error } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("session_id", session.id)
-    .eq("suspect_id", suspect.id)
-    .order("sequence", { ascending: true });
-
-  if (error) {
-    throw new SessionStoreError("database_error", "Could not load messages", 500, error);
-  }
-
-  return {
-    session,
-    caseData,
-    chapter: chapter as Chapter & { type: "interview" },
-    suspect,
-    messages: messages ?? [],
-  };
+  if (session.phase === 'accusation') return revealSession(sessionId);
+  const caseData = await loadCase(session.case_id);
+  const index = getChapterIndex(caseData, session.current_chapter_id);
+  const chapter = caseData.chapters[Math.max(0, Math.min(caseData.chapters.length - 1, index + (direction === 'next' ? 1 : -1)))];
+  if (getChapterPhase(chapter) !== session.phase) return transitionSessionPhase({ sessionId, targetPhase: getChapterPhase(chapter) });
+  return setSessionScene({ sessionId, scene: getChapterScene(chapter), chapterId: chapter.id });
 }
 
-export async function getInterviewMessages(input: {
-  sessionId: string;
-  suspectId: string;
-}): Promise<MessageRow[]> {
-  assertSupabaseConfigured();
+export async function setSessionInterviewer(input: { sessionId: string; playerId: string | null; actorPlayerId?: string }) {
+  const { session, players } = await getLobbyState(input.sessionId);
+  assertSessionActive(session);
+  if (session.phase !== 'interrogation') throw new SessionStoreError('invalid_request', 'Interviews have not opened', 409);
+  if (input.actorPlayerId && !(session.current_interviewer_player_id === input.actorPlayerId || (!session.current_interviewer_player_id && input.playerId === input.actorPlayerId))) throw new SessionStoreError('invalid_request', 'The microphone has moved', 403);
+  if (input.playerId && !players.some(p => p.id === input.playerId && !p.is_observer)) throw new SessionStoreError('invalid_request', 'Choose a detective in this game', 400);
+  return (await commitGameUpdate(session, { patch: { current_interviewer_player_id: input.playerId } })).session;
+}
 
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("session_id", input.sessionId)
-    .eq("suspect_id", input.suspectId)
-    .order("sequence", { ascending: true });
-
-  if (error) {
-    throw new SessionStoreError("database_error", "Could not load messages", 500, error);
+export function tallyAccusations(votes: AccusationVoteRow[]) {
+  const tally = new Map<string, number>();
+  for (const vote of votes) tally.set(vote.suspect_id, (tally.get(vote.suspect_id) ?? 0) + 1);
+  return tally;
+}
+export async function setAccusationVote(input: { sessionId: string; playerId: string; suspectId: string | null }) {
+  // Each vote reads the current revision. A concurrent vote can safely retry its upsert.
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const { session, players } = await getLobbyState(input.sessionId);
+    assertSessionActive(session);
+    if (session.phase !== 'accusation') throw new SessionStoreError('invalid_request', 'Voting is closed', 409);
+    if (!players.some(p => p.id === input.playerId && !p.is_observer)) throw new SessionStoreError('invalid_request', 'Only detectives can vote', 403);
+    const caseData = await loadCase(session.case_id);
+    if (input.suspectId !== null && !caseData.suspects.some(s => s.id === input.suspectId)) throw new SessionStoreError('invalid_request', 'Unknown suspect', 400);
+    try {
+      await commitGameUpdate(session, { vote: { player_id: input.playerId, suspect_id: input.suspectId }, events: [{ type: 'session.accusation_set' }] });
+      return getPublicLobbyState(input.sessionId);
+    } catch (error) {
+      if (!(error instanceof SessionStoreError) || (error.details as { code?: string })?.code !== 'PT409' || attempt === 9) throw error;
+    }
   }
+  throw new SessionStoreError('database_error', 'Please retry your vote', 409);
+}
 
+export async function revealSession(sessionId: string) {
+  const { session, players, accusationVotes } = await getLobbyState(sessionId);
+  assertSessionActive(session);
+  if (session.phase !== 'accusation') throw new SessionStoreError('invalid_request', 'Finish voting before the reveal', 409);
+  const detectives = players.filter(p => !p.is_observer);
+  if (!detectives.length || !detectives.every(p => accusationVotes.some(v => v.player_id === p.id))) throw new SessionStoreError('invalid_request', 'Every detective must vote before the reveal', 409);
+  const caseData = await loadCase(session.case_id);
+  const tally = tallyAccusations(accusationVotes);
+  const path = [...caseData.endgame.paths].sort((a,b) => (tally.get(b.triggerSuspectId) ?? 0) - (tally.get(a.triggerSuspectId) ?? 0))[0];
+  const chapter = caseData.chapters.find(c => c.type === 'reveal');
+  if (!chapter || !path) throw new SessionStoreError('invalid_request', 'This case has no ending', 409);
+  return (await commitGameUpdate(session, { patch: { phase: 'reveal', current_scene: 'reveal', current_chapter_id: chapter.id, current_interview_suspect_id: null, endgame_path_id: path.id, reveal_step: 0 } })).session;
+}
+
+export type InterviewContext = { session: SessionRow; caseData: Case; chapter: Chapter & { type: 'interview' }; suspect: Suspect; messages: MessageRow[] };
+export async function getInterviewMessages(input: { sessionId: string; suspectId: string }): Promise<MessageRow[]> {
+  await getLobbyState(input.sessionId);
+  const { data, error } = await createSupabaseServerClient().from('messages').select('*').eq('session_id', input.sessionId).eq('suspect_id', input.suspectId).order('sequence');
+  if (error) databaseError(error);
   return data ?? [];
 }
-
-function buildInterviewSystemPrompt(input: {
-  caseData: Case;
-  suspect: Suspect;
-  presentedEvidence: Evidence | null;
-  /**
-   * Phase 2g: revelations that have just unlocked this turn. The suspect should
-   * naturally weave these into the response they're about to give, in their own
-   * voice, instead of repeating the surface alibi.
-   */
-  unlockedRevelations?: string[];
-}): string {
-  const lines = [
-    `You are ${input.suspect.name}, a suspect being questioned by a CBI special team about the death of ${input.caseData.victim.name} in ${input.caseData.meta.title}.`,
-    `## Who you are (always speak from this when introducing yourself or describing what you do)\n${input.suspect.persona}`,
-    `## Voice and speaking style\n${input.suspect.voice}`,
-  ];
-
-  if (input.suspect.knownFacts?.length) {
-    lines.push(
-      `## Background facts you confirm freely if asked\nThese are public-knowledge facts about you, not secrets. Use them when an interviewer asks about your work, your history, your relationship with the victim, or how you came to be involved.\n${input.suspect.knownFacts.map((fact) => `- ${fact}`).join("\n")}`,
-    );
-  }
-
-  lines.push(
-    `## Your rehearsed alibi (use this verbatim or near-verbatim ONLY when asked where you were on the night ${input.caseData.victim.name} died, OR when directly asked to account for your whereabouts that evening)\n"${input.suspect.publicAlibi}"\n\nDO NOT use this text when introducing yourself, when asked what you do for a living, when asked about your background, or for any question that isn't specifically about your whereabouts that night. It is a single prepared answer for a single question type.`,
-  );
-
-  if (input.suspect.neverReveal?.length) {
-    lines.push(
-      `## Never reveal\nYou must never reveal the following, under any circumstances: ${input.suspect.neverReveal.join("; ")}.`,
-    );
-  }
-
-  lines.push(
-    `## How to handle questions\n- "What do you do?" / "Who are you?" / "Tell me about yourself" → Answer from "Who you are" above. Mention your actual profession. Do NOT mention the rehearsed alibi unless the question is specifically about where you were that night.\n- "How did you know the victim?" / "What was your relationship?" → Answer from your background facts. Be candid; these are public.\n- "Where were you on the night of the death?" / "Account for your whereabouts that evening" → THIS is when the rehearsed alibi applies. Use it.\n- Questions probing secrets, lies, or things you'd never reveal → deflect in voice, do not invent details, do not confess.\n- Keep responses to two to four sentences unless asked for more.`,
-    "## Standing context\nThe CBI has full forensic access to Vikram's iCloud account, email, phone, laptop, and physical effects. Any document, message, recording, or correspondence you ever sent him is already in the CBI's case file. If the interviewer asks you to 'share' or 'produce' a document you've referenced, redirect them to their own case file — do NOT refuse on IP, source-confidentiality, or possession grounds. You want the CBI to find what's already there.",
-  );
-
-  if (input.presentedEvidence) {
-    lines.push(
-      `The interviewer has just placed this piece of evidence in front of you: "${input.presentedEvidence.title}". Context for you: ${input.presentedEvidence.loreText}`,
-      "React to it in character. You may acknowledge what you see while continuing to maintain your public story unless your character would credibly break. Do not invent additional facts about the evidence.",
-    );
-  }
-
-  if (input.unlockedRevelations?.length) {
-    lines.push(
-      "IMPORTANT — the interviewer has just earned the following revelation(s) from you. Weave them naturally into your response in your own voice; do NOT lead with the surface alibi this turn. Speak the substance below as you would say it, paraphrasing as needed, but stay faithful to the content:",
-      input.unlockedRevelations.map((r, i) => `(${i + 1}) ${r}`).join("\n\n"),
-      "Deliver the revelation in this turn's response. Do not return to the cover story.",
-      "If any of these revelations reference documents you sent to Vikram (emails, memos, WhatsApp messages, recordings, etc.) and the interviewer later asks you to 'share' or 'produce' that artifact, redirect them gently — the CBI has already recovered Vikram's iCloud / email / phone and the artifact is in their case file. Tell them where to look (their evidence locker, the case file). Do not refuse on IP / source-confidentiality grounds; you want them to find it.",
-    );
-  }
-
-  return lines.join("\n\n");
+export async function getInterviewContext(sessionId: string): Promise<InterviewContext> {
+  const { session } = await getLobbyState(sessionId);
+  const caseData = await loadCase(session.case_id);
+  const chapter = caseData.chapters.find(c => c.id === session.current_chapter_id);
+  if (!chapter || chapter.type !== 'interview' || session.current_scene !== 'interview') throw new SessionStoreError('invalid_request', 'Choose a suspect to interview', 409);
+  const suspect = caseData.suspects.find(s => s.id === chapter.suspectId)!;
+  return { session, caseData, chapter, suspect, messages: await getInterviewMessages({ sessionId, suspectId: suspect.id }) };
 }
 
-type RoleplayInput = {
-  apiKey: string;
-  model: string;
-  temperature: number;
-  systemPrompt: string;
-  history: { role: "user" | "assistant"; content: string }[];
-  question: string;
-};
-
-async function callRoleplay(input: RoleplayInput): Promise<string> {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${input.apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-      // HTTP header values must be ASCII. Do not use em-dashes or other Unicode here.
-      "X-Title": "Mystery Engine",
-    },
-    body: JSON.stringify({
-      model: input.model,
-      stream: false,
-      temperature: input.temperature,
-      messages: [
-        { role: "system", content: input.systemPrompt },
-        ...input.history,
-        { role: "user", content: input.question },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new SessionStoreError(
-      "database_error",
-      `OpenRouter request failed with status ${response.status}`,
-      502,
-    );
-  }
-
-  const payload = (await response.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  const content = payload.choices?.[0]?.message?.content?.trim() ?? "";
-  if (!content) {
-    throw new SessionStoreError("database_error", "OpenRouter returned an empty response", 502);
-  }
-  return content;
-}
-
-/**
- * Phase 2h — streaming roleplay call.
- *
- * Hits OpenRouter with `stream: true` and forwards each token chunk to
- * `onChunk(textSoFar)`. Returns the final concatenated content. Callers can
- * use this to UPDATE messages.content live so Realtime subscribers see the
- * suspect's response appear token-by-token.
- *
- * The buffer flushes on whitespace boundaries (word-level) instead of every
- * raw token to keep the UPDATE write rate sane on Supabase. Per the design
- * decision in CLAUDE_HANDOFF.md (Phase 2h "Open design questions"),
- * word-boundary flushes feel best and reduce write amplification.
- */
-async function callRoleplayStream(
-  input: RoleplayInput,
-  onChunk: (textSoFar: string) => Promise<void>,
-): Promise<string> {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${input.apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-      "X-Title": "Mystery Engine",
-      Accept: "text/event-stream",
-    },
-    body: JSON.stringify({
-      model: input.model,
-      stream: true,
-      temperature: input.temperature,
-      messages: [
-        { role: "system", content: input.systemPrompt },
-        ...input.history,
-        { role: "user", content: input.question },
-      ],
-    }),
-  });
-
-  if (!response.ok || !response.body) {
-    throw new SessionStoreError(
-      "database_error",
-      `OpenRouter stream request failed with status ${response.status}`,
-      502,
-    );
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let sseBuffer = "";
-  let assembled = "";
-  let flushedUpTo = 0;
-
-  async function maybeFlush(force = false) {
-    if (assembled.length === flushedUpTo) return;
-    // Flush on the last whitespace so we never write a partial word — feels
-    // smoother than per-token writes.
-    const candidate = assembled.slice(flushedUpTo);
-    const lastSpaceIdx = force ? candidate.length : candidate.lastIndexOf(" ");
-    if (lastSpaceIdx <= 0 && !force) return;
-    const cutoff = flushedUpTo + (force ? candidate.length : lastSpaceIdx);
-    if (cutoff <= flushedUpTo) return;
-    flushedUpTo = cutoff;
-    await onChunk(assembled.slice(0, flushedUpTo));
-  }
-
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    sseBuffer += decoder.decode(value, { stream: true });
-
-    let lineBreak = sseBuffer.indexOf("\n");
-    while (lineBreak !== -1) {
-      const line = sseBuffer.slice(0, lineBreak).trim();
-      sseBuffer = sseBuffer.slice(lineBreak + 1);
-      lineBreak = sseBuffer.indexOf("\n");
-
-      if (!line.startsWith("data:")) continue;
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") continue;
-
-      try {
-        const parsed = JSON.parse(data) as {
-          choices?: { delta?: { content?: string } }[];
-        };
-        const delta = parsed.choices?.[0]?.delta?.content;
-        if (typeof delta === "string" && delta.length > 0) {
-          assembled += delta;
-          await maybeFlush(false);
-        }
-      } catch {
-        // Skip malformed SSE frame; OpenRouter occasionally interleaves
-        // keep-alive comments.
-      }
-    }
-  }
-
-  await maybeFlush(true);
-
-  const trimmed = assembled.trim();
-  if (!trimmed) {
-    throw new SessionStoreError("database_error", "OpenRouter returned an empty stream", 502);
-  }
-  return trimmed;
-}
-
-async function getNextSequence(input: {
-  sessionId: string;
-  suspectId: string;
-}): Promise<number> {
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("messages")
-    .select("sequence")
-    .eq("session_id", input.sessionId)
-    .eq("suspect_id", input.suspectId)
-    .order("sequence", { ascending: false })
-    .limit(1);
-
-  if (error) {
-    throw new SessionStoreError("database_error", "Could not read message sequence", 500, error);
-  }
-
-  const last = data?.[0]?.sequence ?? 0;
-  return last + 1;
-}
-
-export type AskSuspectInput = {
-  sessionId: string;
-  playerId: string;
-  question: string;
-  presentedEvidenceId?: string | null;
-};
-
-export type AskSuspectResult = {
-  userMessage: MessageRow;
-  assistantMessage: MessageRow;
-  systemMessages: MessageRow[];
-  unlockOutcomes: import("@/lib/interview-unlocks").UnlockOutcome[];
-  /**
-   * Phase 2i.1 — verdict from the AI host-judgment service after the
-   * adjudicator pass. `null` when the call was skipped (e.g., missing API key
-   * tolerated for stability). Non-null when the call ran, regardless of action.
-   */
-  hostJudgment: import("@/lib/host-judgment").HostJudgmentVerdict | null;
-  session: SessionRow;
-};
-
-export type HostUnlockInput = {
-  sessionId: string;
-  conditionId: string;
-};
-
-export async function getActiveHostFallbacksForSession(input: {
-  sessionId: string;
-}): Promise<import("@/lib/interview-unlocks").ActiveHostFallback[]> {
-  assertSupabaseConfigured();
-  const { session, caseData, suspect } = await getInterviewContext(input.sessionId);
-  const { getActiveHostFallbacks } = await import("@/lib/interview-unlocks");
-  return getActiveHostFallbacks({ caseData, session, suspect });
-}
-
-export async function triggerHostUnlock(input: HostUnlockInput): Promise<{
-  outcome: import("@/lib/interview-unlocks").UnlockOutcome;
-  systemMessage: MessageRow | null;
-  session: SessionRow;
-}> {
-  assertSupabaseConfigured();
-  const { session, caseData, suspect } = await getInterviewContext(input.sessionId);
-  const { fireHostUnlock } = await import("@/lib/interview-unlocks");
-  const result = await fireHostUnlock({
-    caseData,
-    session,
-    suspect,
-    conditionId: input.conditionId,
-  });
-
-  const supabase = createSupabaseServerClient();
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "interview.unlock_fired",
-    payload: {
-      suspectId: suspect.id,
-      conditionId: input.conditionId,
-      subject: result.outcome.subject,
-      via: "host",
-    },
-  });
-
-  return {
-    outcome: result.outcome,
-    systemMessage: result.systemMessage,
-    session: result.updatedSession,
-  };
-}
-
+export type AskSuspectInput = { sessionId: string; playerId: string; question: string; presentedEvidenceId?: string | null; requestId?: string };
+export type AskSuspectResult = { userMessage: MessageRow; assistantMessage: MessageRow; systemMessages: MessageRow[]; session: SessionRow; unlockOutcomes: import('./interview-unlocks').UnlockOutcome[]; hostJudgment: import('./host-judgment').HostJudgmentVerdict | null };
 export async function askSuspect(input: AskSuspectInput): Promise<AskSuspectResult> {
-  assertSupabaseConfigured();
-
-  const trimmedQuestion = input.question.trim();
-
-  if (!trimmedQuestion) {
-    throw new SessionStoreError("invalid_request", "Question is required", 400);
-  }
-
-  if (trimmedQuestion.length > 600) {
-    throw new SessionStoreError(
-      "invalid_request",
-      "Question is too long (max 600 characters)",
-      400,
-    );
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-
-  if (!apiKey) {
-    throw new SessionStoreError(
-      "invalid_request",
-      "OPENROUTER_API_KEY is not configured. Set it to enable live interviews.",
-      501,
-    );
-  }
-
-  const { session, caseData, chapter, suspect, messages } =
-    await getInterviewContext(input.sessionId);
-
-  if (session.status === "paused") {
-    throw new SessionStoreError("invalid_request", "Session is paused", 409);
-  }
-
-  if (session.status === "finished") {
-    throw new SessionStoreError("invalid_request", "Session has ended", 409);
-  }
-
-  if (session.current_interviewer_player_id !== input.playerId) {
-    throw new SessionStoreError(
-      "invalid_request",
-      "Only the current interviewer can ask the suspect a question",
-      403,
-    );
-  }
-
-  let presentedEvidence: Evidence | null = null;
-  if (input.presentedEvidenceId) {
-    const ev = caseData.evidence.find((item) => item.id === input.presentedEvidenceId);
-
-    if (!ev) {
-      throw new SessionStoreError(
-        "invalid_request",
-        `Unknown evidence id: ${input.presentedEvidenceId}`,
-        400,
-      );
-    }
-
-    if (!session.unlocked_evidence.includes(ev.id)) {
-      throw new SessionStoreError(
-        "invalid_request",
-        `Evidence "${ev.id}" is not unlocked yet`,
-        400,
-      );
-    }
-
-    if (
-      chapter.presentableEvidence?.length &&
-      !chapter.presentableEvidence.includes(ev.id)
-    ) {
-      throw new SessionStoreError(
-        "invalid_request",
-        `Evidence "${ev.id}" cannot be presented in this interview chapter`,
-        400,
-      );
-    }
-
-    presentedEvidence = ev;
-  }
-
-  const baseSystemPrompt = buildInterviewSystemPrompt({
-    caseData,
-    suspect,
-    presentedEvidence,
-  });
-
-  const history: { role: "user" | "assistant"; content: string }[] = [];
-  for (const row of messages) {
-    if (row.role === "user" || row.role === "assistant") {
-      history.push({ role: row.role, content: row.content });
-    }
-  }
-
-  const supabase = createSupabaseServerClient();
-
-  const userSequence = await getNextSequence({
-    sessionId: session.id,
-    suspectId: suspect.id,
-  });
-
-  const { data: userRow, error: userInsertError } = await supabase
-    .from("messages")
-    .insert({
-      session_id: session.id,
-      suspect_id: suspect.id,
-      role: "user",
-      content: trimmedQuestion,
-      asked_by_player_id: input.playerId,
-      presented_evidence_id: presentedEvidence?.id ?? null,
-      is_streaming: false,
-      sequence: userSequence,
-    })
-    .select("*")
-    .single();
-
-  if (userInsertError || !userRow) {
-    throw new SessionStoreError("database_error", "Could not persist question", 500, userInsertError);
-  }
-
-  const {
-    countQuestionsInCurrentStretch,
-    getQuestionsPerDetective,
-    listRotatingDetectives,
-    pickNextInterviewer,
-    shouldRotateAfterQuestion,
-  } = await import("@/lib/round-robin");
-  const { players } = await getLobbyState(session.id);
-  const questionsPerDetective = getQuestionsPerDetective(caseData);
-  const detectives = listRotatingDetectives(players);
-  const transcriptWithQuestion = [...messages, userRow];
-  const questionsInStretch = countQuestionsInCurrentStretch(
-    transcriptWithQuestion,
-    suspect.id,
-    input.playerId,
-  );
-  let activeSession = session;
-
-  if (
-    shouldRotateAfterQuestion(questionsInStretch, questionsPerDetective, detectives.length)
-  ) {
-    const nextInterviewerId = pickNextInterviewer(players, input.playerId, 1);
-    if (nextInterviewerId && nextInterviewerId !== input.playerId) {
-      const { data: rotatedSession, error: rotateError } = await supabase
-        .from("sessions")
-        .update({
-          current_interviewer_player_id: nextInterviewerId,
-          last_activity_at: new Date().toISOString(),
-        })
-        .eq("id", session.id)
-        .select("*")
-        .single();
-
-      if (rotateError || !rotatedSession) {
-        throw new SessionStoreError(
-          "database_error",
-          "Could not rotate interviewer",
-          500,
-          rotateError,
-        );
-      }
-
-      activeSession = rotatedSession;
-
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "session.interviewer_set",
-        payload: {
-          playerId: nextInterviewerId,
-          via: "auto_rotate",
-          previousPlayerId: input.playerId,
-          suspectId: suspect.id,
-        },
-      });
-    }
-  }
-
-  const model = caseData.llm?.modelOverride ?? process.env.OPENROUTER_MODEL ?? "openai/gpt-4o-mini";
-  const temperature = caseData.llm?.temperature ?? 0.7;
-
-  const assistantSequence = await getNextSequence({
-    sessionId: session.id,
-    suspectId: suspect.id,
-  });
-
-  // Phase 2h — pre-insert the assistant row with empty content +
-  // is_streaming=true so Realtime subscribers see a "typing" placeholder
-  // immediately and incremental UPDATEs fan out the tokens as they arrive.
-  const { data: assistantRowInitial, error: assistantInsertError } = await supabase
-    .from("messages")
-    .insert({
-      session_id: session.id,
-      suspect_id: suspect.id,
-      role: "assistant",
-      content: "",
-      is_streaming: true,
-      sequence: assistantSequence,
-    })
-    .select("*")
-    .single();
-
-  if (assistantInsertError || !assistantRowInitial) {
-    throw new SessionStoreError(
-      "database_error",
-      "Could not persist suspect response",
-      500,
-      assistantInsertError,
-    );
-  }
-
-  let assistantRow = assistantRowInitial;
-
-  let assistantContent: string;
-  try {
-    assistantContent = await callRoleplayStream(
-      {
-        apiKey,
-        model,
-        temperature,
-        systemPrompt: baseSystemPrompt,
-        history,
-        question: trimmedQuestion,
-      },
-      async (textSoFar) => {
-        // Word-boundary flushes happen inside callRoleplayStream; this
-        // callback fires once per flush. Realtime UPDATE fans out to all
-        // subscribed clients.
-        await supabase
-          .from("messages")
-          .update({ content: textSoFar })
-          .eq("id", assistantRow.id);
-      },
-    );
-  } catch (streamError) {
-    // Fall back to non-streaming on transport-level failure so a flaky
-    // network doesn't kill the turn.
-    assistantContent = await callRoleplay({
-      apiKey,
-      model,
-      temperature,
-      systemPrompt: baseSystemPrompt,
-      history,
-      question: trimmedQuestion,
-    });
-    void streamError;
-  }
-
-  // Final write: flip is_streaming off and write the full trimmed content.
-  const { data: assistantRowFinal, error: assistantFinalError } = await supabase
-    .from("messages")
-    .update({
-      content: assistantContent,
-      is_streaming: false,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", assistantRow.id)
-    .select("*")
-    .single();
-
-  if (assistantFinalError || !assistantRowFinal) {
-    throw new SessionStoreError(
-      "database_error",
-      "Could not finalise suspect response",
-      500,
-      assistantFinalError,
-    );
-  }
-  assistantRow = assistantRowFinal;
-
-  await supabase.from("events").insert({
-    session_id: session.id,
-    type: "interview.exchange",
-    payload: {
-      suspectId: suspect.id,
-      playerId: input.playerId,
-      presentedEvidenceId: presentedEvidence?.id ?? null,
-      userMessageId: userRow.id,
-      assistantMessageId: assistantRow.id,
-    },
-  });
-
-  // Evaluate pending unlocks. Adjudicator-driven; fires system messages and
-  // updates session.unlocked_evidence where conditions are met.
-  const { evaluatePendingUnlocks } = await import("@/lib/interview-unlocks");
-  const evalResult = await evaluatePendingUnlocks({
-    caseData,
-    session: activeSession,
-    suspect,
-    messages, // history before this turn
-    latestUserMessage: userRow,
-    latestAssistantMessage: assistantRow,
-  });
-
-  // Two-pass roleplay (Phase 2g B1): if any secret/breaking-point unlock fired
-  // on this turn, regenerate the assistant message with the revealed content
-  // injected into the system prompt and UPDATE the row in place. The narrative
-  // stitches in a single visible turn instead of "cover story now, revelation
-  // next turn."
-  const spokenRevelations = evalResult.outcomes
-    .filter((o) => o.fired && (o.subject === "secret" || o.subject === "breaking-point"))
-    .map((o) => o.revealedText)
-    .filter((text): text is string => Boolean(text));
-
-  if (spokenRevelations.length > 0) {
-    const enrichedSystemPrompt = buildInterviewSystemPrompt({
-      caseData,
-      suspect,
-      presentedEvidence,
-      unlockedRevelations: spokenRevelations,
-    });
-
-    // Phase 2h — re-enter streaming mode for the rewrite so Realtime
-    // subscribers see the revelation re-stream in place of the cover story.
-    await supabase
-      .from("messages")
-      .update({ content: "", is_streaming: true })
-      .eq("id", assistantRow.id);
-
-    let newContent: string;
-    try {
-      newContent = await callRoleplayStream(
-        {
-          apiKey,
-          model,
-          temperature,
-          systemPrompt: enrichedSystemPrompt,
-          history,
-          question: trimmedQuestion,
-        },
-        async (textSoFar) => {
-          await supabase
-            .from("messages")
-            .update({ content: textSoFar })
-            .eq("id", assistantRow.id);
-        },
-      );
-    } catch {
-      newContent = await callRoleplay({
-        apiKey,
-        model,
-        temperature,
-        systemPrompt: enrichedSystemPrompt,
-        history,
-        question: trimmedQuestion,
-      });
-    }
-
-    const { data: updatedAssistant, error: updateError } = await supabase
-      .from("messages")
-      .update({
-        content: newContent,
-        is_streaming: false,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", assistantRow.id)
-      .select("*")
-      .single();
-    if (updateError || !updatedAssistant) {
-      throw new SessionStoreError(
-        "database_error",
-        "Could not update assistant message after unlock",
-        500,
-        updateError,
-      );
-    }
-    assistantRow = updatedAssistant;
-    assistantContent = newContent;
-  }
-
-  for (const outcome of evalResult.outcomes) {
-    if (outcome.fired) {
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.unlock_fired",
-        payload: {
-          suspectId: suspect.id,
-          conditionId: outcome.conditionId,
-          subject: outcome.subject,
-          via: "adjudicator",
-        },
-      });
-    } else if (outcome.hostFallbackPrompted) {
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.host_fallback_prompted",
-        payload: {
-          suspectId: suspect.id,
-          conditionId: outcome.conditionId,
-          attempts: outcome.state.attempts,
-          maxAdjacency: outcome.state.max_adjacency,
-        },
-      });
-    }
-  }
-
-  // Phase 2i.1/2i.3 — AI host-judgment pass. Mirrors the adjudicator's
-  // per-turn cadence, but judges one host pacing action at a time.
-  // Treats failures (network, missing API key, malformed LLM response) as
-  // non-fatal: the interview is still playable without the auto-drop. 2i.2
-  // broadens this surface to phase transitions and other forensic events.
-  let hostJudgment: import("@/lib/host-judgment").HostJudgmentVerdict | null = null;
-  let workingSession = evalResult.updatedSession;
-  const systemMessagesToReturn = [...evalResult.systemMessagesInserted];
-  try {
-    const hostJudgmentModule = await import("@/lib/host-judgment");
-    const allTranscripts = await collectAllTranscriptsForHost(
-      session.id,
-      caseData,
-    );
-    hostJudgment = await hostJudgmentModule.judgeHostAction({
-      caseData,
-      session: workingSession,
-      allTranscripts,
-      unlockedEvidence: workingSession.unlocked_evidence,
-    });
-
-    if (
-      hostJudgment.action === "drop-evidence" &&
-      !workingSession.unlocked_evidence.includes(hostJudgment.evidenceId)
-    ) {
-      const evidence = caseData.evidence.find(
-        (item) => item.id === hostJudgment!.evidenceId,
-      );
-      const announcement = evidence
-        ? `Forensic update: ${evidence.title} just arrived in the case file.`
-        : `Forensic update: ${hostJudgment.evidenceId} unlocked.`;
-      const fireResult = await hostJudgmentModule.fireHostJudgmentUnlock({
-        session: workingSession,
-        evidenceId: hostJudgment.evidenceId,
-        suspectId: suspect.id,
-        announcement,
-        reason: hostJudgment.reason,
-      });
-      workingSession = fireResult.updatedSession;
-      systemMessagesToReturn.push(fireResult.systemMessage);
-
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.host_judgment_fired",
-        payload: {
-          evidenceId: hostJudgment.evidenceId,
-          reason: hostJudgment.reason,
-          confidence: hostJudgment.confidence,
-          interviewedSuspectId: suspect.id,
-        },
-      });
-    } else if (hostJudgment.action === "transition-phase") {
-      const currentPhase = getSessionPhase(workingSession);
-      assertValidSessionPhaseTransition(currentPhase, hostJudgment.targetPhase);
-      workingSession = await transitionSessionPhase({
-        sessionId: session.id,
-        targetPhase: hostJudgment.targetPhase,
-      });
-
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.host_phase_transitioned",
-        payload: {
-          fromPhase: currentPhase,
-          toPhase: hostJudgment.targetPhase,
-          reason: hostJudgment.reason,
-          confidence: hostJudgment.confidence,
-          interviewedSuspectId: suspect.id,
-        },
-      });
-    } else {
-      // Log do-nothing verdicts too — the TV's CaseStatusPanel (2i.5) will
-      // read these to surface what the AI host is thinking.
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.host_judgment",
-        payload: {
-          action: hostJudgment.action,
-          reason: hostJudgment.reason,
-          confidence: hostJudgment.confidence,
-          interviewedSuspectId: suspect.id,
-        },
-      });
-    }
-  } catch (err) {
-    // Non-fatal: failure here means the auto-drop didn't happen, but the
-    // interview is otherwise complete. Log and move on. Phase 2i.2 may
-    // re-classify some of these as hard errors.
-    if (err instanceof Error) {
-      await supabase.from("events").insert({
-        session_id: session.id,
-        type: "interview.host_judgment_failed",
-        payload: { error: err.message },
-      });
-    }
-  }
-
-  return {
-    userMessage: userRow,
-    assistantMessage: assistantRow,
-    systemMessages: systemMessagesToReturn,
-    unlockOutcomes: evalResult.outcomes,
-    hostJudgment,
-    session: {
-      ...workingSession,
-      current_interviewer_player_id: activeSession.current_interviewer_player_id,
-    },
-  };
+  const { executeInterview } = await import('./interview-turn');
+  return executeInterview({ ...input, requestId: input.requestId ?? randomUUID() });
 }
-
-/**
- * Phase 2i.1 — Gather per-suspect transcripts and "has opened up" flags for
- * the AI host. The host LLM sees the whole room: every suspect's transcript
- * plus a boolean derived from interview_unlock_state (any `secret:*` row
- * with `met_at IS NOT NULL` counts as "opened up").
- */
-async function collectAllTranscriptsForHost(
-  sessionId: string,
-  caseData: Case,
-): Promise<import("@/lib/host-judgment").HostJudgmentTranscript[]> {
-  const supabase = createSupabaseServerClient();
-
-  const { data: messages, error: messagesError } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("session_id", sessionId)
-    .order("sequence", { ascending: true });
-  if (messagesError) {
-    throw new SessionStoreError(
-      "database_error",
-      "Could not load messages for host-judgment",
-      500,
-      messagesError,
-    );
-  }
-
-  const { data: states, error: statesError } = await supabase
-    .from("interview_unlock_state")
-    .select("*")
-    .eq("session_id", sessionId)
-    .not("met_at", "is", null);
-  if (statesError) {
-    throw new SessionStoreError(
-      "database_error",
-      "Could not load unlock state for host-judgment",
-      500,
-      statesError,
-    );
-  }
-
-  const openedUp = new Set(
-    (states ?? [])
-      .filter((s) => s.condition_id.startsWith("secret:"))
-      .map((s) => s.suspect_id),
-  );
-
-  const byId = new Map<string, MessageRow[]>();
-  for (const m of messages ?? []) {
-    const list = byId.get(m.suspect_id) ?? [];
-    list.push(m);
-    byId.set(m.suspect_id, list);
-  }
-
-  return caseData.suspects.map((suspect) => ({
-    suspectId: suspect.id,
-    suspectName: suspect.name,
-    hasOpenedUp: openedUp.has(suspect.id),
-    messages: (byId.get(suspect.id) ?? []).map((m) => ({
-      role: m.role,
-      content: m.content,
-    })),
-  }));
+export async function getActiveHostFallbacksForSession(input: { sessionId: string }) {
+  const { listHostHelp } = await import('./interview-turn');
+  return listHostHelp(input.sessionId);
+}
+export async function triggerHostUnlock(input: { sessionId: string; conditionId: string }) {
+  const { applyHostHelp } = await import('./interview-turn');
+  return applyHostHelp(input.sessionId, input.conditionId);
 }

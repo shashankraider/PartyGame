@@ -15,11 +15,18 @@
     "types:generate": "node scripts/generate-types.mjs",
     "validate-case": "node scripts/validate-case.mjs",
     "validate-cases": "node scripts/validate-case.mjs --all",
-    "test": "tsx --test tests/",
-    "test:watch": "tsx --test --watch tests/",
+    "test": "tsx --test tests/*.test.mjs",
+    "test:watch": "tsx --test --watch tests/*.test.mjs",
     "eval:adjudicator": "tsx scripts/eval-adjudicator.ts",
     "eval:host": "tsx scripts/eval-host.ts",
-    "repl:interview": "tsx scripts/interview-repl.ts"
+    "repl:interview": "tsx scripts/interview-repl.ts",
+    "check:runtime": "node scripts/check-runtime.mjs",
+    "predev": "npm run check:runtime",
+    "prebuild": "npm run check:runtime",
+    "prestart": "npm run check:runtime",
+    "test:integration": "tsx tests/integration/game.mjs",
+    "eval:boundaries": "tsx scripts/eval-boundaries.ts",
+    "test:integration:local": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/game.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -34,21 +41,25 @@
     "ajv-formats": "^3.0.1",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.6",
+    "eslint-config-next": "16.3.5",
     "json-schema-to-typescript": "^15.0.4",
     "jsonc-parser": "^3.3.1",
-    "postcss": "^8.5.14",
+    "postcss": "8.5.28",
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.105.4",
+    "@supabase/supabase-js": "2.105.4",
     "jose": "^6.2.3",
-    "next": "^16.2.6",
+    "next": "16.3.5",
     "qrcode": "^1.5.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "zustand": "^5.0.13"
+  },
+  "engines": {
+    "node": ">=22.22.0 <23",
+    "npm": ">=10"
   }
 }

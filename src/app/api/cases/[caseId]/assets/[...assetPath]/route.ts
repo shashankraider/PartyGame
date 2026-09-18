@@ -24,6 +24,10 @@ export async function GET(_request: Request, context: RouteContext) {
     return new NextResponse("Bad request", { status: 400 });
   }
 
+  if (!['portraits', 'locations', 'ui'].includes(assetPath[0])) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
   const extension = path.extname(assetPath.at(-1) ?? "").toLowerCase();
   const contentType = CONTENT_TYPES[extension];
 
