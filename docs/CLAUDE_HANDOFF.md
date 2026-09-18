@@ -1,72 +1,34 @@
-# Mystery Engine — current development handoff
+# Mystery Engine — development handoff
 
-**Updated September 17, 2026.** This replaces the historical phase-by-phase handoff. Use the current working tree as authority; do not infer deployment from a completed implementation.
+Updated September 18, 2026. The working tree and hosted deployment metadata are authoritative. See [release notes](RELEASE_2026-09-18.md), [architecture](ARCHITECTURE.md) and [README](../README.md).
 
-## Current state
+## Delivered in this release
 
-The multiplayer path works from lobby through briefing, free suspect interviews, discoveries, voting, both authored confrontation paths, reveal and finish. P1 hardening adds device membership/role checks, public case projections, guarded printables, lifecycle enforcement, atomic turns with retry fencing, host rescue, validated answers, Node 22.22.0 and patched dependencies.
+- Mobile Now / Case file / Team navigation, compact evidence selection and collapsed earlier exchanges.
+- Full chapter visuals, focused galleries, YouTube channel exhibit and a face-obscured Grey Lady facing the viewpoint. Earlier visual work and authenticated saved-session recovery are already in the baseline release.
+- LangGraph planning and draft → validation → one repair → fallback routing. Supabase owns durable transcripts, discoveries and fenced turns; no LangGraph checkpointer or LangSmith service is configured.
+- Rhea's guarded persona, replacement alibi after CCTV, and admission-dependent concealment motive. Finance-only and CCTV-only states do not reveal the combined motive.
+- Eight active minutes per suspect, 90 seconds per detective, early pass, paused clocks during AI generation, and host +2 minutes. Suspect switching/rejoining preserves time and discoveries; leaving the browser does not pause the game.
+- Investigator contract, evidence-gate, cue and conversation evals; focused Rhea scenarios invoke the production graph. Exact focused answers and caveats are in [Rhea tuning](reviews/RHEA_SUSPECT_TUNING.md).
 
-Read [README](../README.md), [current architecture](ARCHITECTURE.md), and [P1 delivery](P1_DELIVERY.md) first. [Project assessment](PROJECT_ASSESSMENT.md) records the pre-fix baseline; its original findings/line references are historical, not a claim that every defect still exists.
+## Verification and rollout
 
-The key change from the old handoff is that answers are validated **before publication** and committed with discoveries and microphone rotation. There is no live draft-token streaming. The AI host releases verified forensic evidence but does not move the live game between phases. Realtime has ongoing polling reconciliation. Pause/finish guards and scheduled expiry cleanup are implemented.
+The local release baseline passed 164 unit tests (one existing environment-dependent skip), 197 API integration assertions, transactional SQL timer checks, lint and production build. Follow the release notes for refreshed case/printable/audit checks, hosted migration, commit and deployment evidence. Historical reports preserve the model/version and counts from their own run; do not present them as current all-suspect passes.
 
-## Verification recorded for this working tree
+Production: https://party-game-dun.vercel.app. Vercel project `party-game` is connected to `shashankraider/PartyGame`, branch `main`. Supabase project `nfpochmyqmttqirhflac` already has migrations 0001–0007 and the P1 integrity/security migrations. The new timed-interviews migration must precede the application update. Never reset the hosted or shared local database.
 
-| Check | Latest recorded result |
-| --- | --- |
-| Clean install, production build/TypeScript, ESLint | Passed |
-| Unit/contract suite | 139 passed, one environment-dependent database test skipped |
-| Local database/API integration | 122 assertions passed against the production build |
-| Mussoorie / printables | Valid; 30 standalone exhibits current |
-| Dependency audit | Zero findings at the recorded check |
-| Live host evaluations | 60/60 |
-| Live story-boundary evaluations | 9/9 |
-| Live adjudicator evaluations | 103/104; missed Anya Grey Lady positive cue |
-| Browser journey | Create/join, briefing, live answer, discoveries, pause/resume, vote, confrontation, reveal, finish |
+Local verification uses `/tmp/partygame-p1-db`, separate from the shared database, and the app on port 3100. Start/build with `SUPABASE_WORKDIR=/tmp/partygame-p1-db node scripts/with-local-supabase.mjs ...`. Node 22.22.x is required. Public Supabase values are baked into the build; do not reuse a local build for hosted production. Keep `.env.local`, personal `.claude/` settings and workspace configuration private.
 
-The original Bisht rifle miss passed after cue clarification. The remaining model miss is recoverable with host assistance. Live evaluations are nondeterministic and incur provider usage; recorded results are not a guarantee for later runs. The checked-in CI workflow has not yet been verified on GitHub. No physical eight-device rehearsal, sustained load test or hosted deployment is claimed.
+## Outstanding work
 
-## Rollout and local environment
-
-Use `nvm use` and `npm ci`. Configure `.env.local` from `.env.example`. `SESSION_AUTH_SECRET` is optional but should be a stable server-only secret in production; otherwise device signing uses the service-role key. `SUPABASE_JWT_SECRET` must match the database project to enable realtime; polling keeps the UI usable without it.
-
-The pending migration is `supabase/migrations/20260918094606_p1_game_integrity.sql`. It was tested from scratch in an isolated local database, not applied to the shared database. During verification the shared database had 24 sessions and a separate `0007_briefing_beat_index` migration belonging to another worktree. Preserve those records and migration history; re-inspect before rollout. Do not reset shared data or delete sibling worktrees as a setup step.
-
-Old lobbies have no trustworthy ownership credentials. Create fresh lobbies after migrating; never grant host access based on a legacy device ID or the first visitor. Review expired historical rows before enabling the migration's GC schedule.
-
-Testing used `/tmp/partygame-p1-db`, with distinct ports and project ID. Its stack was stopped with a local backup after verification, and the test app on port 3100 was stopped. The regular `.env.local` configuration was not redirected. Follow README instructions to start the intended stack and build with its public URL/key.
-
-## Checks for subsequent changes
-
-```sh
-nvm use
-npm ci
-npm run lint
-npm test
-npm run validate-cases
-npm run printables:check
-npm run build
-npm audit --omit=dev
-```
-
-Run `npm run test:integration:local` against a matching running local production app when changing authorization, SQL, lifecycle, or turns; README explains the environment wrapper and isolated workdir. It creates/removes only its own sessions. For cue/roleplay changes, run the relevant `eval:adjudicator`, `eval:host`, or `eval:boundaries` command. Do not turn a one-run model score into a release guarantee.
-
-## Next priorities
-
-1. Review/apply the integrity migration to the intended environment, then rehearse with physical devices, disconnects, paused/reloaded browsers, and provider outages.
-2. Measure session cost, latency and growing host transcript size; add usage accounting and appropriate abuse limits before public exposure.
-3. Close runtime case-validation, reference-validation, legacy unlock semantics, and saved-case version compatibility gaps before claiming a reusable engine for arbitrary cases.
-4. Decide scope for playable solo mode and the phone-hack minigame; integrate final-recording media and soundtrack only with explicit product work.
-5. Review accessibility, TV readability, observer promotion/recovery, and production deployment.
+- Rhea phone records and Devraj duty-log exhibits are missing. The offline contract command intentionally reports them; do not fabricate proof dynamically.
+- Other suspects still have quality findings in the historical investigator review. The focused Rhea improvements do not prove all possible conversations are correct. Mandatory admission detail can still be omitted; grader false positives/negatives require review.
+- Reconcile the channel buyer name across story/printable sources before claiming complete content consistency.
+- Long interview quality beyond the 12-message roleplay window is not exhaustively evaluated, although earned admissions persist separately.
+- Physical multi-device rehearsal, sustained load, cost/latency accounting, accessibility review and abuse controls remain follow-ups.
+- Playable solo, a hacking minigame, observer promotion, host transfer, soundtrack/TTS and inline final-recording playback remain unimplemented/deferred. The recovered phone is a real file viewer; the recording has a guarded download.
+- Runtime case validation, legacy gate behavior, saved-case version compatibility and a second-case portability test remain engine work.
 
 ## Rules to preserve
 
-- Enforce actor ownership on the server, not from a supplied player/device ID.
-- Keep private case fields and raw adjudication reasons out of browser props and public events.
-- Route game writes through the coordinated RPCs; do not restore removed non-atomic unlock helpers.
-- Commit a whole answer before microphone handoff. Keep request replay and per-attempt fencing intact.
-- Preserve committed work on pause; reject stale writes after pause, finish or expiry.
-- Treat `shortDescription`, voice guidance, known facts and displayed exhibits as public/approved narrative surfaces. Keep author secrets in private fields.
-- Keep host rescue for secrets, breaking points and evidence. Confidence is not proximity.
-- `cases/mussoorie/design.md` is the narrative reference; the earlier Word snapshot may be stale.
-- Keep the user's existing edits, media assets, workspace files and other worktrees intact.
+Enforce device membership on the server. Keep private story fields and adjudication reasons out of public projections. Use coordinated transactional RPCs, preserve request replay and attempt fencing, and never publish unvalidated draft tokens. Timer reads must not reset budgets or extend retention. Clocks resume after a failed or expired AI lease. Host extensions require host authorization. Keep character posture dependent on earned admissions, not allegations. Preserve user sessions and other worktrees during tests.

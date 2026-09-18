@@ -26,7 +26,9 @@
     "prestart": "npm run check:runtime",
     "test:integration": "tsx tests/integration/game.mjs",
     "eval:boundaries": "tsx scripts/eval-boundaries.ts",
-    "test:integration:local": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/game.mjs"
+    "test:integration:local": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/game.mjs",
+    "eval:investigators": "tsx scripts/eval-investigators.ts",
+    "eval:rhea": "tsx scripts/eval-rhea.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -50,12 +52,15 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@langchain/core": "1.1.48",
+    "@langchain/langgraph": "1.4.16",
     "@supabase/supabase-js": "2.105.4",
     "jose": "^6.2.3",
     "next": "16.3.5",
     "qrcode": "^1.5.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "zod": "4.2.0",
     "zustand": "^5.0.13"
   },
   "engines": {

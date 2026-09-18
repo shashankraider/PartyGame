@@ -17,6 +17,8 @@ jobs:
         with:
           version: 2.98.2
       - run: supabase start -x studio,postgres-meta,storage-api,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor
+      - name: Verify saved interview clocks
+        run: docker exec -i supabase_db_PartyGame sh -c 'PGPASSWORD="$POSTGRES_PASSWORD" psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1' < tests/integration/interview-clock.sql
       - run: node scripts/with-local-supabase.mjs npm run build
       - name: Verify the running app and database
         run: |

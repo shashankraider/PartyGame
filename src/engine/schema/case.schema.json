@@ -171,12 +171,30 @@
         "ttsVoiceId": { "type": "string", "description": "Optional. Voice ID for TTS playback of the suspect's lines." },
         "persona": { "type": "string", "minLength": 20, "description": "Free-text character description for the LLM system prompt." },
         "voice": { "type": "string", "minLength": 10, "description": "Speaking-style guidance for the LLM (sentence length, accent, register)." },
+        "safeDeflection": { "type": "string", "minLength": 10, "maxLength": 500, "description": "Optional first-person, in-character fallback when generated answers are rejected. Must contain no story claims, secrets or promises of evidence." },
+        "interviewLayers": {
+          "type": "array",
+          "description": "Server-only interview posture and additional facts activated by earned admissions, never by allegations in player text.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "requires", "direction"],
+            "properties": {
+              "id": { "$ref": "#/$defs/SlugId" },
+              "requires": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^(secret|breaking-point):[a-z0-9-]+$" } },
+              "excludes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^(secret|breaking-point):[a-z0-9-]+$" } },
+              "direction": { "type": "string", "minLength": 10 },
+              "facts": { "type": "array", "items": { "type": "string", "minLength": 10 } }
+            }
+          }
+        },
         "knownFacts": {
           "type": "array",
           "items": { "type": "string" },
           "description": "Facts the suspect knows and may volunteer."
         },
         "publicAlibi": { "type": "string", "description": "The story the suspect tells publicly. Always in the prompt." },
+        "alibiAfterBreakingPoint": { "type": "object", "additionalProperties": { "type": "string", "minLength": 10 }, "description": "Optional replacement accounts keyed by breaking-point ID. Used only after that breaking point is admitted, so superseded lies are not reintroduced as current facts." },
         "trueTimeline": {
           "type": "array",
           "minItems": 1,

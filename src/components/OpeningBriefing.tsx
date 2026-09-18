@@ -29,12 +29,12 @@ export function OpeningBriefing({ caseData, compact = false, detectives, observe
             {caseData.victim.portraitUrl ? <CaseArtwork src={assetUrl(caseData.id, caseData.victim.portraitUrl)} alt={`Portrait of ${caseData.victim.name}`} portrait /> : null}
             <div><p className="case-eyebrow">Victim dossier</p><h3 id={compact ? "phone-victim" : "tv-victim"} className="case-serif">{caseData.victim.name}</h3></div>
           </div>
-          {caseData.victim.publicBackground ? <p className="opening-background">{caseData.victim.publicBackground}</p> : null}
+          {caseData.victim.publicBackground ? compact ? <details><summary>Victim background</summary><p className="opening-background">{caseData.victim.publicBackground}</p></details> : <p className="opening-background">{caseData.victim.publicBackground}</p> : null}
           <div className="opening-file-label"><span>Investigation open</span><span>{detectives !== undefined ? `${detectives} detective${detectives === 1 ? "" : "s"}` : observer ? "Observer copy" : "Detective copy"}</span></div>
         </aside>
         <section className="opening-mandate" aria-labelledby={compact ? "phone-assignment" : "tv-assignment"}>
           <p className="case-eyebrow">Your assignment</p><h3 id={compact ? "phone-assignment" : "tv-assignment"} className="case-serif">Start with the questions.</h3>
-          <div className="opening-beats">{opening?.introNarration?.map((beat, index) => <blockquote key={index}><p className="opening-speaker">{beat.speaker ?? "Briefing"}</p><p>{beat.text}</p></blockquote>)}</div>
+          <details open={!compact || undefined}><summary>Read the briefing</summary><div className="opening-beats">{opening?.introNarration?.map((beat, index) => <blockquote key={index}><p className="opening-speaker">{beat.speaker ?? "Briefing"}</p><p>{beat.text}</p></blockquote>)}</div></details>
         </section>
       </div>
       <div className="opening-next"><span className="case-eyebrow">{compact ? "Stay with the room" : "When everyone is ready"}</span><p>{compact ? "Follow the briefing on the shared screen. Your case file updates as the host advances." : "Read the briefing together, then select Continue above to open the first case file."}</p></div>

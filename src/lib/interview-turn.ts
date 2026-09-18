@@ -1,12 +1,11 @@
 import { createHash } from 'node:crypto';
-import type { Case, Suspect } from '@/engine/types';
 import { createSupabaseServerClient, type InterviewUnlockStateRow, type MessageRow, type SessionRow } from './supabase';
-import { listPendingConditions, type PendingCondition, type UnlockOutcome, type ActiveHostFallback } from './interview-unlocks';
-import { judgeUnlock } from './adjudicator';
+import { listPendingConditions, type ActiveHostFallback } from './interview-unlocks';
+import { advanceUnlockState, evidenceGate } from './interview-planner';
+export { advanceUnlockState, planUnlocks } from './interview-planner';
+import { runInterviewGraph } from './interview-graph';
 import { judgeHostAction, type HostJudgmentVerdict } from './host-judgment';
-import { assertSessionActive, commitGameUpdate, getInterviewContext, getLobbyState, SessionStoreError, type AskSuspectInput, type AskSuspectResult, type GameMessage, type InterviewContext } from './session-store';
-import { countQuestionsInCurrentStretch, getQuestionsPerDetective, listRotatingDetectives, pickNextInterviewer, shouldRotateAfterQuestion } from './round-robin';
-import { buildRoleplayPrompt, modelCompletion, SAFE_DEFLECTION, validateRoleplayReply } from './interview-safety';
+import { assertSessionActive, commitGameUpdate, getInterviewContext, getLobbyState, SessionStoreError, type AskSuspectInput, type AskSuspectResult, type GameMessage } from './session-store';
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 async function loadStates(sessionId: string): Promise<InterviewUnlockStateRow[]> {
@@ -15,57 +14,6 @@ async function loadStates(sessionId: string): Promise<InterviewUnlockStateRow[]>
   return data ?? [];
 }
 
-export function advanceUnlockState(condition: PendingCondition, previous: InterviewUnlockStateRow | undefined, verdict: { met: boolean; confidence: number; proximity?: number; reason: string }, sessionId: string, suspectId: string) {
-  const now = new Date().toISOString();
-  const purePressure = condition.unlockBehavior.tier === 'pressure' && !condition.unlockBehavior.cooperationCue;
-  const proximity = verdict.met ? 1 : Math.max(0, Math.min(1, verdict.proximity ?? 0));
-  const pressure = (previous?.pressure_count ?? 0) + (purePressure || verdict.met || proximity >= 0.4 ? 1 : 0);
-  const fired = (purePressure || verdict.met) && pressure >= (condition.unlockBehavior.pressureThreshold ?? 1);
-  const state: InterviewUnlockStateRow = {
-    session_id: sessionId, suspect_id: suspectId, condition_id: condition.conditionId,
-    attempts: (previous?.attempts ?? 0) + 1, pressure_count: pressure,
-    max_adjacency: Math.max(previous?.max_adjacency ?? 0, proximity),
-    last_reason: verdict.reason, last_evaluated_at: now, met_at: fired ? now : null,
-    met_via: fired ? 'adjudicator' : null, created_at: previous?.created_at ?? now, updated_at: now,
-  };
-  return { state, fired };
-}
-
-function evidenceGate(condition: PendingCondition, presented: Set<string>) {
-  return (condition.unlockBehavior.evidenceIds ?? []).every(id => presented.has(id));
-}
-function knownRevelations(caseData: Case, suspect: Suspect, session: SessionRow, states: InterviewUnlockStateRow[]) {
-  const all = listPendingConditions({ caseData, suspect, session, existingStates: [] });
-  const met = new Set(states.filter(s => s.suspect_id === suspect.id && s.met_at).map(s => s.condition_id));
-  return all.filter(c => c.subject !== 'evidence' && met.has(c.conditionId)).map(c => c.revealedText);
-}
-
-async function planUnlocks(context: InterviewContext, question: string, presentedEvidenceId: string | null, states: InterviewUnlockStateRow[]) {
-  const { session, caseData, suspect, messages } = context;
-  const pending = listPendingConditions({ caseData, session, suspect, existingStates: states.filter(s => s.suspect_id === suspect.id) });
-  const presented = new Set(messages.map(m => m.presented_evidence_id).filter((id): id is string => Boolean(id)));
-  if (presentedEvidenceId) presented.add(presentedEvidenceId);
-  const results = await Promise.all(pending.map(async condition => {
-    if (!evidenceGate(condition, presented)) return null;
-    let verdict;
-    try {
-      verdict = condition.unlockBehavior.tier === 'pressure' && !condition.unlockBehavior.cooperationCue
-        ? { met: true, confidence: 1, proximity: 1, reason: 'A pressure turn was completed.' }
-        : await judgeUnlock({ caseData, suspect, conditionId: condition.conditionId,
-          condition: { unlockBehavior: condition.unlockBehavior, presentedEvidenceIdsInThisConversation: [...presented] },
-          // Current question earns pressure; earlier successful questions cannot be counted again.
-          transcript: [{ role: 'user', content: question, presentedEvidenceId }],
-        });
-    } catch { verdict = { met: false, confidence: 0, proximity: 0, reason: 'Judge unavailable; host assistance remains available.' }; }
-    const { state, fired } = advanceUnlockState(condition, states.find(s => s.suspect_id === suspect.id && s.condition_id === condition.conditionId), verdict, session.id, suspect.id);
-    const outcome: UnlockOutcome = { conditionId: condition.conditionId, subject: condition.subject, state, verdict, fired,
-      hostFallbackPrompted: !fired && state.attempts >= (condition.unlockBehavior.hostFallbackAfterTurns ?? 5),
-      label: condition.label, ...(fired ? { revealedText: condition.revealedText } : {}),
-    };
-    return { condition, state, outcome };
-  }));
-  return { updates: results.filter(r => r !== null), presented };
-}
 
 function resultFromCommit(saved: { session: SessionRow; messages: MessageRow[] }): AskSuspectResult {
   return { session: saved.session, userMessage: saved.messages.find(m => m.role === 'user')!, assistantMessage: saved.messages.find(m => m.role === 'assistant')!,
@@ -83,28 +31,21 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
   if (lease.completed) return resultFromCommit(lease.result);
   try {
     const context = await getInterviewContext(input.sessionId);
-    const { session, caseData, chapter, suspect, messages } = context;
+    const { session, caseData, chapter, suspect } = context;
     assertSessionActive(session);
     if (session.phase !== 'interrogation') throw new SessionStoreError('invalid_request', 'Interviews are closed', 409);
     if (evidenceId && (!session.unlocked_evidence.includes(evidenceId) || !caseData.evidence.some(e => e.id === evidenceId) || (chapter.presentableEvidence?.length && !chapter.presentableEvidence.includes(evidenceId)))) throw new SessionStoreError('invalid_request', 'That evidence is not available in this interview', 400);
     const states = await loadStates(session.id);
-    const { updates, presented } = await planUnlocks(context, question, evidenceId, states);
-    const updatedStates = states.filter(s => !updates.some(u => u.state.suspect_id === s.suspect_id && u.state.condition_id === s.condition_id)).concat(updates.map(u => u.state));
+    const { updates, updatedStates, answer, trace } = await runInterviewGraph({
+      context, question, presentedEvidenceId: evidenceId, states,
+    });
     const unlocked = new Set(session.unlocked_evidence);
     const newMessages: GameMessage[] = [];
     for (const { condition, outcome } of updates) if (outcome.fired && condition.evidenceId) {
       unlocked.add(condition.evidenceId);
       newMessages.push({ suspect_id: suspect.id, role: 'system', content: `Evidence added: ${condition.label}.` });
     }
-    const safetyContext = { caseData, suspect, revelations: knownRevelations(caseData, suspect, session, updatedStates), evidence: caseData.evidence.filter(e => presented.has(e.id)).map(e => `${e.title}: ${e.loreText}`) };
-    const model = caseData.llm?.modelOverride ?? process.env.OPENROUTER_MODEL ?? 'openai/gpt-4o-mini';
-    const draft = await modelCompletion({ model, system: buildRoleplayPrompt(safetyContext),
-      user: JSON.stringify({ recentConversation: messages.filter(m => m.role !== 'system').slice(-12).map(m => ({ role: m.role, content: m.content })), question }), temperature: caseData.llm?.temperature ?? 0.7 });
-    const valid = await validateRoleplayReply(safetyContext, draft, caseData.llm?.validatorModelOverride ?? model);
-    // Fail closed. Authored revelations are safe and must remain visible even if a
-    // generated paraphrase fails validation or the validation provider is offline.
-    const newlyRevealed = updates.filter(u => u.outcome.fired && u.condition.subject !== 'evidence').map(u => u.condition.revealedText);
-    const reply = valid ? draft : newlyRevealed.join('\n\n') || SAFE_DEFLECTION;
+    const { valid, reply } = answer;
     let hostJudgment: HostJudgmentVerdict | null = null;
     const { data: allMessages, error: transcriptError } = await db.from('messages').select('suspect_id,role,content').eq('session_id', session.id).order('created_at');
     if (transcriptError) throw new SessionStoreError('database_error', 'Could not read the investigation', 503);
@@ -122,15 +63,13 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
       // Phase changes are deliberate host actions, never decisions taken in an
       // in-flight answer. In particular an AI call cannot resume a paused game.
     } catch { hostJudgment = null; }
-    const { players } = await getLobbyState(session.id);
     const userMessage: GameMessage = { suspect_id: suspect.id, role: 'user', content: question, asked_by_player_id: input.playerId, presented_evidence_id: evidenceId };
-    const stretch = countQuestionsInCurrentStretch([...messages, userMessage], suspect.id, input.playerId);
-    const rotate = shouldRotateAfterQuestion(stretch, getQuestionsPerDetective(caseData), listRotatingDetectives(players).length);
     const saved = await commitGameUpdate(session, { turnId: input.requestId, attemptId: lease.attemptId,
-      patch: { unlocked_evidence: [...unlocked], current_interviewer_player_id: rotate ? pickNextInterviewer(players, input.playerId) : session.current_interviewer_player_id },
+      patch: { unlocked_evidence: [...unlocked], current_interviewer_player_id: session.current_interviewer_player_id },
       messages: [userMessage, { suspect_id: suspect.id, role: 'assistant', content: reply }, ...newMessages], states: updates.map(u => u.state),
-      events: [{ type: 'interview.completed', payload: { validated: valid } }, { type: 'interview.host_judgment', payload: { reason: 'The investigation is progressing.' } }],
+      events: [{ type: 'interview.completed', payload: { validated: valid, graphVersion: 'interview-v1', graphPath: trace, repairAttempted: answer.repairAttempted } }, { type: 'interview.host_judgment', payload: { reason: 'The investigation is progressing.' } }],
     });
+    saved.session = (await getLobbyState(session.id)).session;
     return { ...resultFromCommit(saved), unlockOutcomes: updates.map(u => u.outcome), hostJudgment };
   } catch (error) {
     await db.from('interview_turns').update({ status: 'failed' }).eq('id', input.requestId).eq('attempt_id', lease.attemptId).eq('status', 'pending');

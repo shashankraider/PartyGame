@@ -1,5 +1,7 @@
 # P1 delivery and verification
 
+> Historical assessment/verification record. The current state, subsequent fixes and rollout are documented in [September 18 release](RELEASE_2026-09-18.md) and [Architecture](ARCHITECTURE.md). Statements below about missing deployment or pending P1 migrations describe the original review date.
+
 September 17, 2026. This accompanies the [baseline assessment](PROJECT_ASSESSMENT.md). Changes are in the working tree; no hosted deployment or shared-database migration was performed.
 
 ## Delivered changes

@@ -16,7 +16,7 @@ export function LetterReveal({ caseData, evidence, chapter, compact = false }: {
   chapter: Chapter;
   compact?: boolean;
 }) {
-  const [view, setView] = useState<"letter" | "notes">("letter");
+  const [view, setView] = useState<"letter" | "notes">(compact ? "notes" : "letter");
   const second = evidence.id === "anonymous-letter-2";
   const printable = getEvidencePrintableUrl(caseData.id, evidence, caseData.sessionId);
   return <section className={`letter-reveal${compact ? " letter-reveal--phone" : ""}`} aria-label="The anonymous letter">

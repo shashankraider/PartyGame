@@ -1,12 +1,5 @@
 # Crime scene images
 
-**Current status:** `ravine-overview.png` is completed and used by the TV/phone crime-scene view. It is gated by membership and the `crime-scene-summary` unlock. See [artwork provenance and prompt](ARTWORK.md). The individual detail images listed below remain planned.
+**Current status:** The ravine overview and authored evidence illustrations are delivered. Images are served through membership/unlock-gated routes. The Grey Lady faces the viewpoint at a distance that keeps her face unidentifiable. Its current generation brief is [grey-lady-story.prompt.md](grey-lady-story.prompt.md).
 
-Images used in evidence cards and during specific narrative beats:
-
-- `ravine-bend.png` — wide shot of the murder bend near Gun Hill (day)
-- `broken-railing.png` — the rusted, broken railing where Vikram fell
-- `tripod-shoe.png` — Vikram's broken tripod and missing shoe at the scene (non-graphic)
-- `empty-wall-mount.png` — Vikram's photo of the two empty hooks at Thakur Cottage (where the rifle hung)
-- `bisht-office-rifle.png` — Vikram's photo of the British-era Enfield rifle in Bisht's office
-- `chai-shop-table.png` — the chai-shop scene where Vikram and Kabir argued
+See [visual production](../VISUAL_PRODUCTION.md) for the delivered inventory and exact prompts, and [ravine provenance](ARTWORK.md) for the initial crime-scene image. The missing shoe is an observation marker, not an invented recovered object. No departure CCTV or identifiable Grey Lady face should be added without changing canon.

@@ -1,5 +1,7 @@
 # PartyGame / Mystery Engine assessment
 
+> Historical assessment/verification record. The current state, subsequent fixes and rollout are documented in [September 18 release](RELEASE_2026-09-18.md) and [Architecture](ARCHITECTURE.md). Statements below about missing deployment or pending P1 migrations describe the original review date.
+
 Assessed September 17, 2026, against working tree at `fb5b7d1`. Existing uncommitted work was preserved. This records the baseline before remediation. Subsequent P1 changes and their verification are tracked in [P1 delivery](P1_DELIVERY.md); the findings and line references below describe the original assessed revision.
 
 **Overall judgment: a substantial playable prototype with a strong content foundation, but not yet a complete, dependable game-night product or a public-release candidate.** The next investment should be finishing and hardening one full multiplayer playthrough. More content and visual polish will have less value until that path is reliable.

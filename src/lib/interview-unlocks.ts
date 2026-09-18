@@ -50,7 +50,7 @@ export type ActiveHostFallback = {
 export function listPendingConditions(input: {
   caseData: Case;
   suspect: Suspect;
-  session: SessionRow;
+  session: Pick<SessionRow, "unlocked_evidence">;
   existingStates: InterviewUnlockStateRow[];
 }): PendingCondition[] {
   const { caseData, suspect, session, existingStates } = input;

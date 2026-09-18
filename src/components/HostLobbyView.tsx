@@ -2,6 +2,7 @@
 
 import { gameFetch } from "@/lib/game-fetch";
 
+import { InterviewClock } from "./InterviewClock";
 import { VisualCaseBoard, EvidenceGallery, ExhibitDetail, RecoveredPhone, VisualEnding, GameStatus, caseAsset } from "./InvestigationVisuals";
 import Image from "next/image";
 import { CaseArtwork } from "@/components/CaseArtwork";
@@ -18,7 +19,6 @@ import {
   type HostJudgmentEventRow,
 } from "@/lib/case-status";
 import type { LobbyState } from "@/lib/session-store";
-import { getQuestionsPerDetective } from "@/lib/round-robin";
 import {
   useCaseStatusRealtime,
   useHostFallbackRealtime,
@@ -107,7 +107,7 @@ export function HostLobbyView({ initialLobby, caseData: initialCaseData, qrCode,
   }
 
   async function hostControlAction(
-    action: "pause" | "resume" | "open-accusation" | "end-session" | "next" | "next-file",
+    action: "extend-interview" | "pause" | "resume" | "open-accusation" | "end-session" | "next" | "next-file",
   ) {
     setIsHostActionBusy(true);
     setError(null);
@@ -245,6 +245,7 @@ export function HostLobbyView({ initialLobby, caseData: initialCaseData, qrCode,
         </p>
       ) : null}
 
+      <InterviewClock session={lobby.session} multiplayer={lobby.players.filter(p => !p.is_observer).length > 1} onExtend={() => hostControlAction("extend-interview")} busy={isHostActionBusy || Boolean(lobby.turnPending) || isFinished} />
       <GameStatus paused={isPaused} pending={lobby.turnPending} error={realtimeError} activeName={lobby.players.find(p=>p.id===lobby.session.current_interviewer_player_id)?.name}/>
 
       <fieldset disabled={isPaused || Boolean(lobby.turnPending)} className="min-w-0">
@@ -553,7 +554,7 @@ function InterviewScene({
           </span>
         ) : null}
         <span className="text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
-          Mic rotates every {getQuestionsPerDetective(caseData)} questions
+          Follow up freely within the interview time
         </span>
       </div>
       {suspect ? (

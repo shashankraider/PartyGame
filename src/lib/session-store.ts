@@ -239,7 +239,8 @@ export async function createSession(caseId: string, mode: 'solo' | 'multiplayer'
 export async function getLobbyState(sessionId: string): Promise<LobbyState> {
   assertSupabaseConfigured();
   const db = createSupabaseServerClient();
-  const { data: session, error } = await db.from('sessions').select('*').eq('id', sessionId).single();
+  const { data: storedSession, error } = await db.rpc('tick_interview_clock', { p_session: sessionId });
+  const session = storedSession ? { ...storedSession, clock_observed_at: new Date().toISOString() } as SessionRow : null;
   if (error || !session) throw new SessionStoreError('session_not_found', 'Session not found', 404);
   assertSessionActive(session, ['lobby', 'in_progress', 'paused', 'finished']);
   const [players, votes, turns] = await Promise.all([
@@ -451,4 +452,10 @@ export async function getActiveHostFallbacksForSession(input: { sessionId: strin
 export async function triggerHostUnlock(input: { sessionId: string; conditionId: string }) {
   const { applyHostHelp } = await import('./interview-turn');
   return applyHostHelp(input.sessionId, input.conditionId);
+}
+
+export async function extendInterview(sessionId: string) {
+  const { session } = await getLobbyState(sessionId);
+  const { error } = await createSupabaseServerClient().rpc('extend_interview_clock', { p_session: sessionId, p_revision: session.revision });
+  if (error) databaseError(error);
 }

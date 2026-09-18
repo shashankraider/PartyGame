@@ -243,3 +243,11 @@ Before declaring done:
 ---
 
 *This guide will grow as the engine grows. Open a pull request if you find a step that needs clarifying.*
+
+## Admission-dependent interview writing
+
+`safeDeflection` may provide a first-person fallback without new story facts or promised exhibits. `alibiAfterBreakingPoint` maps an earned breaking-point ID to a replacement account so the original lie is not restored after exposure. Private `interviewLayers` contain an ID, required admission IDs (`secret:<id>` / `breaking-point:<id>`), optional excluded admission IDs, a direction and optional approved facts. All required admissions must be earned; any excluded admission disables the layer. Validation checks references and contradictory conditions. These fields are excluded from public case projections.
+
+Rhea demonstrates four states: guarded, finances exposed, tampering exposed, and both exposed. Only the combined state approves her concealment motive. Never treat an investigator's allegation as an earned admission. Distinguish a suspect's alibi from independent proof, and do not promise a document unless it exists with a release path.
+
+Use `npm run eval:investigators` for authored evidence contracts and `npm run eval:rhea` for focused live production-graph conversations. Model grades need manual review. Gameplay uses fixed 480-second suspect and 90-second microphone clocks, with 120-second host extensions; the legacy `questionsPerDetective` field no longer controls live handoff.

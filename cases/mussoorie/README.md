@@ -2,7 +2,7 @@
 
 **The first implemented case for the Mystery Engine prototype.**
 
-Status reconciled September 17, 2026. See [P1 delivery](../../docs/P1_DELIVERY.md) for test results and pending rollout.
+Status reconciled September 18, 2026. See [release notes](../../docs/RELEASE_2026-09-18.md) for current checks and rollout.
 6–8 players · ages 10+ · ~3 hours · 4 rounds · cooperative whodunit · LLM-driven suspect interrogation.
 
 A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a CBI special team investigating the death of a popular YouTuber that the local police have ruled accidental — and discover that the case unlocks a fifteen-year-old cold case underneath.
@@ -17,10 +17,10 @@ A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a 
 | `printables/` | Player-facing HTML exhibits, one standalone file per evidence item, plus print-all-round source bundles. |
 | `assets/portraits/` | Suspect, victim, and backstory-character portraits. |
 | `assets/locations/` | Wide images of the 8 key locations. |
-| `assets/crime-scene/` | Planned scene-photo inventory; no images supplied yet. |
+| `assets/crime-scene/` | Authored ravine, Grey Lady and evidence illustrations with prompt provenance. |
 | `assets/audio/` | Planned five-cue soundtrack; no soundtrack files supplied yet. |
 | `assets/ui/` | Cover image present; other listed UI assets are planned. |
-| `assets/video/` | Local final-recording media and source files; playback is not integrated. |
+| `assets/video/` | Final-recording media and captions; guarded download after the truth reveal, inline playback deferred. |
 
 ## Story structure (4 rounds)
 

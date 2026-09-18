@@ -1,5 +1,9 @@
 # Gameplay visual assessment
 
+## September 18 follow-up
+
+Player phones now use **Now / Case file / Team** navigation, collapsed earlier conversations and a compact evidence picker. The newly opened-file gallery uses focused exhibits rather than repeating large artwork. The Grey Lady is nearer and facing the viewpoint but her face remains indistinguishable; her identity must not be visually disclosed. The YouTube channel exhibit now has channel artwork and video thumbnails. Shared host/player interview countdowns show saved time; host extensions are available. See [September 18 release](RELEASE_2026-09-18.md) for release checks. The assessment tables below retain the original recommendations and delivered history.
+
 Assessment of current source, all 19 authored chapters, 30 exhibit definitions, printable examples, image dimensions, and selected artwork. This is a source-and-asset review, not a new browser playthrough. Recommendations below describe the original plan; the delivery note records what has since been implemented.
 
 ## Delivery update

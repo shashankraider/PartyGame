@@ -28,11 +28,8 @@ export default async function PlayerSessionPage({ params }: PlayerSessionPagePro
 
   const caseData = lobby.caseData;
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col overflow-x-hidden px-0 py-8 sm:py-10">
-      <p className="mx-4 mb-6 text-sm uppercase tracking-[0.2em] text-[#c8a46a] sm:mx-6">
-        Detective controller
-      </p>
-      <div className="mx-4 min-w-0 sm:mx-6">
+    <main className="player-page mx-auto min-h-screen w-full max-w-2xl">
+      <div className="min-w-0">
         <PlayerLobbyView initialLobby={lobby} caseData={caseData} playerId={playerId} />
       </div>
     </main>

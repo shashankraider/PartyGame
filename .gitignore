@@ -34,3 +34,6 @@ npm-debug.log*
 # Supabase CLI local scratch (project-specific paths and version pins)
 supabase/.temp/
 supabase/snippets/
+
+# Timestamped live-model transcripts; summarized findings live in docs.
+output/evals/

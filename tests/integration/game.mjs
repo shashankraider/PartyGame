@@ -130,8 +130,12 @@ try {
    const secret=game.suspects.find(s=>s.id==='naina').secrets.find(s=>`secret:${s.id}`===states[0].condition_id);
    check(recordedPrompts.some(p=>p.startsWith('You are Naina')&&p.includes(secret.revealedText)),'established admissions included on later turns');
    const third=await executeInterview({sessionId:id,playerId:players[0].player.id,question:'Can you clarify that?',requestId:randomUUID()});
-   check(third.session.current_interviewer_player_id===players[1].player.id,'microphone rotates after the third complete answer');
+   check(third.session.current_interviewer_player_id===players[0].player.id,'three answers do not exhaust an active microphone');
  } finally {globalThis.fetch=restoredFetch;if(savedKey===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=savedKey;}
+ await scene(players[0],id,'extend-interview',403);
+ const beforeExtension=await snapshot(id);
+ const extended=await scene(host,id,'extend-interview');
+ check(extended.session.interview_clocks.naina>beforeExtension.interview_clocks.naina+115,'host adds two minutes through the API');
  const recording=`/api/cases/mussoorie/recording/film?sessionId=${id}`;
  await request(guest,recording,undefined,401);
  await request(host,recording,undefined,403);

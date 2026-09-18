@@ -114,3 +114,8 @@ default for revelations that need emotional pressure on top of forensic
 pressure (e.g., Naina admitting she heard the sound). For pure
 evidence-presentation triggers (the CCTV still cracks Rhea on its own),
 use evidence-tier instead and skip the cue.
+
+
+## Investigator conversation suite
+
+`npm run eval:investigators -- --live` now exercises all six suspects' generated answers, proof requests, evidence challenges, fabricated claims, injection resistance, and admission retention, alongside the cue tests above. `npm run eval:investigators` runs deterministic checks and the evidence-contract audit without provider calls. See [investigator evaluations](../../../docs/INVESTIGATOR_EVALS.md) for coverage, commands, calibration and the September 18 findings. Missing proof exhibits intentionally produce a nonzero exit status.

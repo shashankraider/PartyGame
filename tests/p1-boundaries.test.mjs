@@ -18,6 +18,7 @@ test('public case excludes private truth and locked material at every prereveal 
     assert.deepEqual(result.ending, []);
     assert.ok(!JSON.stringify(result.suspects).match(/mastermind|anonymous tipster|plagiarised/i));
     assert.ok(result.suspects.every(s => !('persona' in s) && !('secrets' in s) && !('trueTimeline' in s) && !('neverReveal' in s)));
+    assert.ok(result.suspects.every(s => !('interviewLayers' in s) && !('alibiAfterBreakingPoint' in s)));
     assert.ok(!('endgame' in result) && !('backstoryEvents' in result));
     assert.ok(result.chapters.every(c => !('unlockCondition' in c)));
   }

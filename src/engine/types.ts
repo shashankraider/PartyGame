@@ -203,6 +203,23 @@ export interface Suspect {
    */
   voice: string;
   /**
+   * Optional first-person, in-character fallback when generated answers are rejected. Must contain no story claims, secrets or promises of evidence.
+   */
+  safeDeflection?: string;
+  /**
+   * Server-only interview posture and additional facts activated by earned admissions, never by allegations in player text.
+   */
+  interviewLayers?: {
+    id: SlugId;
+    /**
+     * @minItems 1
+     */
+    requires: [string, ...string[]];
+    excludes?: string[];
+    direction: string;
+    facts?: string[];
+  }[];
+  /**
    * Facts the suspect knows and may volunteer.
    */
   knownFacts?: string[];
@@ -210,6 +227,12 @@ export interface Suspect {
    * The story the suspect tells publicly. Always in the prompt.
    */
   publicAlibi: string;
+  /**
+   * Optional replacement accounts keyed by breaking-point ID. Used only after that breaking point is admitted, so superseded lies are not reintroduced as current facts.
+   */
+  alibiAfterBreakingPoint?: {
+    [k: string]: string | undefined;
+  };
   /**
    * What the suspect actually did during the relevant timeframe. Each beat is gated by an optional UnlockCondition; ungated beats are private until the suspect breaks.
    *

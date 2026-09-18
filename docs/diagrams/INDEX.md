@@ -7,9 +7,9 @@ Regenerate with `npm run docs:render`.
 | Source | Section | SVG |
 |---|---|---|
 | ARCHITECTURE.md (line 7) | System overview | [architecture-01-system-overview.svg](architecture-01-system-overview.svg) |
-| ARCHITECTURE.md (line 75) | Interview execution and realtime fan-out | [architecture-02-interview-execution-and-realtime-fan-out.svg](architecture-02-interview-execution-and-realtime-fan-out.svg) |
-| ARCHITECTURE.md (line 105) | Story boundaries and rescue | [architecture-03-story-boundaries-and-rescue.svg](architecture-03-story-boundaries-and-rescue.svg) |
-| ARCHITECTURE.md (line 125) | Lifecycle and ending | [architecture-04-lifecycle-and-ending.svg](architecture-04-lifecycle-and-ending.svg) |
+| ARCHITECTURE.md (line 107) | Story boundaries and rescue | [architecture-03-story-boundaries-and-rescue.svg](architecture-03-story-boundaries-and-rescue.svg) |
+| ARCHITECTURE.md (line 129) | Lifecycle and ending | [architecture-04-lifecycle-and-ending.svg](architecture-04-lifecycle-and-ending.svg) |
+| INTERVIEW_LANGGRAPH.md (line 7) | Flow | [interview-langgraph-01-flow.svg](interview-langgraph-01-flow.svg) |
 | PRD.md (line 109) | End-to-end workflow | [prd-01-end-to-end-workflow.svg](prd-01-end-to-end-workflow.svg) |
 | PRD.md (line 137) | Host vs Player journey | [prd-02-host-vs-player-journey.svg](prd-02-host-vs-player-journey.svg) |
 | authoring-guide.md (line 55) | The mental model | [authoring-guide-01-the-mental-model.svg](authoring-guide-01-the-mental-model.svg) |

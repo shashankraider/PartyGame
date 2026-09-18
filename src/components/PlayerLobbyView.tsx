@@ -1,5 +1,6 @@
 "use client";
 
+import { InterviewClock, useInterviewClock } from "./InterviewClock";
 import { gameFetch, newRequestId } from "@/lib/game-fetch";
 
 import { VisualCaseBoard, EvidenceGallery, ExhibitDetail, RecoveredPhone, VisualEnding, GameStatus, caseAsset } from "./InvestigationVisuals";
@@ -20,11 +21,9 @@ import {
 } from "@/lib/session-realtime";
 import { useSpeechToText } from "@/lib/use-speech-to-text";
 import {
-  countQuestionsInCurrentStretch,
   getNextInterviewerName,
-  getQuestionsPerDetective,
+  pickNextInterviewer,
   listRotatingDetectives,
-  questionsUntilRotation,
 } from "@/lib/round-robin";
 import type { MessageRow, PlayerRow, SessionRow, SessionScene } from "@/lib/supabase";
 
@@ -91,6 +90,10 @@ export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playe
   );
   const caseData = lobby.caseData ?? initialCaseData;
   const [localError, setLocalError] = useState<string | null>(null);
+  const sceneKey = `${lobby.session.current_scene}:${lobby.session.current_chapter_id}`;
+  const [navigation, setNavigation] = useState({ scene: sceneKey, panel: "now" });
+  const panel = navigation.scene === sceneKey ? navigation.panel : "now";
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [sceneKey]);
   const error = localError ?? realtimeError;
   const setError = setLocalError;
   const hasStarted = lobby.session.status !== "lobby";
@@ -141,7 +144,7 @@ export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playe
   };
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-zinc-950/70 p-6">
+    <section className="player-controller">
       {lobby.session.current_scene !== "lobby" ? <Header player={player} scene={lobby.session.current_scene} /> : null}
 
       {error ? (
@@ -150,8 +153,15 @@ export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playe
         </p>
       ) : null}
 
+      <InterviewClock session={lobby.session} multiplayer={lobby.players.filter(p => !p.is_observer).length > 1} />
       <GameStatus paused={lobby.session.status === "paused"} pending={lobby.turnPending} error={realtimeError} activeName={lobby.players.find(p=>p.id===lobby.session.current_interviewer_player_id)?.name}/>
 
+      {hasStarted && <nav className="player-navigation" aria-label="Your investigation">
+        {[["now", "Now"], ["evidence", `Case file · ${caseData.evidence.length}`], ["team", "Team"]].map(([id, label]) =>
+          <button key={id} type="button" aria-pressed={panel === id} aria-controls={`player-${id}`} onClick={() => { setNavigation({ scene: sceneKey, panel: id }); window.scrollTo({ top: 0, behavior: "instant" }); }}>{label}</button>
+        )}
+      </nav>}
+      <div id="player-now" hidden={panel !== "now"}>
       <fieldset disabled={lobby.session.status === 'paused' || Boolean(lobby.turnPending)} className="mt-6 min-w-0">
         {lobby.session.current_scene === "lobby" ? (
           <LobbyMode lobby={lobby} player={player} detectives={detectives} />
@@ -183,7 +193,7 @@ export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playe
         ) : null}
 
         {lobby.session.current_scene === "phone_hack" ? (
-          <RecoveredPhone key={chapter?.id} chapter={chapter} />
+          <RecoveredPhone key={chapter?.id} chapter={chapter} compact />
         ) : null}
 
         {lobby.session.current_scene === "accusation" ? (
@@ -202,13 +212,14 @@ export function PlayerLobbyView({ initialLobby, caseData: initialCaseData, playe
         ) : null}
       </fieldset>
 
-      {hasStarted && lobby.session.current_scene !== "case_board" ? (
-        <DigitalCaseFile
-          caseData={caseData}
-          unlocked={lobby.session.unlocked_evidence}
-          currentChapter={chapter}
-        />
-      ) : null}
+      </div>
+      {panel === "evidence" && <div id="player-evidence" className="player-case-file">
+        <EvidenceGallery caseData={caseData} title="Your case file" />
+      </div>}
+      {panel === "team" && <section id="player-team" className="player-team">
+        <h2>Your team</h2><p>Game {lobby.session.join_code}</p>
+        <ul>{lobby.players.map(member => <li key={member.id}><strong>{member.name}{member.id === playerId ? " (you)" : ""}</strong><span>{member.is_observer ? "Observer" : member.id === lobby.session.current_interviewer_player_id ? "Leading the interview" : `Detective ${member.seat_number}`}</span></li>)}</ul>
+      </section>}
     </section>
   );
 }
@@ -217,12 +228,9 @@ function Header({ player, scene }: { player: PlayerRow; scene: SessionScene }) {
   const role = player.is_observer ? "Observer" : `Detective seat ${player.seat_number}`;
 
   return (
-    <header>
-      <p className="text-xs uppercase tracking-[0.28em] text-[#c8a46a]">{role}</p>
-      <h1 className="mt-2 text-3xl font-semibold">{player.name}</h1>
-      <p className="mt-1 text-sm uppercase tracking-[0.24em] text-[#a6a29a]">
-        {sceneTitles[scene]}
-      </p>
+    <header className="player-header">
+      <div><p>{role}</p><h1>{player.name}</h1></div>
+      <span>{sceneTitles[scene]}</span>
     </header>
   );
 }
@@ -257,7 +265,7 @@ function CaseBoardTabs({ caseData, chapter, unlocked }: { caseData: Case; chapte
   if (hasCrimeScene(caseData, chapter, unlocked) && chapter) return <CrimeSceneReveal caseData={caseData} chapter={chapter} compact />;
   const letter = getOpeningLetter(caseData, chapter, unlocked);
   if (letter && chapter) return <LetterReveal key={letter.id} caseData={caseData} evidence={letter} chapter={chapter} compact />;
-  return <VisualCaseBoard caseData={caseData} chapter={chapter} />;
+  return <VisualCaseBoard caseData={caseData} chapter={chapter} compact />;
 }
 
 function InterviewMode({
@@ -316,18 +324,8 @@ function InterviewMode({
   }, [speech.finalTranscript]);
 
   const isInterviewer = session.current_interviewer_player_id === player.id;
-  const questionsPerDetective = getQuestionsPerDetective(caseData);
+  const interviewClock = useInterviewClock(session);
   const detectiveCount = listRotatingDetectives(players).length;
-  const questionsInStretch = useMemo(() => {
-    if (!suspect || !session.current_interviewer_player_id) {
-      return 0;
-    }
-    return countQuestionsInCurrentStretch(
-      transcript.messages,
-      suspect.id,
-      session.current_interviewer_player_id,
-    );
-  }, [transcript.messages, suspect, session.current_interviewer_player_id]);
   const nextInterviewerName = useMemo(() => {
     if (!session.current_interviewer_player_id || detectiveCount <= 1) {
       return null;
@@ -338,7 +336,7 @@ function InterviewMode({
     isInterviewer &&
     detectiveCount > 1 &&
     nextInterviewerName !== null &&
-    questionsUntilRotation(questionsInStretch, questionsPerDetective) === 1;
+    interviewClock.microphone <= 20;
 
   async function claimInterviewer(targetPlayerId: string | null) {
     setIsClaiming(true);
@@ -422,7 +420,7 @@ function InterviewMode({
           </p>
         ) : null}
         <Transcript messages={transcript.messages} suspectName={suspect?.name ?? null} />
-        <InterviewEvidencePanel caseData={caseData} unlocked={unlocked} />
+
       </div>
     );
   }
@@ -460,7 +458,7 @@ function InterviewMode({
           {isClaiming ? "Claiming..." : "Take control"}
         </button>
         <Transcript messages={transcript.messages} suspectName={suspect?.name ?? null} />
-        <InterviewEvidencePanel caseData={caseData} unlocked={unlocked} />
+
       </div>
     );
   }
@@ -494,7 +492,7 @@ function InterviewMode({
 
       <Transcript messages={transcript.messages} suspectName={suspect?.name ?? null} />
 
-      <InterviewEvidencePanel caseData={caseData} unlocked={unlocked} />
+
 
       {showNextRotationCue ? (
         <p className="mt-5 rounded-2xl border border-[#c8a46a]/40 bg-[#c8a46a]/10 px-4 py-3 text-sm text-[#e6bd77]">
@@ -503,7 +501,7 @@ function InterviewMode({
       ) : null}
 
       <div className="mt-6 flex items-center justify-between gap-3">
-        <label className="block text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
+        <label htmlFor="player-question" className="block text-xs uppercase tracking-[0.22em] text-[#a6a29a]">
           Your next question
         </label>
         {speech.isSupported ? (
@@ -527,6 +525,7 @@ function InterviewMode({
         ) : null}
       </div>
       <textarea
+        id="player-question"
         value={question}
         onChange={(event) => setQuestion(event.target.value)}
         rows={3}
@@ -632,7 +631,7 @@ function InterviewMode({
       <button
         type="button"
         onClick={askSuspect}
-        disabled={isAsking || !question.trim() || !suspect}
+        disabled={isAsking || !question.trim() || !suspect || interviewClock.remaining <= 0 || (detectiveCount > 1 && interviewClock.microphone <= 0)}
         className="mt-6 w-full rounded-full bg-[#c8a46a] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-zinc-950 transition hover:bg-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isAsking ? "Suspect is responding..." : "Ask suspect"}
@@ -650,7 +649,7 @@ function InterviewMode({
 
       <button
         type="button"
-        onClick={() => claimInterviewer(null)}
+        onClick={() => claimInterviewer(pickNextInterviewer(players, player.id))}
         disabled={isClaiming || isAsking}
         className="mt-3 w-full rounded-full border border-white/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition hover:border-[#c8a46a] hover:text-[#e6bd77] disabled:cursor-not-allowed disabled:opacity-60"
       >
@@ -778,6 +777,9 @@ function Transcript({
   messages: MessageRow[];
   suspectName: string | null;
 }) {
+  const [showHistory, setShowHistory] = useState(false);
+  const lastQuestion = messages.map(message => message.role).lastIndexOf("user");
+  const visibleMessages = showHistory ? messages : messages.slice(Math.max(0, lastQuestion));
   if (messages.length === 0) {
     return (
       <p className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-xs leading-6 text-[#a6a29a]">
@@ -787,8 +789,9 @@ function Transcript({
   }
 
   return (
-    <div className="mt-5 max-h-80 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-black/30 p-4">
-      {messages.map((message) => {
+    <div className="player-transcript mt-5 space-y-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+      {lastQuestion > 0 && <button type="button" className="player-history-toggle" aria-expanded={showHistory} onClick={() => setShowHistory(value => !value)}>{showHistory ? "Show latest answer" : "Earlier questions & answers"}</button>}
+      {visibleMessages.map((message) => {
         if (message.role === "system") {
           return (
             <div
@@ -907,7 +910,7 @@ function AccusationMode({
               aria-pressed={selected}
               onClick={() => vote(suspect.id)}
               disabled={submittingId !== null}
-              className={`rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-70 ${
+              className={`player-ballot rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-70 ${
                 selected
                   ? "border-[#c8a46a] bg-[#c8a46a]/10 text-[#f5f2ea]"
                   : "border-white/15 hover:border-[#c8a46a]"
@@ -936,15 +939,4 @@ function AccusationMode({
       </div>
     </div>
   );
-}
-
-
-function DigitalCaseFile({ caseData }: {caseData:Case;unlocked:string[];currentChapter:Chapter|null}) {
-  return <details className="phone-interview-locker"><summary>Digital case file · {caseData.evidence.length} released exhibits</summary><EvidenceGallery caseData={caseData}/></details>;
-}
-
-function InterviewEvidencePanel({ caseData, unlocked }: { caseData: Case; unlocked: string[] }) {
-  const [initial] = useState(() => new Set(unlocked));
-  const fresh = unlocked.filter(id=>!initial.has(id));
-  return <details className="phone-interview-locker" open={fresh.length>0 || undefined}><summary>Inspect evidence · {caseData.evidence.length} exhibits{fresh.length ? ` · ${fresh.length} new` : ""}</summary><EvidenceGallery caseData={caseData} focusIds={fresh}/></details>;
 }

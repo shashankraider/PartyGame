@@ -12,6 +12,10 @@ export type SessionScene =
   | "reveal";
 
 export type SessionRow = {
+  interview_clocks?: Record<string, number>;
+  interview_clock_anchor?: string | null;
+  microphone_seconds?: number;
+  clock_observed_at?: string;
   id: string;
   case_id: string;
   case_version: string;

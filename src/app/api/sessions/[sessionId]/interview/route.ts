@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireSessionAccess, checkRequestOrigin, AccessError } from "@/lib/session-auth";
 import { apiError } from "@/lib/api-errors";
+// Includes bounded answer repair; the database turn lease is also 120 seconds.
+export const maxDuration = 120;
 type Context = { params: Promise<{ sessionId: string }> };
 const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
 import { askSuspect, getInterviewMessages } from "@/lib/session-store";

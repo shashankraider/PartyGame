@@ -203,6 +203,19 @@ export function crossReferenceChecks(caseObj, options = {}) {
     for (const bp of s.breakingPoints ?? []) {
       checkUnlockCondition(bp.trigger, `${ctx}.breakingPoints[${bp.id}].trigger`);
     }
+    const admissionIds = new Set([
+      ...(s.secrets ?? []).map(secret => `secret:${secret.id}`),
+      ...(s.breakingPoints ?? []).map(bp => `breaking-point:${bp.id}`),
+    ]);
+    const layerIds = new Set();
+    for (const layer of s.interviewLayers ?? []) {
+      if (layerIds.has(layer.id)) issues.push(error(`${ctx}.interviewLayers duplicates "${layer.id}"`));
+      layerIds.add(layer.id);
+      for (const id of [...layer.requires, ...(layer.excludes ?? [])]) {
+        checkRef('admission id', admissionIds, id, `${ctx}.interviewLayers[${layer.id}]`);
+      }
+      if (layer.requires.some(id => layer.excludes?.includes(id))) issues.push(error(`${ctx}.interviewLayers[${layer.id}] both requires and excludes an admission`));
+    }
   }
 
   // Evidence.

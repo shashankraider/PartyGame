@@ -286,7 +286,7 @@ Anya's confession completes the picture: the fifteen years of silence, the blood
 
 ## 9b. Interrogation scenario playbook (host reference)
 
-After Briefing, the case opens into the **Interrogation phase**. The free-choice suspect picker is on the TV at all times. The current interviewer (mic auto-rotates every three questions, default; manual claim/pass still works) can pick any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine. No human host advances the case — an AI host watches every transcript and decides when forensic evidence arrives.
+After Briefing, the case opens into the **Interrogation phase**. The free-choice suspect picker is on the TV at all times. The current interviewer (mic auto-rotates after 90 seconds of active time; early pass still works; each suspect has an eight-minute budget and host extensions of two minutes) can pick any of the six suspects in any order and revisit at will. Each suspect's transcript and unlock state are preserved across re-entries by the engine. No human host advances the case — an AI host watches every transcript and decides when forensic evidence arrives.
 
 This playbook lists which handoffs actually *fire engine cues* in the early Interrogation arc (with only the opening evidence set in the locker), vs. which are deliberately stonewalled until the AI host has dropped the deeper forensic evidence later in the phase. Use it to set table expectations.
 

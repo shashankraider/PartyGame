@@ -1,0 +1,38 @@
+{
+  "rhea": {
+    "proof": { "claim": "Phone records confirm her Delhi alibi", "evidenceId": "rhea-phone-records", "status": "missing", "note": "The alibi promises this document, but no authored exhibit or unlock path exists." },
+    "questions": ["Where were you on the evening Vikram died?", "Do you have proof?", "Please give me those phone records. Where can I inspect them?"],
+    "challenge": "This still shows you entering his cottage at 5:02 AM before the body was found. Explain your arrival story.",
+    "evidenceId": "building-cctv-rhea"
+  },
+  "devraj": {
+    "proof": { "claim": "The duty log confirms he stayed at the station", "evidenceId": "devraj-duty-log", "status": "missing", "note": "The duty log is referenced by the alibi and unlock cues but has no standalone inspectable exhibit. A police death report is not the duty log." },
+    "questions": ["Where were you that evening?", "What records support that?", "Show me the duty log you are relying on. Can I inspect the entry?"],
+    "challenge": "The jeep CCTV places your vehicle on Camel's Back Road at 8:10 PM. How does that fit your station alibi?",
+    "evidenceId": "devraj-jeep-cctv"
+  },
+  "naina": {
+    "proof": { "claim": "Phone calls and witness statement challenge her hotel alibi", "evidenceId": "naina-phone-records", "status": "available", "note": "Do not treat her uncorroborated hotel claim as verified. The authored records concern calls, not a hotel-location certificate." },
+    "questions": ["Where were you that evening?", "Who or what can confirm that?", "Do you have hotel CCTV or a receipt that proves you stayed in? Please show it."],
+    "challenge": "The shopkeeper saw you on Camel's Back Road. What did you hear while you were there?",
+    "evidenceId": "shopkeeper-statement-naina"
+  },
+  "bisht": {
+    "proof": { "claim": "Hotel CCTV supports his whereabouts but has a gap", "evidenceId": "bisht-hotel-cctv-log", "status": "available", "note": "The existing CCTV log is inspectable. Do not invent uninterrupted footage or certify innocence from location alone." },
+    "questions": ["Where were you when Vikram died?", "What proof do you have?", "Show me the hotel CCTV. Does it cover the entire evening without any gaps?"],
+    "challenge": "Your hotel CCTV has an 8:00–8:15 maintenance gap. Can you actually prove your location throughout it?",
+    "evidenceId": "bisht-hotel-cctv-log"
+  },
+  "anya": {
+    "proof": { "claim": "Bus ticket provides a time anchor, not proof of an immediate trip home", "evidenceId": "anya-bus-ticket", "status": "available", "note": "The ticket is inspectable. Preserve the gap between leaving the cottage and the 9:15 bus." },
+    "questions": ["When did you leave Vikram's cottage and how did you get home?", "Do you have proof of the journey?", "Can I see your bus ticket? What time was the bus?"],
+    "challenge": "Your ticket says 9:15 PM but you left around 7:30. Where were you in between?",
+    "evidenceId": "anya-bus-ticket"
+  },
+  "kabir": {
+    "proof": { "claim": "Chai-shop receipt anchors the meeting, not the whole evening", "evidenceId": "chai-shop-receipt", "status": "available", "note": "Do not invent hotel CCTV, a witness or an auction receipt to complete the alibi." },
+    "questions": ["When did you last see Vikram, and where did you go afterwards?", "What can corroborate your account?", "Please show me a receipt or recording proving you stayed at your hotel afterwards."],
+    "challenge": "The chai-shop receipt records your meeting. Why did you argue with Vikram?",
+    "evidenceId": "chai-shop-receipt"
+  }
+}

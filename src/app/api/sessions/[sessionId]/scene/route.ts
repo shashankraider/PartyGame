@@ -3,7 +3,7 @@ import { requireSessionAccess, checkRequestOrigin, AccessError } from "@/lib/ses
 import { apiError } from "@/lib/api-errors";
 type Context = { params: Promise<{ sessionId: string }> };
 const json = (data: unknown) => NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
-import { advanceInvestigationFile, advanceSessionChapter, endSession, pauseSession, resumeSession, setSessionScene, transitionSessionPhase, getPublicLobbyState, getLobbyState } from "@/lib/session-store";
+import { extendInterview, advanceInvestigationFile, advanceSessionChapter, endSession, pauseSession, resumeSession, setSessionScene, transitionSessionPhase, getPublicLobbyState, getLobbyState } from "@/lib/session-store";
 export async function POST(request: Request, context: Context) {
   try {
     checkRequestOrigin(request);
@@ -16,6 +16,7 @@ export async function POST(request: Request, context: Context) {
       case 'next-file': await advanceInvestigationFile(sessionId); break;
       case 'next': case 'previous': await advanceSessionChapter(sessionId,body.action); break;
       case 'set': await setSessionScene({ sessionId, scene: body.scene, chapterId: body.chapterId, actorPlayerId: actor.isHost ? undefined : actor.playerId! }); break;
+      case 'extend-interview': await extendInterview(sessionId); break;
       case 'pause': await pauseSession(sessionId); break;
       case 'resume': await resumeSession(sessionId); break;
       case 'open-accusation': await transitionSessionPhase({ sessionId, targetPhase: 'accusation' }); break;
