@@ -35,7 +35,7 @@ Automated checks are in `tests/p1-boundaries.test.mjs`, `tests/integration/game.
 ## Rollout
 
 1. Use the pinned Node runtime and install the lockfile.
-2. Review and apply `supabase/migrations/20260918023306_p1_game_integrity.sql` to the intended database before running the updated app. Preserve any additional migrations from other checkouts.
+2. Review and apply `supabase/migrations/20260918094606_p1_game_integrity.sql` to the intended database before running the updated app. Preserve any additional migrations from other checkouts.
 3. Configure server-only authentication/Supabase secrets and the OpenRouter key. Start fresh lobbies: historical public device IDs cannot safely establish host ownership.
 4. Build against the intended public Supabase URL/key. Run the integration checks against a local test database, then perform a real multi-device rehearsal before public release.
 

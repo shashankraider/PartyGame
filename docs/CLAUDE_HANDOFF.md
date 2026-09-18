@@ -30,7 +30,7 @@ The original Bisht rifle miss passed after cue clarification. The remaining mode
 
 Use `nvm use` and `npm ci`. Configure `.env.local` from `.env.example`. `SESSION_AUTH_SECRET` is optional but should be a stable server-only secret in production; otherwise device signing uses the service-role key. `SUPABASE_JWT_SECRET` must match the database project to enable realtime; polling keeps the UI usable without it.
 
-The pending migration is `supabase/migrations/20260918023306_p1_game_integrity.sql`. It was tested from scratch in an isolated local database, not applied to the shared database. During verification the shared database had 24 sessions and a separate `0007_briefing_beat_index` migration belonging to another worktree. Preserve those records and migration history; re-inspect before rollout. Do not reset shared data or delete sibling worktrees as a setup step.
+The pending migration is `supabase/migrations/20260918094606_p1_game_integrity.sql`. It was tested from scratch in an isolated local database, not applied to the shared database. During verification the shared database had 24 sessions and a separate `0007_briefing_beat_index` migration belonging to another worktree. Preserve those records and migration history; re-inspect before rollout. Do not reset shared data or delete sibling worktrees as a setup step.
 
 Old lobbies have no trustworthy ownership credentials. Create fresh lobbies after migrating; never grant host access based on a legacy device ID or the first visitor. Review expired historical rows before enabling the migration's GC schedule.
 
