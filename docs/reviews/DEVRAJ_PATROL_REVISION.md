@@ -14,29 +14,13 @@ of lying or establish that a patrol actually occurred. The older transcript's
 “my earlier statement was false” requirement has been removed from both the
 authored response and the evaluation contract.
 
-## Actual revised dialogue
+## Actual conversations
 
-First live jeep conversation:
-
-**Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did
-you say you stayed at the station all evening?
-
-> That's my jeep, yes. I was on station duty that evening. I may have stepped
-> out for a patrol round, but I'd need to check the patrol logs for exact timings.
-
-**Investigator:** So you still say you were inside the station all evening?
-
-> I was on station duty, yes. I may have stepped out for a patrol round, but
-> I can't confirm exact timings without checking the patrol logs.
-
-**Investigator:** Your jeep was there, so the camera proves you struck him.
-Correct?
-
-> The jeep was there, yes. But that doesn't prove I struck anyone. I was on
-> duty and may have stepped out for a round. I would need to check the patrol
-> logs for more details.
-
-These are delivered model answers, not merely proposed lines.
+Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md),
+the single source of truth for all delivered dialogue from this revision.
+It includes both repetitions of the jeep exchange and the full patrol-log
+follow-up, followed by the remaining evaluated scenarios. Dialogue is maintained
+there rather than copied into separate reviews.
 
 ## Limits of the cover story
 

@@ -2,7 +2,7 @@
 
 Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj work is isolated on `codex/devraj-persona-evals`; concurrent Rhea work is not included. This is a local character and interview-engine change, not a deployment.
 
-**Current patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. See [the current dialogue and evaluation](DEVRAJ_PATROL_REVISION.md). The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
+**Current patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) for actual dialogue and the [patrol revision](DEVRAJ_PATROL_REVISION.md) for the changes and evaluation. The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
 
 ## Character brief
 
@@ -82,7 +82,7 @@ There were two repairs and one fallback in this final run. The unsupported finge
 
 Rhea regression checks on this branch passed both concealment orders: **2 conversations / 9 answers**, expected unlocks matched, no grader flags or execution errors. These use the released Rhea baseline, not concurrent unmerged Rhea work.
 
-Raw outputs are local ignored artifacts. The checked-in [evaluation results](DEVRAJ_EVAL_RESULTS.json) and [delivered transcripts](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) preserve metrics, source fingerprints, manual findings and actual replies.
+Historical raw outputs are local ignored artifacts; the checked-in [evaluation results](DEVRAJ_EVAL_RESULTS.json) retain their metrics, source fingerprints and manual findings. The [single current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) contains only the latest patrol-cover run. Older transcript versions remain in Git.
 
 ## Local verification
 
