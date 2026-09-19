@@ -35,6 +35,12 @@ for(let repeat=1;repeat<=2;repeat++){
   ['negated-request','Do not obtain Devraj’s phone records or test his lathi.',[]],
   ['past-test-not-request','We already asked the lab to test your lathi. Explain why you were there.',[]],
   ['account-check-not-request','Check your story, Devraj. Were you at the station or on patrol?',[]],
+  ['natural-have','Can we have Devraj’s phone records?',['bisht-devraj-call']],
+  ['natural-need','I need a forensic report on Devraj’s issued lathi.',['devraj-lathi-forensics']],
+  ['hinglish-request','Devraj ke phone records chahiye.',['bisht-devraj-call']],
+  ['hindi-request','देवराज के फोन रिकॉर्ड चाहिए।',['bisht-devraj-call']],
+  ['natural-audit','We need an independent audit of changes to Devraj’s duty register.',['devraj-duty-log']],
+  ['natural-location','Can we have the extracted location history from Devraj’s handset?',['devraj-phone-location']],
   ['bundled-request','Please obtain Bisht-Devraj call records and send Devraj’s issued lathi for forensic blood/DNA testing.',['bisht-devraj-call','devraj-lathi-forensics']],
  ] as const){
   const {evidence,error}=await classify(question);

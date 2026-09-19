@@ -31,7 +31,8 @@
     "eval:rhea": "tsx scripts/eval-rhea.ts",
     "eval:devraj": "tsx scripts/eval-devraj.ts",
     "eval:devraj:recall": "tsx scripts/eval-devraj-recall.ts",
-    "test:integration:devraj": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/devraj-recall.mjs"
+    "test:integration:devraj": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/devraj-recall.mjs",
+    "eval:devraj:journey": "node scripts/with-local-supabase.mjs node --import tsx scripts/eval-devraj-journey.ts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

@@ -203,6 +203,10 @@ export interface Suspect {
    */
   voice: string;
   /**
+   * Public first-person account of the suspect’s connection to the victim. Must not expose gated secrets. Used to recover a rejected basic introductory answer.
+   */
+  initialConnection?: string;
+  /**
    * Optional first-person, in-character fallback when generated answers are rejected. Must contain no story claims, secrets or promises of evidence.
    */
   safeDeflection?: string;
@@ -216,6 +220,17 @@ export interface Suspect {
      */
     requires: string[];
     excludes?: string[];
+    requiresPresentedEvidenceIds?: SlugId[];
+    excludesPresentedEvidenceIds?: SlugId[];
+    fallbackAnswers?: {
+      questionPattern: string;
+      text: string;
+      requiresPresentedEvidenceIds?: SlugId[];
+    }[];
+    /**
+     * Replaces the current alibi while this layer is active. Later active overrides take priority.
+     */
+    accountOverride?: string;
     direction: string;
     facts?: string[];
   }[];
@@ -421,6 +436,10 @@ export interface Evidence {
    * Kebab-case identifier: lowercase letters, digits, and single hyphens.
    */
   unlockedAtChapter: string;
+  /**
+   * Evidence that must already be in the case file before this item can be discovered.
+   */
+  requiresUnlockedEvidenceIds?: SlugId[];
   /**
    * Optional natural-language condition the AI host uses to decide when this evidence should arrive during Interrogation.
    */

@@ -354,7 +354,8 @@
       ],
       "guiltCategory": "tamperer",
       "guiltSummary": "Entered Vikram's cottage at 5 AM the morning after his death and wiped the camera memory card and laptop research files to hide her embezzlement and a clandestine channel sale. Did not kill anyone.",
-      "introducedAtChapter": "r1-suspect-board"
+      "introducedAtChapter": "r1-suspect-board",
+      "initialConnection": "Vikram was my business partner for three years. We co-ran the Hidden Mussoorie YouTube channel."
     },
 
     {
@@ -544,7 +545,7 @@
             "type": "evidence",
             "evidenceId": "devraj-jeep-cctv"
           },
-          "reaction": "That's my jeep, yes. Let me check the patrol logs; I may have stepped out on a round. I was on station duty that evening.",
+          "reaction": "That's my jeep on Camel's Back Road at 8:10 PM.",
           "unlockBehavior": {
             "tier": "compound",
             "evidenceIds": [
@@ -628,7 +629,11 @@
             "breaking-point:jeep-cctv",
             "breaking-point:lathi-confession"
           ],
-          "direction": "Controlled and professionally defensive. Retain the station account when asked. Distinguish an allegation from an established fact; no unsolicited admissions about the road, bribe, call content, violence or falsification. Evidence and questioning can earn admissions; until then do not fill gaps with invented explanations. A presented handset report or duty-register audit supersedes the unsupported station account on the facts it actually establishes. Acknowledge the exposed record or edit without volunteering violence or Bisht’s words."
+          "direction": "Controlled and professionally defensive. Retain the station account when asked. Distinguish an allegation from an established fact; no unsolicited admissions about the road, bribe, call content, violence or falsification. Evidence and questioning can earn admissions; until then do not fill gaps with invented explanations. A presented handset report or duty-register audit supersedes the unsupported station account on the facts it actually establishes. Acknowledge the exposed record or edit without volunteering violence or Bisht’s words.",
+          "excludesPresentedEvidenceIds": [
+            "devraj-duty-log"
+          ],
+          "accountOverride": "I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered."
         },
         {
           "id": "patrol-account",
@@ -638,7 +643,46 @@
           "excludes": [
             "breaking-point:lathi-confession"
           ],
-          "direction": "Acknowledge the jeep and keep the narrow distinction between station duty and being physically inside the building. Before an independent log audit is presented, suggest a possible patrol round and, if asked for times or records, that you would need to check the logs. This remains an unverified cover: do not volunteer that you lied, certify a route, invent witnesses, or pretend an offscreen check happened. Do not volunteer assault denials on simple whereabouts questions. Read the Evidence already presented block on each turn. Once it contains the duty-register alteration audit, the log-check delay is over even if the murder admission is still locked: acknowledge your documented edit and departure, stop claiming continuous station presence, and dispute only what those facts imply about the assault. Never ask for log verification after that audit has been presented. If handset or weapon reports are presented, answer the finding asked about using the actual exhibit and its limits; do not invent a replacement cover story. Before any report is presented, its claimed findings remain unverified allegations. After the murder admission is earned, stop defending patrol and admit the own acts and cover-up."
+          "direction": "Acknowledge the jeep and keep the narrow distinction between station duty and being physically inside the building. Before an independent log audit is presented, suggest a possible patrol round and, if asked for times or records, that you would need to check the logs. This remains an unverified cover: do not volunteer that you lied, certify a route, invent witnesses, or pretend an offscreen check happened. Do not volunteer assault denials on simple whereabouts questions. Read the Evidence already presented block on each turn. Once it contains the duty-register alteration audit, the log-check delay is over even if the murder admission is still locked: acknowledge your documented edit and departure, stop claiming continuous station presence, and dispute only what those facts imply about the assault. Never ask for log verification after that audit has been presented. If handset or weapon reports are presented, answer the finding asked about using the actual exhibit and its limits; do not invent a replacement cover story. Before any report is presented, its claimed findings remain unverified allegations. After the murder admission is earned, stop defending patrol and admit the own acts and cover-up.",
+          "excludesPresentedEvidenceIds": [
+            "devraj-duty-log"
+          ],
+          "accountOverride": "That's my jeep on Camel's Back Road. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements."
+        },
+        {
+          "id": "audit-exposed",
+          "requires": [],
+          "requiresPresentedEvidenceIds": [
+            "devraj-duty-log"
+          ],
+          "excludes": [
+            "breaking-point:lathi-confession"
+          ],
+          "accountOverride": "The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. I cannot use the overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.",
+          "direction": "The independent audit has been presented. The log-check delaying tactic is finished. Acknowledge the documented departure and your edit when the question concerns whereabouts, patrol, the log or concealment; answer unrelated questions normally. Do not propose checking, fetching, verifying or supplying patrol logs, even if the investigator invites you to. Do not return to the old station or tentative-patrol account. You may challenge what the audit proves about violence or motive, using only the limits of presented exhibits. Do not invent an innocent reason for the edit. Preserve this posture on subsequent turns and recalls. The full murder admission remains locked until its separate conditions are earned.",
+          "fallbackAnswers": [
+            {
+              "questionPattern": "blood|DNA|DK-17|issued.*lathi|खून",
+              "requiresPresentedEvidenceIds": [
+                "devraj-lathi-forensics"
+              ],
+              "text": "The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed."
+            },
+            {
+              "questionPattern": "injur|medical|post.mortem|review.*lathi|चोट",
+              "requiresPresentedEvidenceIds": [
+                "lathi-postmortem"
+              ],
+              "text": "The medical review identifies a pre-fall injury compatible with a lathi. The audit establishes my departure and the later edit I made. Those findings alone do not prove that I struck or pushed Vikram."
+            },
+            {
+              "questionPattern": "phone|handset|location|फोन",
+              "requiresPresentedEvidenceIds": [
+                "devraj-phone-location"
+              ],
+              "text": "The extraction places my handset near the bend at 8:18 and 8:21, with 20-metre accuracy. It does not identify the carrier or an exact position. The audit records my departure and later edit; I cannot use the overwritten entry to verify continuous station presence."
+            }
+          ]
         },
         {
           "id": "old-case-guarded",
@@ -646,23 +690,41 @@
           "excludes": [
             "secret:thakur-bribe"
           ],
-          "direction": "Do not admit the 2011 bribe or explain why you buried the Thakur file before that admission is earned. Your approved public position is that you investigated the Thakur case; do not invent investigative steps. A present-day confession alone does not authorize the separate old-case details."
+          "direction": "Do not admit the 2011 bribe or explain why you buried the Thakur file before that admission is earned. Your approved public position is that you investigated the Thakur case; do not invent investigative steps. A present-day confession alone does not authorize the separate old-case details.",
+          "fallbackAnswers": [
+            {
+              "questionPattern": "2011|Thakur|brib|paid|payment|रिश्वत|ठाकुर|rishwat",
+              "text": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records."
+            }
+          ]
         },
         {
           "id": "bribe-exposed",
           "requires": [
             "secret:thakur-bribe"
           ],
-          "direction": "The old corruption is exposed: acknowledge Bisht's payment in 2011, your debts and deliberate failure to pursue the Thakur case when asked. Do not convert that admission into a present-day murder confession. Do not invent the bribe amount, named hired killers or a payment trail. No claims that you personally killed the Thakurs."
+          "direction": "The old corruption is exposed: acknowledge Bisht's payment in 2011, your debts and deliberate failure to pursue the Thakur case when asked. Do not convert that admission into a present-day murder confession. Do not invent the bribe amount, named hired killers or a payment trail. No claims that you personally killed the Thakurs.",
+          "fallbackAnswers": [
+            {
+              "questionPattern": "(?:how much|amount|कितन|kitn).*(?:paid|pay|brib|रिश्वत)|(?:paid|pay|brib|रिश्वत).*(?:how much|amount|कितन|kitn)",
+              "text": "I took Bisht’s bribe, but the amount has not been established here."
+            },
+            {
+              "questionPattern": "2011|Thakur|brib|paid|payment|रिश्वत|ठाकुर|rishwat",
+              "text": "In 2011 I was a sub-inspector with debts. Bisht offered me money to bury the Thakur investigation. I took it. I kept the file thin and did not pursue the leads. I didn't kill the Thakurs. I took the money and let their case go cold."
+            }
+          ]
         },
         {
           "id": "murder-exposed",
           "requires": [
             "breaking-point:lathi-confession"
           ],
-          "direction": "You have lost control of the account and now try to place the order on Bisht to save yourself. Speak plainly about your own acts: lathi strike, push, killing and falsified log. Never substitute 'I only followed orders', accidental fall or mere presence for responsibility. Do not continue the patrol cover story or station alibi. Admit that 'patrol' was a cover if it came up earlier. Do not invent threats to your family or a promise of immunity. Do not spill still-unearned 2011 details. On a direct factual follow-up answer the admitted fact in one or two clauses rather than reciting the full confession."
+          "direction": "You have lost control of the account and now try to place the order on Bisht to save yourself. Speak plainly about your own acts: lathi strike, push, killing and falsified log. Never substitute 'I only followed orders', accidental fall or mere presence for responsibility. Do not continue the patrol cover story or station alibi. Admit that 'patrol' was a cover if it came up earlier. Do not invent threats to your family or a promise of immunity. Do not spill still-unearned 2011 details. On a direct factual follow-up answer the admitted fact in one or two clauses rather than reciting the full confession.",
+          "accountOverride": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it."
         }
-      ]
+      ],
+      "initialConnection": "I took charge of the investigation into Vikram’s death the morning after his body was discovered. I am the local investigating officer."
     },
 
     {
@@ -793,7 +855,8 @@
       ],
       "guiltCategory": "moral-bystander",
       "guiltSummary": "Walked Camel's Back Road that night hoping to engineer a chance encounter. Heard the sound of Vikram's murder. Walked away. Lied to police about being there. Carries the moral weight of a bystander who might have made a difference.",
-      "introducedAtChapter": "r1-suspect-board"
+      "introducedAtChapter": "r1-suspect-board",
+      "initialConnection": "Vikram and I were engaged for two years. We broke up four months ago and remained friends. I also did confidential investigation work for him."
     },
 
     {
@@ -932,7 +995,8 @@
       ],
       "guiltCategory": "mastermind",
       "guiltSummary": "Ordered the Thakur family murders in 2011 for revenge and profit. Ordered Vikram's murder in the present to protect the secret. Has built his hotel empire on land taken from the family he had killed. Never touched anyone himself — Devraj is his weapon, has been for fifteen years.",
-      "introducedAtChapter": "r1-suspect-board"
+      "introducedAtChapter": "r1-suspect-board",
+      "initialConnection": "I knew of Vikram through his videos about Mussoorie. I run Royal Pines and develop property here; we were not close."
     },
 
     {
@@ -1058,7 +1122,8 @@
       ],
       "guiltCategory": "accessory",
       "guiltSummary": "Saw suspicious activity before the 2011 Thakur robbery and reported it; Devraj buried her statement and Bisht silenced her with school money for her son. Inadvertently triggered Vikram's murder by warning Bisht about his research. Walked Camel's Back Road as the Grey Lady, unable to find the courage to warn the man whose death she had helped set in motion. Wrote the anonymous letter that brought the CBI.",
-      "introducedAtChapter": "r1-suspect-board"
+      "introducedAtChapter": "r1-suspect-board",
+      "initialConnection": "I worked as Vikram’s housekeeper. I cleaned his cottage three afternoons a week."
     },
 
     {
@@ -1165,7 +1230,8 @@
       ],
       "guiltCategory": "moral-cowardice",
       "guiltSummary": "Came to Mussoorie to beg Vikram to bury a plagiarism story. Argued with him at the chai shop hours before his murder. Pawned his watch to raise bribe money. Did not commit the murder. Knew about the Thakur connection but withheld it from the official investigation because exposing it meant exposing himself. Sent the second anonymous letter when his conscience finally cracked.",
-      "introducedAtChapter": "r1-suspect-board"
+      "introducedAtChapter": "r1-suspect-board",
+      "initialConnection": "I knew Vikram from our undergraduate days at Mumbai University, twelve years ago. We were old college friends."
     }
   ],
 
@@ -1499,7 +1565,12 @@
       "unlockedAtChapter": "r4-evidence",
       "arrivesWhen": "Reveal this after the 8:00 PM Bisht-to-Devraj call is already in the case file and the players explicitly press Devraj's present-night whereabouts, his station alibi, whether he left in his police jeep, Camel's Back Road around 8:10 PM, or how he could have reached Vikram. Do NOT fire for the old Thakur investigation, Devraj's general corruption, station routine, paperwork, or Bisht's land motive unless the present-night movement, jeep, road, or station-alibi contradiction is being pursued.",
       "locationId": "camels-back-road",
-      "relatesToSuspectIds": ["devraj"]
+      "relatesToSuspectIds": [
+        "devraj"
+      ],
+      "requiresUnlockedEvidenceIds": [
+        "bisht-devraj-call"
+      ]
     },
     {
       "id": "lathi-postmortem",
@@ -1511,7 +1582,12 @@
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
       "arrivesWhen": "Reveal this after Devraj's jeep CCTV is already in the case file and the players question whether Vikram's fall was staged, whether Devraj struck him, whether a police lathi caused the head injury, or whether the local autopsy hid a different cause of death. Do NOT fire for questions about the jeep or station alibi alone unless the injury, fall, lathi, autopsy, or cause of death is part of the thread. Do NOT fire for old Thakur-case violence without a present-day Vikram injury angle.",
-      "relatesToSuspectIds": ["devraj"]
+      "relatesToSuspectIds": [
+        "devraj"
+      ],
+      "requiresUnlockedEvidenceIds": [
+        "devraj-jeep-cctv"
+      ]
     },
     {
       "id": "grey-shawl-fresh",

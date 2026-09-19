@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadCase } from '../src/engine/case-loader.ts';
-import { activeInterviewLayers, buildRoleplayPrompt, generateInterviewReply } from '../src/lib/interview-safety.ts';
+import { activeInterviewLayers, buildRoleplayPrompt, generateInterviewReply, establishedAccountFallback, initialAccountFallback } from '../src/lib/interview-safety.ts';
 import { advanceUnlockState, evidenceGate } from '../src/lib/interview-planner.ts';
 import { listPendingConditions } from '../src/lib/interview-unlocks.ts';
 import { subsets } from '../scripts/evals/investigator.ts';
@@ -23,7 +23,7 @@ test('Devraj posture handles every admission combination without reopening a spe
     assert.equal(ids.includes('murder-exposed'), revelations.includes(murder));
     const prompt = buildRoleplayPrompt({caseData, suspect, revelations, evidence: []});
     const account = prompt.split('Current account, only if asked about whereabouts: ')[1].split('\n\n')[0];
-    assert.equal(account, revelations.includes(murder) ? suspect.alibiAfterBreakingPoint['lathi-confession'] : revelations.includes(jeep) ? suspect.alibiAfterBreakingPoint['jeep-cctv'] : suspect.publicAlibi);
+    assert.equal(account, activeInterviewLayers(suspect,revelations).slice().reverse().find(l=>l.accountOverride)?.accountOverride ?? (revelations.includes(murder) ? suspect.alibiAfterBreakingPoint['lathi-confession'] : revelations.includes(jeep) ? suspect.alibiAfterBreakingPoint['jeep-cctv'] : suspect.publicAlibi));
   }
   assert.deepEqual(activeInterviewLayers(suspect, ['I know you killed him.']).map(l => l.id), ['interview-trained', 'station-account', 'old-case-guarded']);
   const reversed = buildRoleplayPrompt({caseData, suspect, revelations: [murder, jeep], evidence: []});
@@ -77,4 +77,47 @@ test('Devraj evaluation fixtures reference real evidence and admissions', async 
     }
   }
   assert.ok(calibrationControls.some(c => c.admission === 'breaking-point:lathi-confession' && c.expectedFailure));
+});
+
+
+test('presented audit replaces every pre-confession cover, but an allegation or unlocked report does not', async()=>{
+ const caseData=await loadCase('mussoorie');const suspect=caseData.suspects.find(s=>s.id==='devraj');
+ const jeep=suspect.breakingPoints.find(b=>b.id==='jeep-cctv').reaction;const murder=suspect.breakingPoints.find(b=>b.id==='lathi-confession').reaction;
+ for(const revelations of [[],[jeep]]){
+  const ids=activeInterviewLayers(suspect,revelations,['devraj-duty-log']).map(l=>l.id);
+  assert.ok(ids.includes('audit-exposed'));assert.ok(!ids.includes('patrol-account'));assert.ok(!ids.includes('station-account'));
+  const prompt=buildRoleplayPrompt({caseData,suspect,revelations,evidence:[],presentedEvidenceIds:['devraj-duty-log']});
+  const account=prompt.split('Current account, only if asked about whereabouts: ')[1].split('\n\n')[0];
+  assert.match(account,/8:34 PM edit/);assert.doesNotMatch(account,/may have stepped out|need to check/);
+ }
+ assert.ok(!activeInterviewLayers(suspect,[],[]).some(l=>l.id==='audit-exposed'));
+ assert.ok(!activeInterviewLayers(suspect,[murder],['devraj-duty-log']).some(l=>l.id==='audit-exposed'));
+ assert.doesNotMatch(jeep,/check.*logs/);
+});
+
+
+test('rejected follow-ups retain only the current evidence-authorized account',async()=>{
+ const caseData=await loadCase('mussoorie');const suspect=caseData.suspects.find(s=>s.id==='devraj');
+ const context={caseData,suspect,revelations:[],evidence:[],presentedEvidenceIds:['devraj-duty-log']};
+ assert.match(establishedAccountFallback(context,'Why did you edit the log?'),/8:34 PM edit/);
+ assert.doesNotMatch(establishedAccountFallback({...context,presentedEvidenceIds:[]},'Why did you edit the log?') ?? '',/8:34|my.*edit/);
+ assert.equal(establishedAccountFallback(context,'What is your rank?'),undefined);
+ const confessed={...context,revelations:[suspect.breakingPoints.find(b=>b.id==='lathi-confession').reaction]};
+ assert.match(establishedAccountFallback(confessed,'Why did you change the register?'),/I killed him/);
+ assert.doesNotMatch(establishedAccountFallback(confessed,'How much did Bisht pay you in 2011?'),/I killed him/);
+ assert.doesNotMatch(establishedAccountFallback(context,'Does the medical review prove the injury?') ?? '',/medical review identifies/);
+ assert.match(establishedAccountFallback({...context,presentedEvidenceIds:['devraj-duty-log','lathi-postmortem']},'Does the medical review prove the injury?'),/medical review identifies/);
+});
+
+
+test('rejected basic introductions recover a public account without reverting an exposed alibi',async()=>{
+ const caseData=await loadCase('mussoorie');const suspect=caseData.suspects.find(s=>s.id==='kabir');
+ const originalFetch=globalThis.fetch;const key=process.env.OPENROUTER_API_KEY;process.env.OPENROUTER_API_KEY='test';
+ globalThis.fetch=async(_url,init)=>Response.json({choices:[{message:{content:JSON.parse(init.body).response_format?'{"safe":false}':'Rejected'}}]});
+ try{
+  const result=await generateInterviewReply({context:{caseData,suspect,revelations:[],evidence:[]},question:'What was your connection to Vikram?',recentConversation:[],newlyRevealed:[],model:'test'});
+  assert.equal(result.reply,suspect.initialConnection);assert.match(result.reply,/Mumbai University/);
+  const devraj=caseData.suspects.find(s=>s.id==='devraj');
+  assert.match(initialAccountFallback({caseData,suspect:devraj,revelations:[],evidence:[],presentedEvidenceIds:['devraj-duty-log']},'Where were you that evening?'),/8:34 PM edit/);
+ }finally{globalThis.fetch=originalFetch;if(key===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=key;}
 });

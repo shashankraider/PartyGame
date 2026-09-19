@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadCase } from '../src/engine/case-loader.ts';
 import { classifyInvestigationRequests, investigationProgress, planInvestigationRequest, planRecallDelivery } from '../src/lib/investigation-requests.ts';
-import { getHostEvidenceCandidates } from '../src/lib/host-judgment.ts';
+import { getHostEvidenceCandidates, judgeHostAction } from '../src/lib/host-judgment.ts';
 import { getUnlockedEvidenceForChapter } from '../src/lib/session-store.ts';
 const caseData=await loadCase('mussoorie');
 const evidence=caseData.evidence.find(e=>e.id==='devraj-lathi-forensics');
@@ -64,7 +64,11 @@ test('requests do not masquerade as unlocked evidence or chapter rewards',()=>{
  const finalFile=caseData.chapters.find(c=>c.id==='r4-evidence');
  const unlocked=getUnlockedEvidenceForChapter(caseData,finalFile,[]);
  for(const e of caseData.evidence.filter(e=>e.investigationRequest))assert.ok(!unlocked.includes(e.id));
- assert.ok(unlocked.includes('lathi-postmortem'));
+ assert.ok(!unlocked.includes('lathi-postmortem'));
+ assert.ok(!unlocked.includes('devraj-jeep-cctv'));
+ assert.ok(getUnlockedEvidenceForChapter(caseData,finalFile,['devraj-jeep-cctv']).includes('lathi-postmortem'));
+ assert.ok(!getHostEvidenceCandidates(caseData,[]).some(e=>e.id==='devraj-jeep-cctv'));
+ assert.ok(getHostEvidenceCandidates(caseData,['bisht-devraj-call']).some(e=>e.id==='devraj-jeep-cctv'));
  assert.equal(planInvestigationRequest(evidence,[],[evidence.id],'devraj'),null);
 });
 
@@ -76,14 +80,29 @@ test('malformed and repeated persisted events cannot inflate visits or duplicate
 });
 
 
-test('bare allegations do not call the request classifier; invented quoted instructions are rejected', async()=>{
+test('natural request wording reaches classification; invented quoted instructions are rejected', async()=>{
  const fetchBefore=globalThis.fetch;const key=process.env.OPENROUTER_API_KEY;process.env.OPENROUTER_API_KEY='test';
- let calls=0;
- globalThis.fetch=async()=>{calls++;return Response.json({choices:[{message:{content:JSON.stringify({requests:[{evidenceId:evidence.id,requestQuote:'Please test the issued lathi.'}]})}}]});};
+ let question='';let invented=false;
+ globalThis.fetch=async(_url,init)=>{question=JSON.parse(init.body).messages[1].content;return Response.json({choices:[{message:{content:JSON.stringify({requests:[{evidenceId:evidence.id,requestQuote:invented?'Please test the issued lathi.':question}]})}}]});};
  try{
-  assert.deepEqual(await classifyInvestigationRequests(caseData,'Your phone was there and the DNA proves it. Confess.',[],[]),[]);
-  assert.deepEqual(await classifyInvestigationRequests(caseData,'Where were you at eight? Why did you leave?',[],[]),[]);
-  assert.equal(calls,0);
+  for(const request of ['Can we have the lathi forensic report?', 'I need a forensic report on Devraj’s lathi.', 'Devraj ki lathi ki forensic report chahiye.', 'देवराज की लाठी की फोरेंसिक रिपोर्ट चाहिए।']) {
+   assert.deepEqual((await classifyInvestigationRequests(caseData,request,[],[])).map(e=>e.id),[evidence.id]);
+   assert.equal(question,request);
+  }
+  invented=true;
   await assert.rejects(()=>classifyInvestigationRequests(caseData,'Please obtain call records.',[],[]),/Ungrounded/);
  }finally{globalThis.fetch=fetchBefore;if(key===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=key;}
+});
+
+
+test('host recovery requires an actual quoted question and hard evidence prerequisites',async()=>{
+ const originalFetch=globalThis.fetch;const key=process.env.OPENROUTER_API_KEY;process.env.OPENROUTER_API_KEY='test';let grounded=true;let calls=0;
+ const question='Where was your jeep on the murder night?';
+ globalThis.fetch=async(_url,init)=>{calls++;const body=JSON.parse(init.body);const verify=body.messages[0].content.startsWith('Verify one fictional');assert.match(body.messages[0].content,/JSON/);return Response.json({choices:[{message:{content:JSON.stringify(verify?{met:true,questionQuote:grounded?question:'Words that were never asked.'}:{action:'do-nothing',reason:'Wait',confidence:1})}}]});};
+ const input={caseData,session:{phase:'interrogation'},allTranscripts:[],currentTurn:{suspectId:'devraj',question},unlockedEvidence:['bisht-devraj-call']};
+ try{
+  assert.equal((await judgeHostAction(input)).evidenceId,'devraj-jeep-cctv');
+  grounded=false;assert.equal((await judgeHostAction(input)).action,'do-nothing');
+  grounded=true;calls=0;assert.equal((await judgeHostAction({...input,unlockedEvidence:[]})).action,'do-nothing');assert.equal(calls,1);
+ }finally{globalThis.fetch=originalFetch;if(key===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=key;}
 });

@@ -64,8 +64,8 @@ await Promise.all(Array.from({length:3},async()=>{while(cursor<queue.length){
       for(const u of updates)if(u.outcome.verdict?.reason.startsWith('Judge unavailable'))issues.push('PROVIDER_ERROR: unlock judge unavailable');
       const admitted=authored.filter(c=>states.some(st=>st.condition_id===c.id&&st.met_at));
       for(const id of fixture.requiredAdmitted ?? [])if(!admitted.some(c=>c.id===id))issues.push(`ADMISSION_MISSING: ${id} must be earned by this turn.`);
-      const context={caseData,suspect,revelations:admitted.map(c=>c.text),evidence:caseData.evidence.filter(e=>presented.has(e.id)).map(e=>`${e.title}: ${e.loreText}`)};
-      const requirements=[...admissionRequirements(fired),...(fixture.requirements??[])];
+      const context={caseData,suspect,presentedEvidenceIds:[...presented].filter((id): id is string => Boolean(id)),revelations:admitted.map(c=>c.text),evidence:caseData.evidence.filter(e=>presented.has(e.id)).map(e=>`${e.title}: ${e.loreText}`)};
+      const requirements=[...admissionRequirements(fired,[...presented].filter((id): id is string => Boolean(id))),...(fixture.requirements??[])];
       const category=['false-forensics','prompt-injection','no-evidence-pressure'].includes(s.id)?'fabricated-evidence':'stateful-investigation';
       issues.push(...await gradeInterview({context,proof,history,question:fixture.question,reply:answer.reply,model:graderModel,category,requirements}));
       result.turns.push({...fixture,fired,admitted:admitted.map(c=>c.id),verdicts:updates.map(u=>({id:u.condition.conditionId,...u.outcome.verdict})),...answer,trace,requirements,issues});

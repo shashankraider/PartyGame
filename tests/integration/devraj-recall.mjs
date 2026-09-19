@@ -1,3 +1,4 @@
+import { initialAccountProgress } from '../../src/lib/interview-rounds.ts';
 /** Local database integration, with deterministic model responses. Removes only its own session. */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
@@ -7,15 +8,26 @@ import { executeInterview, listHostHelp, applyHostHelp } from '../../src/lib/int
 import { loadCase } from '../../src/engine/case-loader.ts';
 if(!['localhost','127.0.0.1'].includes(new URL(process.env.SUPABASE_URL).hostname))throw Error('Local database required');
 const db=createSupabaseServerClient();const originalFetch=globalThis.fetch;const oldKey=process.env.OPENROUTER_API_KEY;process.env.OPENROUTER_API_KEY='local-test';
-let evidenceId='devraj-phone-location';let session;
+let evidenceId='devraj-phone-location';let session;let failRequest=false;
 globalThis.fetch=async(url,init)=>{
  if(!String(url).startsWith('https://openrouter.ai/'))return originalFetch(url,init);
  const body=JSON.parse(init.body);const system=body.messages[0].content;
  let content='Inspector Devraj Khanna, sir.';
- if(system.includes('Classify explicit CBI'))content=JSON.stringify({requests:[{evidenceId,requestQuote:body.messages[1].content}]});
+ if(system.includes('Classify explicit CBI')) {
+  if(failRequest)return new Response('Unavailable',{status:503});
+  const question=body.messages[1].content;
+  content=JSON.stringify({requests:/records|handset|examine|forensic/i.test(question)?[{evidenceId,requestQuote:question}]:[]});
+ }
+ else if(system.includes('Assess first-interview coverage')) {
+  const {reply}=JSON.parse(body.messages[1].content);const covered=[];
+  if(reply.includes('at the station that evening'))covered.push({topic:'whereabouts',answerQuote:reply});
+  if(reply.includes('took charge'))covered.push({topic:'connection',answerQuote:reply});
+  content=JSON.stringify({covered});
+ }
  else if(system.includes('Your job: judge'))content=JSON.stringify({action:'do-nothing',reason:'No immediate report',confidence:1});
  else if(system.includes('Verify one forensic'))content='{"met":true}';
  else if(system.includes('strict safety'))content='{"safe":true}';
+ else if(!body.response_format){const q=JSON.parse(body.messages[1].content).question??'';if(q.includes('Where were'))content='I was at the station that evening.';else if(q.includes('connection'))content='I took charge of Vikram’s death investigation.';}
  else if(body.response_format)content='{"met":false,"confidence":1,"proximity":0,"reason":"No admission"}';
  return Response.json({choices:[{message:{content}}]});
 };
@@ -45,6 +57,19 @@ try{
  assert.ok(!turn.session.unlocked_evidence.includes(evidenceId));
  assert.ok(!(await getPublicLobbyState(session.id)).caseData.evidence.some(e=>e.id===evidenceId));
  await enter();assert.ok(!(await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
+ const ask=(question)=>executeInterview({sessionId:session.id,playerId:joined.player.id,question,requestId:randomUUID()});
+ await ask('Hello, what is your name?');
+ assert.ok(!initialAccountProgress(await loadInvestigationEvents(session.id)).completed.has('devraj'));
+ await ask('Where were you that evening?');
+ assert.ok(!initialAccountProgress(await loadInvestigationEvents(session.id)).completed.has('devraj'));
+ await ask('What was your connection to Vikram?');
+ assert.ok(initialAccountProgress(await loadInvestigationEvents(session.id)).completed.has('devraj'));
+ // A provider failure must be visible and cannot silently create an order.
+ failRequest=true;
+ const failed=await ask('Can we have the call records?');
+ failRequest=false;
+ assert.ok(failed.systemMessages.some(m=>m.content.includes('No new report request was recorded')));
+ assert.equal((await loadInvestigationEvents(session.id)).filter(e=>e.type==='investigation.requested').length,1);
  await leave();
  const beforeBlocked=(await getLobbyState(session.id)).session;
  const beforeEvents=(await loadInvestigationEvents(session.id)).length;
@@ -61,6 +86,8 @@ try{
   if(index>0)await assert.rejects(()=>setSessionScene({sessionId:session.id,scene:'interview',chapterId:otherChapters[0].id}),/Interview every suspect once/);
   await setSessionInterviewer({sessionId:session.id,playerId:joined.player.id});
   await executeInterview({sessionId:session.id,playerId:joined.player.id,question:'Where were you that evening?',requestId:randomUUID()});
+  await assert.rejects(enter,/Interview every suspect once/);
+  await ask('What was your connection to Vikram?');
  }
  await enter();assert.ok((await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
  const revealed=(await getPublicLobbyState(session.id)).caseData.evidence;
@@ -72,7 +99,7 @@ try{
  await leave();await enter();assert.ok((await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
  const unrequested=['bisht-devraj-call','devraj-duty-log'];
  assert.ok(!(await getPublicLobbyState(session.id)).caseData.evidence.some(e=>unrequested.includes(e.id)));
- console.log('PASS: all six suspects answered before recalls; host and player recall attempts blocked without changes; unfinished interviews resume; requested reports stay sealed until an allowed recall; separate request-only reports, no host-help bypass, and late requests wait until third.');
+ console.log('PASS: all six substantive initial accounts required before recalls; greetings and orders do not count; request failures are visible; host and player recall attempts blocked without changes; unfinished interviews resume; requested reports stay sealed until an allowed recall; separate request-only reports, no host-help bypass, and late requests wait until third.');
 }finally{
  globalThis.fetch=originalFetch;if(oldKey===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=oldKey;
  if(session){const {error}=await db.from('sessions').delete().eq('id',session.id);if(error)throw error;}

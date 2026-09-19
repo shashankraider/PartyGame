@@ -1,3 +1,4 @@
+import { classifyInitialAccount, initialAccountProgress, INITIAL_ACCOUNT_TOPICS } from './interview-rounds';
 import { classifyInvestigationRequests, investigationProgress, planInvestigationRequest, type InvestigationEvent } from './investigation-requests';
 import { createHash } from 'node:crypto';
 import { createSupabaseServerClient, type InterviewUnlockStateRow, type MessageRow, type SessionRow } from './supabase';
@@ -63,7 +64,27 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
           newMessages.push({ suspect_id: suspect.id, role: 'system', content: request.message });
         }
       }
-      hostJudgment = await judgeHostAction({ caseData, session, pendingEvidenceIds, unlockedEvidence: [...unlocked], allTranscripts: caseData.suspects.map(s => ({
+    } catch {
+      newMessages.push({ suspect_id: suspect.id, role: 'system', content: 'The report-request check failed. No new report request was recorded. Please repeat any report request.' });
+      requestEvents.push({ type: 'investigation.request_failed', payload: { suspectId: suspect.id } });
+    }
+    const account = initialAccountProgress(investigationEvents);
+    if (!account.completed.has(suspect.id)) {
+      try {
+        const topics = await classifyInitialAccount({ question, reply, model: caseData.llm?.modelOverride ?? process.env.OPENROUTER_MODEL ?? 'openai/gpt-4o-mini' });
+        const known = account.topics.get(suspect.id) ?? new Set();
+        const added = topics.filter(topic => !known.has(topic));
+        if (added.length) requestEvents.push({ type: 'interview.initial_account', payload: { suspectId: suspect.id, topics: added } });
+        const missing = INITIAL_ACCOUNT_TOPICS.filter(topic => !known.has(topic) && !topics.includes(topic));
+        newMessages.push({ suspect_id: suspect.id, role: 'system', content: missing.length
+          ? `First interview still needs ${missing.map(topic => topic === 'whereabouts' ? 'an account of the incident evening' : `their connection to ${caseData.victim.name}`).join(' and ')}.`
+          : `${suspect.name}’s first interview is complete: whereabouts and connection recorded.` });
+      } catch {
+        newMessages.push({ suspect_id: suspect.id, role: 'system', content: 'First-interview progress could not be recorded for this answer. Please ask again about whereabouts or the connection to the victim.' });
+      }
+    }
+    try {
+      hostJudgment = await judgeHostAction({ caseData, session, currentTurn: { suspectId: suspect.id, question }, pendingEvidenceIds, unlockedEvidence: [...unlocked], allTranscripts: caseData.suspects.map(s => ({
         suspectId: s.id, suspectName: s.name,
         hasOpenedUp: updatedStates.some(state => state.suspect_id === s.id && state.condition_id.startsWith('secret:') && state.met_at),
         messages: (allMessages ?? []).filter(m => m.suspect_id === s.id).map(m => ({ role: m.role, content: m.content })).concat(s.id === suspect.id ? [{ role: 'user', content: question }, { role: 'assistant', content: reply }] : []),
@@ -108,7 +129,7 @@ async function availableHelp(sessionId: string) {
   const conditions = pending.filter(c => evidenceGate(c, presented));
   const investigationEvents = await loadInvestigationEvents(sessionId);
   const requested = investigationProgress(investigationEvents).requests;
-  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !e.investigationRequest && !context.session.unlocked_evidence.includes(e.id) && !requested.has(e.id));
+  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !e.investigationRequest && !context.session.unlocked_evidence.includes(e.id) && !requested.has(e.id) && (e.requiresUnlockedEvidenceIds ?? []).every(id => context.session.unlocked_evidence.includes(id)));
   return { context, states, conditions, hostEvidence };
 }
 export async function listHostHelp(sessionId: string): Promise<ActiveHostFallback[]> {

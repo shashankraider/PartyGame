@@ -171,6 +171,7 @@
         "ttsVoiceId": { "type": "string", "description": "Optional. Voice ID for TTS playback of the suspect's lines." },
         "persona": { "type": "string", "minLength": 20, "description": "Free-text character description for the LLM system prompt." },
         "voice": { "type": "string", "minLength": 10, "description": "Speaking-style guidance for the LLM (sentence length, accent, register)." },
+        "initialConnection": { "type": "string", "minLength": 10, "description": "Public first-person account of the suspect’s connection to the victim. Must not expose gated secrets. Used to recover a rejected basic introductory answer." },
         "safeDeflection": { "type": "string", "minLength": 10, "maxLength": 500, "description": "Optional first-person, in-character fallback when generated answers are rejected. Must contain no story claims, secrets or promises of evidence." },
         "interviewLayers": {
           "type": "array",
@@ -183,6 +184,10 @@
               "id": { "$ref": "#/$defs/SlugId" },
               "requires": { "type": "array", "description": "Earned admissions required for this posture. An empty list activates a baseline posture, subject to excludes.", "uniqueItems": true, "items": { "type": "string", "pattern": "^(secret|breaking-point):[a-z0-9-]+$" } },
               "excludes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^(secret|breaking-point):[a-z0-9-]+$" } },
+              "requiresPresentedEvidenceIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/SlugId" } },
+              "excludesPresentedEvidenceIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/SlugId" } },
+              "fallbackAnswers": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["questionPattern", "text"], "properties": { "questionPattern": { "type": "string", "minLength": 1 }, "text": { "type": "string", "minLength": 10 }, "requiresPresentedEvidenceIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/SlugId" } } } } },
+              "accountOverride": { "type": "string", "minLength": 10, "description": "Replaces the current alibi while this layer is active. Later active overrides take priority." },
               "direction": { "type": "string", "minLength": 10 },
               "facts": { "type": "array", "items": { "type": "string", "minLength": 10 } }
             }
@@ -407,6 +412,7 @@
         "loreText": { "type": "string", "description": "Longer description fed to the LLM when this evidence is presented in an interview." },
         "revealedInRound": { "type": "integer", "minimum": 1, "description": "Round in which this evidence becomes available." },
         "unlockedAtChapter": { "$ref": "#/$defs/SlugId", "description": "Chapter id whose completion unlocks this evidence in the locker." },
+        "requiresUnlockedEvidenceIds": { "type": "array", "uniqueItems": true, "description": "Evidence that must already be in the case file before this item can be discovered.", "items": { "$ref": "#/$defs/SlugId" } },
         "arrivesWhen": {
           "type": "string",
           "minLength": 1,

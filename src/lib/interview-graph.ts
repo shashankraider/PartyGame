@@ -40,6 +40,7 @@ const interviewGraph = new StateGraph(InterviewState)
     const { caseData, suspect, session } = state.input.context;
     return {
       safetyContext: { caseData, suspect,
+        presentedEvidenceIds: state.presented,
         revelations: knownRevelations(caseData, suspect, session, state.updatedStates),
         evidence: caseData.evidence.filter(e => state.presented.includes(e.id)).map(e => `${e.title}: ${e.loreText}`),
       },

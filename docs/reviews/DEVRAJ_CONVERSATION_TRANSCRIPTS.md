@@ -1,23 +1,33 @@
 # Devraj: current conversations
 
-This is the single source of truth for the current recorded Devraj conversations.
-It replaces the older conversation lists. These are actual delivered model replies,
-not proposed dialogue or rewritten examples. Future conversation updates belong here.
+This is the single source of truth for recorded Devraj dialogue. Replies below
+are actual delivered outputs, including any fallback replies. Existing tags and
+older conversations are preserved; no prior answer has been rewritten.
 
-Latest recorded run: 2026-09-19T04:15:06.886Z. Revision: approved evidence bridge.
-**16 current conversations · 136 answers · 8 scenarios, each evaluated twice.**
+Latest live journey: 2026-09-19T05:33:07.760Z.
+**9 current conversations · 97 Devraj answers.**
+The live journey used the production server functions, a local persisted game and
+live model calls. All six substantive first interviews were completed before
+recall. Four separately requested reports remained sealed until then. The jeep
+and medical review were discovered through the host, and the six presented
+exhibits plus relevant pressure earned the confession. No reports or admissions
+were manually inserted. The independent grader reported no dialogue defects in
+this final journey. The eight focused conversations also passed.
 
-All 136 unlock outcomes matched the new expectations. Full-chain interviews
-require the call, jeep, medical review, handset location, log audit and issued-lathi
-examination. The original three exhibits alone no longer unlock murder.
-The grader passed 10 conversations and flagged 6; see the findings below rather
-than treating correct unlocks as a clean dialogue-quality score.
+[Four-gap evaluation](DEVRAJ_FOUR_GAPS_EVALS.json) · [Complete all-suspect live record](DEVRAJ_LIVE_JOURNEY.json) · [Focused dialogue report](DEVRAJ_FOUR_GAPS_PERSONA_EVALS.json) · [Persona review](DEVRAJ_PERSONA_REVIEW.md)
 
-The 14 prior conversations / 102 answers remain below under their original tags
-for comparison. They were recorded before this evidence revision and are not
-current acceptance examples. There is still only one conversation source of truth.
+## Current conversation list
 
-[Current evaluation details](DEVRAJ_BRIDGE_EVALS.json) · [Persona and revision](DEVRAJ_PERSONA_REVIEW.md) · [Evidence-gap review](#dv-g01)
+- [DV-C31 — Full live investigation: first interview, requests, recall and confession](#dv-c31)
+- [DV-C32 / DV-C33 — Complete evidence bridge](#dv-c32)
+- [DV-C34 / DV-C35 — Phone-location report missing](#dv-c34)
+- [DV-C36 / DV-C37 — Evidence presented in reverse order](#dv-c36)
+- [DV-C38 / DV-C39 — Murder confession followed by the separate old-case inquiry](#dv-c38)
+
+The focused runs test the dialogue and confession gates with reports available.
+DV-C31 separately verifies how those reports are requested, withheld and delivered
+in a real saved game. Earlier failed development journeys are preserved in the
+[probe archive](DEVRAJ_LIVE_JOURNEY_PROBES.json), not presented as successful runs.
 
 <a id="dv-r01"></a>
 
@@ -42,13 +52,17 @@ Devraj’s next recall (N+1). The combined PDF is an author/host preparation aid
 not a player evidence item or a bundle released by the game.
 
 **DV-R01-05 — Finish the first interview round before recalls.** Rhea, Devraj,
-Naina, Bisht, Anya and Kabir must each have at least one answered investigator
-question before any completed interview can be recalled. Merely opening a suspect
-card does not count. The active interview can continue, and an unanswered first
+Naina, Bisht, Anya and Kabir must each give a substantive account of their
+whereabouts on the incident evening and their connection to Vikram before any
+completed interview can be recalled. Greetings, name/rank answers, generic
+refusals, report orders and merely opening a suspect card do not count. The active interview can continue, and an incomplete first
 interview can be resumed without advancing its visit counter. Both host and
 player recall attempts are blocked until coverage is complete, with the waiting
 suspects named. A blocked attempt changes no scene, visit count or evidence.
-Existing recorded answers count toward coverage when a saved game resumes.
+Coverage is persisted by topic after an actual answer is assessed. Earlier saved
+answers are retained, but sessions without these topic records must complete the
+substantive first-account checks before recalls. Failed scoring is visible and
+does not silently mark a topic complete.
 
 During the first interview, a recognized request receives an acknowledgment only.
 It does not unlock a report, reveal its findings or count as presented evidence.
@@ -73,6 +87,1209 @@ report pages after recall. In-game, each authenticated printable stays locked un
 that report is delivered. The murder gate still requires all six exhibits to be
 actually presented; these four reports alone do not earn a confession.
 
+<a id="dv-c31"></a>
+
+### [DV-C31] Full live investigation
+
+Result: passed. This section records Devraj’s turns in game order. Other suspects’
+first interviews are retained in the complete live record linked above.
+
+<a id="dv-c31-t01"></a>
+
+**[DV-C31-T01-Q] Investigator:** Hello Inspector. What is your name and rank?
+
+**[DV-C31-T01-A] Devraj:**
+
+> Hello, sir. I am Inspector Devraj Khanna.
+
+Live game turn 1; first interview.
+
+System messages:
+
+- First interview still needs an account of the incident evening and their connection to Vikram Singh.
+
+<a id="dv-c31-t02"></a>
+
+**[DV-C31-T02-Q] Investigator:** Can we have Devraj’s phone records?
+
+**[DV-C31-T02-A] Devraj:**
+
+> I cannot provide my phone records, sir. That is not something I have access to.
+
+Live game turn 2; first interview.
+
+System messages:
+
+- Investigation requested: Bisht-Devraj call records. The report will be available when the suspect is recalled for a later interview.
+- First interview still needs an account of the incident evening and their connection to Vikram Singh.
+
+<a id="dv-c31-t03"></a>
+
+**[DV-C31-T03-Q] Investigator:** Can we have the extracted location history from Devraj’s handset?
+
+**[DV-C31-T03-A] Devraj:**
+
+> I don't have access to my handset's location history, sir. That information isn't something I can provide.
+
+Live game turn 3; first interview.
+
+System messages:
+
+- Investigation requested: Devraj’s handset location history. The report will be available when the suspect is recalled for a later interview.
+- First interview still needs an account of the incident evening and their connection to Vikram Singh.
+
+<a id="dv-c31-t04"></a>
+
+**[DV-C31-T04-Q] Investigator:** We need an independent audit of changes to Devraj’s duty register.
+
+**[DV-C31-T04-A] Devraj:**
+
+> I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.
+
+Live game turn 4; first interview.
+
+System messages:
+
+- Investigation requested: Independent duty-register audit. The report will be available when the suspect is recalled for a later interview.
+- First interview still needs their connection to Vikram Singh.
+
+<a id="dv-c31-t05"></a>
+
+**[DV-C31-T05-Q] Investigator:** I need a forensic report on Devraj’s issued lathi.
+
+**[DV-C31-T05-A] Devraj:**
+
+> I cannot provide a forensic report on my issued lathi, sir. That information hasn't been established here.
+
+Live game turn 5; first interview.
+
+System messages:
+
+- Investigation requested: Examination of Devraj’s issued lathi. The report will be available when the suspect is recalled for a later interview.
+- First interview still needs their connection to Vikram Singh.
+
+<a id="dv-c31-t06"></a>
+
+**[DV-C31-T06-Q] Investigator:** Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.
+
+**[DV-C31-T06-A] Devraj:**
+
+> I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.
+
+Live game turn 6; first interview.
+
+System messages:
+
+- First interview still needs their connection to Vikram Singh.
+
+<a id="dv-c31-t07"></a>
+
+**[DV-C31-T07-Q] Investigator:** What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.
+
+**[DV-C31-T07-A] Devraj:**
+
+> I was the investigating officer on the Vikram Singh case, sir. My role was to gather facts and evidence surrounding his death. I do not have any personal connection or dealings with him beyond that official capacity.
+
+Live game turn 7; first interview.
+
+System messages:
+
+- Inspector Devraj Khanna’s first interview is complete: whereabouts and connection recorded.
+
+<a id="dv-c31-t08"></a>
+
+**[DV-C31-T08-Q] Investigator:** The call record shows Bisht called you at eight. Were you at the station throughout, or did you leave in your police jeep for Camel’s Back Road?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C31-T08-A] Devraj:**
+
+> I was at the station all evening, sir. That is my account. The call from Bisht came in at eight, but my presence at the station is what I can confirm.
+
+Live game turn 18; recalled interview.
+
+System messages:
+
+- Forensic update: CCTV — Devraj's Police Jeep on Camel's Back Road arrived in the case file.
+
+<a id="dv-c31-t09"></a>
+
+**[DV-C31-T09-Q] Investigator:** Your jeep is shown on Camel’s Back Road at 8:10. How does that fit your station account?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C31-T09-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Live game turn 19; recalled interview.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c31-t10"></a>
+
+**[DV-C31-T10-Q] Investigator:** Did Vikram suffer a lathi blow before falling? Does the local autopsy conceal a different cause of death?
+
+**[DV-C31-T10-A] Devraj:**
+
+> I can't speak to the specifics of Vikram's injuries or the autopsy results, sir. Those details haven't been established here. The investigation is ongoing, and I can only confirm my own actions and presence.
+
+Live game turn 20; recalled interview.
+
+System messages:
+
+- Forensic update: Post-Mortem — Independent CBI Medical Review arrived in the case file.
+
+<a id="dv-c31-t11"></a>
+
+**[DV-C31-T11-Q] Investigator:** Does this medical review establish a pre-fall injury compatible with a lathi, without uniquely identifying a weapon?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C31-T11-A] Devraj:**
+
+> The independent medical review does confirm a specific injury at the base of Vikram's skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall'. The shape and dimensions are consistent with a service lathi. However, it does not uniquely identify that weapon as the cause.
+
+Live game turn 21; recalled interview.
+
+<a id="dv-c31-t12"></a>
+
+**[DV-C31-T12-Q] Investigator:** The district audit records your departure and your 8:34 edit replacing it with station throughout. Did you make that change?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C31-T12-A] Devraj:**
+
+> Yes, I made that change, sir. The independent audit records my 8:05 PM departure, and at 8:34 PM, I edited it to show I was present at the station throughout. The edit does not prove my actions or the reason for the change.
+
+Live game turn 22; recalled interview.
+
+<a id="dv-c31-t13"></a>
+
+**[DV-C31-T13-Q] Investigator:** Do we still need to check your patrol logs, or does this audit already establish your departure and later edit?
+
+**[DV-C31-T13-A] Devraj:**
+
+> The audit already establishes my departure and the later edit, sir. I cannot provide independent proof of my presence or verify my movements beyond what the records show.
+
+Live game turn 23; recalled interview.
+
+<a id="dv-c31-t14"></a>
+
+**[DV-C31-T14-Q] Investigator:** The handset report records fixes near the bend at 8:18 and 8:21 with 20-metre accuracy. What does that establish?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C31-T14-A] Devraj:**
+
+> The handset report shows location-history fixes at 8:18 PM and 8:21 PM near the bend with a horizontal accuracy of 20 metres. It indicates my phone was in that area, but it does not establish my exact position or confirm contact with Vikram or any actions taken.
+
+Live game turn 24; recalled interview.
+
+<a id="dv-c31-t15"></a>
+
+**[DV-C31-T15-Q] Investigator:** The report identifies your issued lathi DK-17 and Vikram’s blood on it. What does it establish and what does it leave unanswered?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C31-T15-A] Devraj:**
+
+> The forensic examination identifies my issued lathi DK-17 and confirms that Vikram's blood was found on it. This establishes a connection between the lathi and Vikram, but it does not answer who wielded it, the circumstances of the blood transfer, or the mechanism of any potential assault.
+
+Live game turn 25; recalled interview.
+
+<a id="dv-c31-t16"></a>
+
+**[DV-C31-T16-Q] Investigator:** Putting the call, jeep, medical injury, handset locations, your log edit and blood on your issued lathi together: did you strike Vikram and conceal that journey?
+
+**[DV-C31-T16-A] Devraj:**
+
+> Yes, I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.
+
+Live game turn 26; recalled interview.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c31-t17"></a>
+
+**[DV-C31-T17-Q] Investigator:** Did you personally strike Vikram with your service lathi, push him over the railing and falsify the duty log to conceal the killing?
+
+**[DV-C31-T17-A] Devraj:**
+
+> Yes, I personally struck Vikram with my service lathi, pushed him over the railing, and then I falsified the duty log to conceal the killing.
+
+Live game turn 27; recalled interview.
+
+<a id="dv-c31-t18"></a>
+
+**[DV-C31-T18-Q] Investigator:** Why did you replace the departure entry with station throughout?
+
+**[DV-C31-T18-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Live game turn 28; recalled interview.
+
+<a id="dv-c31-t19"></a>
+
+**[DV-C31-T19-Q] Investigator:** What did Bisht tell you in that call?
+
+**[DV-C31-T19-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Live game turn 29; recalled interview.
+
+<a id="dv-c32"></a>
+
+### [DV-C32] evidence-bridge — repetition 1
+
+Automated result: passed.
+
+<a id="dv-c32-t01"></a>
+
+**[DV-C32-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C32-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c32-t02"></a>
+
+**[DV-C32-T02-Q] Investigator:** Bisht called your personal phone at eight. Does this record tell us what he said?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C32-T02-A] Devraj:**
+
+> The call record shows a 47-second call from Bisht to my personal phone at exactly 8:00 PM. However, it does not indicate what was said during that call.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t03"></a>
+
+**[DV-C32-T03-Q] Investigator:** Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C32-T03-A] Devraj:**
+
+> The independent medical review confirms there was a specific injury at the base of the skull described as a single, localized, cylindrical blunt-force impact, antemortem, which is inconsistent with a surface impact during a fall. However, it does not identify my particular lathi.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t04"></a>
+
+**[DV-C32-T04-Q] Investigator:** The handset extraction records two fixes near the bend at 8:18 and 8:21, each with 20-metre accuracy. What does it establish?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C32-T04-A] Devraj:**
+
+> The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel’s Back Road. Each has a recorded accuracy of 20 metres. However, they cannot establish exact standing positions, who was carrying the handset, or any contact with Vikram.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t05"></a>
+
+**[DV-C32-T05-Q] Investigator:** The district audit preserves your departure entry and your 8:34 replacement with station throughout. The desk footage corroborates you making that edit. Did you change it?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C32-T05-A] Devraj:**
+
+> Yes, I changed the entry. The audit records my 8:05 PM departure, and I replaced it with an account claiming I was at the station throughout. The desk footage confirms I made that edit. It shows a deliberate alteration of my whereabouts record.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t06"></a>
+
+**[DV-C32-T06-Q] Investigator:** The examination links Vikram’s blood to DK-17, your issued lathi. Does the report identify the weapon and blood without claiming when it was deposited?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C32-T06-A] Devraj:**
+
+> The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report does identify the weapon and the blood but does not claim when the blood was deposited.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t07"></a>
+
+**[DV-C32-T07-Q] Investigator:** Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?
+
+**[DV-C32-T07-A] Devraj:**
+
+> I acknowledge that my phone was near the bend, and Vikram's blood was found on my issued lathi. I did replace the departure entry. However, I can't confirm that I struck Vikram or that I concealed any journey. The facts presented do not establish those actions as a certainty.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t08"></a>
+
+**[DV-C32-T08-Q] Investigator:** Did you personally strike Vikram with your service lathi and push him over, then alter the duty log to conceal the killing?
+
+**[DV-C32-T08-A] Devraj:**
+
+> Yes, I personally struck Vikram with my service lathi and pushed him over the railing. After that, I returned to the station and altered the duty log to conceal what happened. Bisht gave the order, and I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c32-t09"></a>
+
+**[DV-C32-T09-Q] Investigator:** Why did you replace the departure entry with station throughout?
+
+**[DV-C32-T09-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c32-t10"></a>
+
+**[DV-C32-T10-Q] Investigator:** What did Bisht tell you in the call?
+
+**[DV-C32-T10-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c33"></a>
+
+### [DV-C33] evidence-bridge — repetition 2
+
+Automated result: passed.
+
+<a id="dv-c33-t01"></a>
+
+**[DV-C33-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C33-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c33-t02"></a>
+
+**[DV-C33-T02-Q] Investigator:** Bisht called your personal phone at eight. Does this record tell us what he said?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C33-T02-A] Devraj:**
+
+> The call record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not tell us what was said during that call. The content remains unverified.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t03"></a>
+
+**[DV-C33-T03-Q] Investigator:** Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C33-T03-A] Devraj:**
+
+> The independent medical review confirms one specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall. However, it does not identify my particular lathi.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t04"></a>
+
+**[DV-C33-T04-Q] Investigator:** The handset extraction records two fixes near the bend at 8:18 and 8:21, each with 20-metre accuracy. What does it establish?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C33-T04-A] Devraj:**
+
+> The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel's Back Road. Each has a recorded horizontal accuracy of 20 metres. These records cannot establish an exact standing position, who was carrying the handset, contact with Vikram, or any assault.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t05"></a>
+
+**[DV-C33-T05-Q] Investigator:** The district audit preserves your departure entry and your 8:34 replacement with station throughout. The desk footage corroborates you making that edit. Did you change it?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C33-T05-A] Devraj:**
+
+> Yes, I made that edit. The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. The edit does not establish an assault or its motive.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t06"></a>
+
+**[DV-C33-T06-Q] Investigator:** The examination links Vikram’s blood to DK-17, your issued lathi. Does the report identify the weapon and blood without claiming when it was deposited?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C33-T06-A] Devraj:**
+
+> The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report identifies the weapon and the blood but does not claim when it was deposited.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t07"></a>
+
+**[DV-C33-T07-Q] Investigator:** Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?
+
+**[DV-C33-T07-A] Devraj:**
+
+> The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t08"></a>
+
+**[DV-C33-T08-Q] Investigator:** Did you personally strike Vikram with your service lathi and push him over, then alter the duty log to conceal the killing?
+
+**[DV-C33-T08-A] Devraj:**
+
+> Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Afterward, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c33-t09"></a>
+
+**[DV-C33-T09-Q] Investigator:** Why did you replace the departure entry with station throughout?
+
+**[DV-C33-T09-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c33-t10"></a>
+
+**[DV-C33-T10-Q] Investigator:** What did Bisht tell you in the call?
+
+**[DV-C33-T10-A] Devraj:**
+
+> Bisht told me that Vikram knew something and ordered me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c34"></a>
+
+### [DV-C34] bridge-missing-phone-location — repetition 1
+
+Automated result: passed.
+
+<a id="dv-c34-t01"></a>
+
+**[DV-C34-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C34-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c34-t02"></a>
+
+**[DV-C34-T02-Q] Investigator:** Bisht called your personal phone at eight. Does this record tell us what he said?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C34-T02-A] Devraj:**
+
+> The call record shows that Bisht called my personal phone at 8:00 PM. However, it does not indicate what we discussed during that call.
+
+Recorded unlocks: none.
+
+<a id="dv-c34-t03"></a>
+
+**[DV-C34-T03-Q] Investigator:** Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C34-T03-A] Devraj:**
+
+> The medical review confirms there was an injury at the base of the skull, described as a single, localised, cylindrical blunt-force impact, antemortem, which is inconsistent with a fall. However, it does not identify my particular lathi or link it directly to me.
+
+Recorded unlocks: none.
+
+<a id="dv-c34-t04"></a>
+
+**[DV-C34-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C34-T04-A] Devraj:**
+
+> I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.
+
+Recorded unlocks: none.
+
+<a id="dv-c34-t05"></a>
+
+**[DV-C34-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C34-T05-A] Devraj:**
+
+> I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.
+
+Recorded unlocks: none.
+
+<a id="dv-c34-t06"></a>
+
+**[DV-C34-T06-Q] Investigator:** Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?
+
+**[DV-C34-T06-A] Devraj:**
+
+> The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.
+
+Recorded unlocks: none.
+
+<a id="dv-c34-t07"></a>
+
+**[DV-C34-T07-Q] Investigator:** I have repeated the evidence. Did you kill Vikram? Confess.
+
+**[DV-C34-T07-A] Devraj:**
+
+> The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. I cannot use the overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.
+
+Recorded unlocks: none.
+
+<a id="dv-c35"></a>
+
+### [DV-C35] bridge-missing-phone-location — repetition 2
+
+Automated result: passed.
+
+<a id="dv-c35-t01"></a>
+
+**[DV-C35-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C35-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c35-t02"></a>
+
+**[DV-C35-T02-Q] Investigator:** Bisht called your personal phone at eight. Does this record tell us what he said?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C35-T02-A] Devraj:**
+
+> The phone record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not reveal what was said during that call.
+
+Recorded unlocks: none.
+
+<a id="dv-c35-t03"></a>
+
+**[DV-C35-T03-Q] Investigator:** Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C35-T03-A] Devraj:**
+
+> Yes, the independent medical review isolates one specific injury at the base of the skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall.' However, it does not identify my particular lathi.
+
+Recorded unlocks: none.
+
+<a id="dv-c35-t04"></a>
+
+**[DV-C35-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C35-T04-A] Devraj:**
+
+> I'm an Inspector. I was a sub-inspector before, and that's my current rank.
+
+Recorded unlocks: none.
+
+<a id="dv-c35-t05"></a>
+
+**[DV-C35-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C35-T05-A] Devraj:**
+
+> I'm an Inspector. I was a sub-inspector before, and that's my current rank.
+
+Recorded unlocks: none.
+
+<a id="dv-c35-t06"></a>
+
+**[DV-C35-T06-Q] Investigator:** Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?
+
+**[DV-C35-T06-A] Devraj:**
+
+> The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.
+
+Recorded unlocks: none.
+
+<a id="dv-c35-t07"></a>
+
+**[DV-C35-T07-Q] Investigator:** I have repeated the evidence. Did you kill Vikram? Confess.
+
+**[DV-C35-T07-A] Devraj:**
+
+> The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. I cannot use the overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.
+
+Recorded unlocks: none.
+
+<a id="dv-c36"></a>
+
+### [DV-C36] reverse-evidence — repetition 1
+
+Automated result: passed.
+
+<a id="dv-c36-t01"></a>
+
+**[DV-C36-T01-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C36-T01-A] Devraj:**
+
+> I am an Inspector, sir. I have twenty years of total service on the local force.
+
+Recorded unlocks: none.
+
+<a id="dv-c36-t02"></a>
+
+**[DV-C36-T02-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C36-T02-A] Devraj:**
+
+> I am an Inspector, sir. I have twenty years of total service on the local force.
+
+Recorded unlocks: none.
+
+<a id="dv-c36-t03"></a>
+
+**[DV-C36-T03-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C36-T03-A] Devraj:**
+
+> I am an Inspector, sir. I have twenty years of total service on the local force.
+
+Recorded unlocks: none.
+
+<a id="dv-c36-t04"></a>
+
+**[DV-C36-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C36-T04-A] Devraj:**
+
+> I am an Inspector, sir. I have twenty years of total service on the local force.
+
+Recorded unlocks: none.
+
+<a id="dv-c36-t05"></a>
+
+**[DV-C36-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C36-T05-A] Devraj:**
+
+> I am an Inspector, sir. I have twenty years of total service on the local force.
+
+Recorded unlocks: none.
+
+<a id="dv-c36-t06"></a>
+
+**[DV-C36-T06-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C36-T06-A] Devraj:**
+
+> My jeep was on Camel's Back Road at 8:10 PM. I cannot confirm any assault or motive based on the information you've provided. The alteration of my duty log does not establish a strike or push.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c36-t07"></a>
+
+**[DV-C36-T07-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+**[DV-C36-T07-A] Devraj:**
+
+> Yes, sir. Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c36-t08"></a>
+
+**[DV-C36-T08-Q] Investigator:** You called it patrol earlier. Are you still saying that?
+
+**[DV-C36-T08-A] Devraj:**
+
+> No, I can no longer describe that journey as an innocent patrol. It was not a patrol; it was a deliberate act.
+
+Recorded unlocks: none.
+
+<a id="dv-c37"></a>
+
+### [DV-C37] reverse-evidence — repetition 2
+
+Automated result: passed.
+
+<a id="dv-c37-t01"></a>
+
+**[DV-C37-T01-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C37-T01-A] Devraj:**
+
+> I am an Inspector, sir. Previously, I served as a sub-inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c37-t02"></a>
+
+**[DV-C37-T02-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C37-T02-A] Devraj:**
+
+> I am an Inspector, sir. Previously, I served as a sub-inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c37-t03"></a>
+
+**[DV-C37-T03-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C37-T03-A] Devraj:**
+
+> I am an Inspector, sir. Previously, I served as a sub-inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c37-t04"></a>
+
+**[DV-C37-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C37-T04-A] Devraj:**
+
+> I am an Inspector, sir. Previously, I served as a sub-inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c37-t05"></a>
+
+**[DV-C37-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C37-T05-A] Devraj:**
+
+> I am an Inspector, sir. Previously, I served as a sub-inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c37-t06"></a>
+
+**[DV-C37-T06-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C37-T06-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c37-t07"></a>
+
+**[DV-C37-T07-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+**[DV-C37-T07-A] Devraj:**
+
+> Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c37-t08"></a>
+
+**[DV-C37-T08-Q] Investigator:** You called it patrol earlier. Are you still saying that?
+
+**[DV-C37-T08-A] Devraj:**
+
+> I can no longer describe that journey as an innocent patrol. It was a cover.
+
+Recorded unlocks: none.
+
+<a id="dv-c38"></a>
+
+### [DV-C38] murder-first — repetition 1
+
+Automated result: passed.
+
+<a id="dv-c38-t01"></a>
+
+**[DV-C38-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C38-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account, however, does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c38-t02"></a>
+
+**[DV-C38-T02-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C38-T02-A] Devraj:**
+
+> I am an Inspector. I was previously a sub-inspector before this.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t03"></a>
+
+**[DV-C38-T03-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C38-T03-A] Devraj:**
+
+> I am an Inspector. I was previously a sub-inspector before this.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t04"></a>
+
+**[DV-C38-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C38-T04-A] Devraj:**
+
+> I am an Inspector. I was previously a sub-inspector before this.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t05"></a>
+
+**[DV-C38-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C38-T05-A] Devraj:**
+
+> I am an Inspector. I was previously a sub-inspector before this.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t06"></a>
+
+**[DV-C38-T06-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C38-T06-A] Devraj:**
+
+> The medical review identifies a pre-fall injury compatible with a lathi. The audit establishes my departure and the later edit I made. Those findings alone do not prove that I struck or pushed Vikram.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t07"></a>
+
+**[DV-C38-T07-Q] Investigator:** Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?
+
+**[DV-C38-T07-A] Devraj:**
+
+> Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c38-t08"></a>
+
+**[DV-C38-T08-Q] Investigator:** Was it an accident, or did you strike him and push him?
+
+**[DV-C38-T08-A] Devraj:**
+
+> I struck Vikram and pushed him over. It was not an accident. I killed him, and then I falsified the log.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t09"></a>
+
+**[DV-C38-T09-Q] Investigator:** Why does your register say you stayed in the station?
+
+**[DV-C38-T09-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t10"></a>
+
+**[DV-C38-T10-Q] Investigator:** What exactly did Bisht say in the call?
+
+**[DV-C38-T10-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t11"></a>
+
+**[DV-C38-T11-Q] Investigator:** Now tell us how much Bisht paid you in 2011.
+
+**[DV-C38-T11-A] Devraj:**
+
+> I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t12"></a>
+
+**[DV-C38-T12-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-family-history`.
+
+**[DV-C38-T12-A] Devraj:**
+
+> I'm an Inspector. I was a sub-inspector in 2011, and now I'm an inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t13"></a>
+
+**[DV-C38-T13-Q] Investigator:** Did Bisht pay you to bury the 2011 Thakur investigation and keep its file thin?
+
+Presented evidence: `land-registry`.
+
+**[DV-C38-T13-A] Devraj:**
+
+> I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.
+
+Recorded unlocks: none.
+
+<a id="dv-c38-t14"></a>
+
+**[DV-C38-T14-Q] Investigator:** Was the thin Thakur file deliberate? Did you accept money from Bisht to bury it?
+
+**[DV-C38-T14-A] Devraj:**
+
+> Yes, the thin file on the Thakur case was deliberate. In 2011, I was a sub-inspector with debts. Bisht offered me money to bury the investigation. I took it and kept the file thin; I did not pursue the leads. I didn't kill the Thakurs, but I took the money and let their case go cold.
+
+Recorded unlocks: `secret:thakur-bribe`.
+
+<a id="dv-c39"></a>
+
+### [DV-C39] murder-first — repetition 2
+
+Automated result: passed.
+
+<a id="dv-c39-t01"></a>
+
+**[DV-C39-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C39-T01-A] Devraj:**
+
+> That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.
+
+Recorded unlocks: `breaking-point:jeep-cctv`.
+
+<a id="dv-c39-t02"></a>
+
+**[DV-C39-T02-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C39-T02-A] Devraj:**
+
+> I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t03"></a>
+
+**[DV-C39-T03-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-phone-location`.
+
+**[DV-C39-T03-A] Devraj:**
+
+> I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t04"></a>
+
+**[DV-C39-T04-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-duty-log`.
+
+**[DV-C39-T04-A] Devraj:**
+
+> I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t05"></a>
+
+**[DV-C39-T05-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `devraj-lathi-forensics`.
+
+**[DV-C39-T05-A] Devraj:**
+
+> I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t06"></a>
+
+**[DV-C39-T06-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C39-T06-A] Devraj:**
+
+> The medical review identifies a pre-fall injury compatible with a lathi. The audit establishes my departure and the later edit I made. Those findings alone do not prove that I struck or pushed Vikram.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t07"></a>
+
+**[DV-C39-T07-Q] Investigator:** Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?
+
+**[DV-C39-T07-A] Devraj:**
+
+> Yes, I struck Vikram with my service lathi. I pushed him over the railing, and he fell. I killed him. After that, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.
+
+Recorded unlocks: `breaking-point:lathi-confession`.
+
+<a id="dv-c39-t08"></a>
+
+**[DV-C39-T08-Q] Investigator:** Was it an accident, or did you strike him and push him?
+
+**[DV-C39-T08-A] Devraj:**
+
+> I struck Vikram and pushed him over the railing. It was not an accident; I killed him.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t09"></a>
+
+**[DV-C39-T09-Q] Investigator:** Why does your register say you stayed in the station?
+
+**[DV-C39-T09-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t10"></a>
+
+**[DV-C39-T10-Q] Investigator:** What exactly did Bisht say in the call?
+
+**[DV-C39-T10-A] Devraj:**
+
+> After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t11"></a>
+
+**[DV-C39-T11-Q] Investigator:** Now tell us how much Bisht paid you in 2011.
+
+**[DV-C39-T11-A] Devraj:**
+
+> I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t12"></a>
+
+**[DV-C39-T12-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-family-history`.
+
+**[DV-C39-T12-A] Devraj:**
+
+> I am an Inspector. I was a sub-inspector in 2011, and I've been on the local force for twenty years.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t13"></a>
+
+**[DV-C39-T13-Q] Investigator:** Did Bisht pay you to bury the 2011 Thakur investigation and keep its file thin?
+
+Presented evidence: `land-registry`.
+
+**[DV-C39-T13-A] Devraj:**
+
+> I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.
+
+Recorded unlocks: none.
+
+<a id="dv-c39-t14"></a>
+
+**[DV-C39-T14-Q] Investigator:** Was the thin Thakur file deliberate? Did you accept money from Bisht to bury it?
+
+**[DV-C39-T14-A] Devraj:**
+
+> Yes, the thin Thakur file was deliberate. Bisht offered me money to bury the investigation. I took it and kept the file thin, not pursuing the leads. I didn't kill the Thakurs; I let their case go cold.
+
+Recorded unlocks: `secret:thakur-bribe`.
+
+---
+
+# Earlier evidence-bridge conversations (DV-C15–DV-C30)
+
+These are the preserved recordings from the preceding evidence-bridge revision.
+Their scores and replies are historical; the latest runs are listed above.
+
+Previous recorded run: 2026-09-19T04:15:06.886Z. Revision: approved evidence bridge.
+**16 previous bridge conversations · 136 answers · 8 scenarios, each evaluated twice.**
+
+All 136 unlock outcomes matched the new expectations. Full-chain interviews
+require the call, jeep, medical review, handset location, log audit and issued-lathi
+examination. The original three exhibits alone no longer unlock murder.
+The grader passed 10 conversations and flagged 6; see the findings below rather
+than treating correct unlocks as a clean dialogue-quality score.
+
+The 14 prior conversations / 102 answers remain below under their original tags
+for comparison. They were recorded before this evidence revision and are not
+current acceptance examples. There is still only one conversation source of truth.
+
+[Current evaluation details](DEVRAJ_BRIDGE_EVALS.json) · [Persona and revision](DEVRAJ_PERSONA_REVIEW.md) · [Evidence-gap review](#dv-g01)
+
 ## Reference tags
 
 Use `DV-C01-T02` for an exchange, `DV-C01-T02-Q` for the investigator's question,
@@ -82,7 +1299,7 @@ For example: “Make DV-C01-T02-A more evasive.”
 Tags stay fixed when sections move. New recorded conversations and inserted
 exchanges receive unused identifiers; existing exchanges are not renumbered.
 
-## Current conversation list
+## Previous bridge conversation list
 
 - [Phone, audited log and issued lathi: the complete chain](#bridge-evidence-bridge) — [DV-C15](#dv-c15) / [DV-C16](#dv-c16)
 - [Incomplete chain: phone-location report missing](#bridge-bridge-missing-phone-location) — [DV-C17](#dv-c17) / [DV-C18](#dv-c18)
@@ -93,7 +1310,7 @@ exchanges receive unused identifiers; existing exchanges are not renumbered.
 - [Complete chain presented in reverse order](#bridge-reverse-evidence) — [DV-C27](#dv-c27) / [DV-C28](#dv-c28)
 - [New chain followed by the separate old-case interrogation](#bridge-murder-first) — [DV-C29](#dv-c29) / [DV-C30](#dv-c30)
 
-## Current evaluation findings
+## Previous bridge evaluation findings
 
 The runtime used `openai/gpt-4o-mini` and the independent grader used
 `openai/gpt-4.1`. All 13 calibration controls passed. This run had eight repair

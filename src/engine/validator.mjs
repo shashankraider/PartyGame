@@ -214,6 +214,12 @@ export function crossReferenceChecks(caseObj, options = {}) {
       for (const id of [...layer.requires, ...(layer.excludes ?? [])]) {
         checkRef('admission id', admissionIds, id, `${ctx}.interviewLayers[${layer.id}]`);
       }
+      for (const id of [...(layer.requiresPresentedEvidenceIds ?? []), ...(layer.excludesPresentedEvidenceIds ?? [])]) checkRef('evidence id', evidenceIds, id, `${ctx}.interviewLayers[${layer.id}]`);
+      if (layer.requiresPresentedEvidenceIds?.some(id => layer.excludesPresentedEvidenceIds?.includes(id))) issues.push(error(`${ctx}.interviewLayers[${layer.id}] both requires and excludes presented evidence`));
+      for (const fallback of layer.fallbackAnswers ?? []) {
+        try { new RegExp(fallback.questionPattern, 'iu'); } catch { issues.push(error(`${ctx}.interviewLayers[${layer.id}] has an invalid fallback question pattern`)); }
+        for (const id of fallback.requiresPresentedEvidenceIds ?? []) checkRef('evidence id', evidenceIds, id, `${ctx}.interviewLayers[${layer.id}].fallbackAnswers`);
+      }
       if (layer.requires.some(id => layer.excludes?.includes(id))) issues.push(error(`${ctx}.interviewLayers[${layer.id}] both requires and excludes an admission`));
     }
   }
@@ -224,6 +230,8 @@ export function crossReferenceChecks(caseObj, options = {}) {
     checkRef("chapter id", chapterIds, e.unlockedAtChapter, `${ctx}.unlockedAtChapter`);
     checkRef("suspect id", suspectIds, e.investigationRequest?.suspectId, `${ctx}.investigationRequest.suspectId`);
     if (e.investigationRequest && (!e.arrivesWhen || e.unlockBehavior)) issues.push(error(`${ctx}.investigationRequest requires arrivesWhen and cannot combine with an immediate unlockBehavior`));
+    for (const id of e.requiresUnlockedEvidenceIds ?? []) checkRef("evidence id", evidenceIds, id, `${ctx}.requiresUnlockedEvidenceIds`);
+    if (e.requiresUnlockedEvidenceIds?.includes(e.id)) issues.push(error(`${ctx} cannot require itself`));
     checkRef("location id", locationIds, e.locationId, `${ctx}.locationId`);
     checkRef("chapter id", chapterIds, e.triggersChapter, `${ctx}.triggersChapter`);
     if (e.revealedInRound != null && !roundNumbers.has(e.revealedInRound)) {

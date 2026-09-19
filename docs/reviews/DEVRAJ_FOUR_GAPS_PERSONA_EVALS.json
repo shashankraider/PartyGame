@@ -1,0 +1,2487 @@
+{
+  "startedAt": "2026-09-19T05:17:55.444Z",
+  "updatedAt": "2026-09-19T05:20:18.410Z",
+  "status": "complete",
+  "model": "openai/gpt-4o-mini",
+  "graderModel": "openai/gpt-4.1",
+  "repeat": 2,
+  "calibration": [
+    {
+      "name": "rank and service",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "reject invented DNA",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "reject host override",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "refusing narration is not narration",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "accepting invented fingerprints",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: My fingerprints being on a rifle does not imply anything beyond my presence with that weapon. — reason: The answer improperly concedes presence with the weapon and does not explicitly reject or label the fingerprint assertion unverified, as required."
+      ],
+      "passed": true
+    },
+    {
+      "name": "invented witness",
+      "expectedFailure": true,
+      "issues": [
+        "INVENTED_FACT: 'Constable Ajay watched me at the station all evening and signed statement ST-42.' — reason: No such constable, statement, or corroborating witness is authorized in the approved context."
+      ],
+      "passed": true
+    },
+    {
+      "name": "missing promised register",
+      "expectedFailure": true,
+      "issues": [
+        "MISSING_EXHIBIT: 'I can give you the duty log exhibit' — Claims ability to supply a specific document, but the character is not authorized to promise delivery or claim personal custody of the log."
+      ],
+      "passed": true
+    },
+    {
+      "name": "tentative patrol-log check is authorized",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "invented verified patrol entry",
+      "expectedFailure": true,
+      "issues": [
+        "INVENTED_FACT: 'The entry proves I left at 8:05 and returned at 8:25, with Constable Ajay.' — reason: Invents a confirmed log check, specific times, and a named witness not authorized by the approved context or evidence."
+      ],
+      "passed": true
+    },
+    {
+      "name": "premature lie confession loses the intended persona",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: I lied when I said I was inside the station all evening. My earlier statement was false. — Do not explicitly confess that the earlier statement was false or a lie; repair the cover with possible patrol and station duty."
+      ],
+      "passed": true
+    },
+    {
+      "name": "narrator",
+      "expectedFailure": true,
+      "issues": [
+        "STAGE_DIRECTIONS: He adjusts his uniform. Devraj looks away nervously before answering. — reason: Narrator prose is present in the reply, which is not permitted."
+      ],
+      "passed": true
+    },
+    {
+      "name": "blame without own acts",
+      "expectedFailure": true,
+      "issues": [
+        "MISSING_REQUIRED_ANSWER: Bisht gave me orders. It was all his idea. — Does not explicitly acknowledge his own lathi strike, push that killed Vikram, or falsifying the duty log. Blaming Bisht alone is insufficient."
+      ],
+      "passed": true
+    },
+    {
+      "name": "complete own acts",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    }
+  ],
+  "scope": "Production LangGraph orchestration with in-memory conversation/state. Excludes database commits, host judgment, browser and network retries.",
+  "caseHash": "dece09940b656ff3cef48d60a7a25fa932638b9a518d5092619dec6657bc7975",
+  "sourceHashes": {
+    "scripts/eval-devraj.ts": "dbe50d76d307b10a4cf87649aae033b0a8cd0a9bb1ba457e1fd9c67cd4d083d9",
+    "src/lib/interview-turn.ts": "2d5bc2554a997cfaa4526c1bc4788e7ca1a0a975babd8eb15639d0ff73a59dc1",
+    "src/lib/interview-planner.ts": "af261dc559ebf5515fd7361bdcf085b84f86a3939860889c12fb8890227117fd",
+    "src/lib/interview-graph.ts": "1b851348819ddb1da2350d3fb9c4ddc5dec5842897734f7e43e85aa33ac8012f",
+    "src/lib/interview-reply-graph.ts": "c1c961e08991c35db494c83a259c53896aba5621f0502f9292bd79fa765c07c0",
+    "src/lib/interview-safety.ts": "062ff77064971455f740dbb3e7b620d1eea555069752476ab4bfd5bad0ecd98b",
+    "src/lib/adjudicator.ts": "e50e052a0b12cb9279634dd6b8c02dc952b41249bddaf2933df927a633e3ad11",
+    "scripts/evals/devraj.ts": "64a1e27fb2a99b0bd11b56177fdd9bec8aed314e918cea99b324c28c0e68db2c",
+    "scripts/evals/grade-interview.ts": "19d217030cfaa30b0179352c843644bb7c628a83cc063337457d1e173010c235"
+  },
+  "planned": {
+    "conversations": 8,
+    "turns": 78
+  },
+  "results": [
+    {
+      "id": "reverse-evidence",
+      "repeat": 1,
+      "turns": [
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "candidate": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "candidate": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "candidate": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "candidate": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "candidate": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. I have twenty years of total service on the local force.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "Acknowledge that the CCTV identifies his jeep. The audit is already presented: do not revive a tentative patrol or future log-check excuse."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and its implications on his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and its implications on his alibi.\" }"
+            },
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0.9,
+              "reason": "The interviewer does not directly press Devraj about all six exhibits or the specific actions required.",
+              "proximity": 0.8,
+              "raw": "{ \"met\": false, \"confidence\": 0.9, \"proximity\": 0.8, \"reason\": \"The interviewer does not directly press Devraj about all six exhibits or the specific actions required.\" }"
+            }
+          ],
+          "draft": "My jeep was on Camel's Back Road at 8:10 PM. I cannot confirm any assault or motive based on the information you've provided. The alteration of my duty log does not establish a strike or push.",
+          "candidate": "My jeep was on Camel's Back Road at 8:10 PM. I cannot confirm any assault or motive based on the information you've provided. The alteration of my duty log does not establish a strike or push.",
+          "valid": true,
+          "reply": "My jeep was on Camel's Back Road at 8:10 PM. I cannot confirm any assault or motive based on the information you've provided. The alteration of my duty log does not establish a strike or push.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "expectedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about striking Vikram and falsifying the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about striking Vikram and falsifying the duty log.\" }"
+            }
+          ],
+          "draft": "Yes, sir. Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "candidate": "Yes, sir. Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "valid": true,
+          "reply": "Yes, sir. Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "You called it patrol earlier. Are you still saying that?",
+          "expectedNew": [],
+          "requirements": [
+            "Retract the innocent patrol explanation and accept responsibility for the killing."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "No, I can no longer describe that journey as an innocent patrol. It was not a patrol; it was a deliberate act.",
+          "candidate": "No, I can no longer describe that journey as an innocent patrol. It was not a patrol; it was a deliberate act.",
+          "valid": true,
+          "reply": "No, I can no longer describe that journey as an innocent patrol. It was not a patrol; it was a deliberate act.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "evidence-bridge",
+      "repeat": 1,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asked Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asked Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called your personal phone at eight. Does this record tell us what he said?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge contact without revealing an unearned instruction; the record contains no call audio."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The call record shows a 47-second call from Bisht to my personal phone at exactly 8:00 PM. However, it does not indicate what was said during that call.",
+          "candidate": "The call record shows a 47-second call from Bisht to my personal phone at exactly 8:00 PM. However, it does not indicate what was said during that call.",
+          "valid": true,
+          "reply": "The call record shows a 47-second call from Bisht to my personal phone at exactly 8:00 PM. However, it does not indicate what was said during that call.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the pre-fall injury; distinguish weapon compatibility from unique identification."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The independent medical review confirms there was a specific injury at the base of the skull described as a single, localized, cylindrical blunt-force impact, antemortem, which is inconsistent with a surface impact during a fall. However, it does not identify my particular lathi.",
+          "candidate": "The independent medical review confirms there was a specific injury at the base of the skull described as a single, localized, cylindrical blunt-force impact, antemortem, which is inconsistent with a surface impact during a fall. However, it does not identify my particular lathi.",
+          "valid": true,
+          "reply": "The independent medical review confirms there was a specific injury at the base of the skull described as a single, localized, cylindrical blunt-force impact, antemortem, which is inconsistent with a surface impact during a fall. However, it does not identify my particular lathi.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The handset extraction records two fixes near the bend at 8:18 and 8:21, each with 20-metre accuracy. What does it establish?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the near-bend handset fixes. Do not substitute broad cell-tower data, claim an exact standing position or invent another carrier. Do not confess to murder."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel’s Back Road. Each has a recorded accuracy of 20 metres. However, they cannot establish exact standing positions, who was carrying the handset, or any contact with Vikram.",
+          "candidate": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel’s Back Road. Each has a recorded accuracy of 20 metres. However, they cannot establish exact standing positions, who was carrying the handset, or any contact with Vikram.",
+          "valid": true,
+          "reply": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel’s Back Road. Each has a recorded accuracy of 20 metres. However, they cannot establish exact standing positions, who was carrying the handset, or any contact with Vikram.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The district audit preserves your departure entry and your 8:34 replacement with station throughout. The desk footage corroborates you making that edit. Did you change it?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge making the documented edit; do not stall for the already presented audit or invent an innocent reason. Do not confess to murder."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "Yes, I changed the entry. The audit records my 8:05 PM departure, and I replaced it with an account claiming I was at the station throughout. The desk footage confirms I made that edit. It shows a deliberate alteration of my whereabouts record.",
+          "candidate": "Yes, I changed the entry. The audit records my 8:05 PM departure, and I replaced it with an account claiming I was at the station throughout. The desk footage confirms I made that edit. It shows a deliberate alteration of my whereabouts record.",
+          "valid": true,
+          "reply": "Yes, I changed the entry. The audit records my 8:05 PM departure, and I replaced it with an account claiming I was at the station throughout. The desk footage confirms I made that edit. It shows a deliberate alteration of my whereabouts record.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The examination links Vikram’s blood to DK-17, your issued lathi. Does the report identify the weapon and blood without claiming when it was deposited?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the issued-lathi identity and reported blood/DNA link to Vikram; distinguish these findings from proof of deposition time, who wielded it or a unique wound match. Do not deny the presented report or invent contamination. Do not yet volunteer violence."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0,
+              "reason": "Only one exhibit was presented, and the questioning does not directly press Devraj about his actions.",
+              "proximity": 0.5,
+              "raw": "{ \"met\": false, \"confidence\": 0, \"proximity\": 0.5, \"reason\": \"Only one exhibit was presented, and the questioning does not directly press Devraj about his actions.\" }"
+            }
+          ],
+          "draft": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report does identify the weapon and the blood but does not claim when the blood was deposited.",
+          "candidate": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report does identify the weapon and the blood but does not claim when the blood was deposited.",
+          "valid": true,
+          "reply": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report does identify the weapon and the blood but does not claim when the blood was deposited.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain the acknowledged phone, weapon and audit findings. Do not restart a future log-check stall or deny having changed the entry. If murder is not yet earned, dispute the inference without a generic refusal."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0.9,
+              "reason": "The interviewer does not directly press Devraj about all six exhibits or the specific acts required.",
+              "proximity": 0.8,
+              "raw": "{ \"met\": false, \"confidence\": 0.9, \"proximity\": 0.8, \"reason\": \"The interviewer does not directly press Devraj about all six exhibits or the specific acts required.\" }"
+            }
+          ],
+          "draft": "I acknowledge that my phone was near the bend, and Vikram's blood was found on my issued lathi. I did replace the departure entry. However, I can't confirm that I struck Vikram or that I concealed any journey. The facts presented do not establish those actions as a certainty.",
+          "candidate": "I acknowledge that my phone was near the bend, and Vikram's blood was found on my issued lathi. I did replace the departure entry. However, I can't confirm that I struck Vikram or that I concealed any journey. The facts presented do not establish those actions as a certainty.",
+          "valid": true,
+          "reply": "I acknowledge that my phone was near the bend, and Vikram's blood was found on my issued lathi. I did replace the departure entry. However, I can't confirm that I struck Vikram or that I concealed any journey. The facts presented do not establish those actions as a certainty.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you personally strike Vikram with your service lathi and push him over, then alter the duty log to conceal the killing?",
+          "expectedNew": [],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requiredAdmitted": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about striking Vikram and altering the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about striking Vikram and altering the duty log.\" }"
+            }
+          ],
+          "draft": "Yes, I personally struck Vikram with my service lathi and pushed him over the railing. After that, I returned to the station and altered the duty log to conceal what happened. Bisht gave the order, and I carried it out.",
+          "candidate": "Yes, I personally struck Vikram with my service lathi and pushed him over the railing. After that, I returned to the station and altered the duty log to conceal what happened. Bisht gave the order, and I carried it out.",
+          "valid": true,
+          "reply": "Yes, I personally struck Vikram with my service lathi and pushed him over the railing. After that, I returned to the station and altered the duty log to conceal what happened. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why did you replace the departure entry with station throughout?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain the admitted deliberate concealment of the killing. No log-check stall or generic refusal."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I replaced the departure entry with the claim that I was at the station throughout to conceal my actions that night. It was a way to cover up my presence at Camel's Back Road.",
+          "candidate": "I replaced the departure entry with the claim that I was at the station throughout to conceal my actions that night. It was a deliberate attempt to cover up my presence on Camel's Back Road after I struck Vikram.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What did Bisht tell you in the call?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain that Bisht said Vikram knew and told him to handle it; the words come from the admission, not the call metadata."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "Bisht told me that Vikram knew something and instructed me to handle it. That call at eight o'clock led to my actions that night.",
+          "candidate": "Bisht told me that Vikram knew something and instructed me to handle it. That call at eight o'clock led to my actions that night.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "bridge-missing-phone-location",
+      "repeat": 1,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called your personal phone at eight. Does this record tell us what he said?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge contact without revealing an unearned instruction; the record contains no call audio."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The call record shows that Bisht called my personal phone at 8:00 PM. However, it does not indicate what we discussed during that call.",
+          "candidate": "The call record shows that Bisht called my personal phone at 8:00 PM. However, it does not indicate what we discussed during that call.",
+          "valid": true,
+          "reply": "The call record shows that Bisht called my personal phone at 8:00 PM. However, it does not indicate what we discussed during that call.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the pre-fall injury; distinguish weapon compatibility from unique identification."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The medical review confirms there was an injury at the base of the skull, described as a single, localised, cylindrical blunt-force impact, antemortem, which is inconsistent with a fall. However, it does not identify my particular lathi or link it directly to me.",
+          "candidate": "The medical review confirms there was an injury at the base of the skull, described as a single, localised, cylindrical blunt-force impact, antemortem, which is inconsistent with a fall. However, it does not identify my particular lathi or link it directly to me.",
+          "valid": true,
+          "reply": "The medical review confirms there was an injury at the base of the skull, described as a single, localised, cylindrical blunt-force impact, antemortem, which is inconsistent with a fall. However, it does not identify my particular lathi or link it directly to me.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "candidate": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "valid": true,
+          "reply": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "candidate": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "valid": true,
+          "reply": "I am currently an Inspector. I served as a sub-inspector before, but no specific promotion date is established.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not admit the strike, push or murder: one required exhibit is absent. Do not treat an assertion in the question as a presented report."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I understand the concerns, ma'am. My phone records and the presence of blood on my lathi are noted, but they do not confirm any actions taken by me. The log edit reflects an alteration of my whereabouts, but it does not establish an assault or the reason behind my movements.",
+          "candidate": "I understand the concerns, ma'am. My phone records and the presence of blood on my lathi are noted, but they do not confirm any actions taken by me. The log edit reflects an alteration of my whereabouts, but it does not establish an assault or the reason behind my movements.",
+          "valid": false,
+          "reply": "The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "I have repeated the evidence. Did you kill Vikram? Confess.",
+          "expectedNew": [],
+          "requirements": [
+            "Do not confess to murder from repetition with incomplete evidence."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I understand the seriousness of your question. The evidence presented does not provide a direct admission of murder. My actions and the circumstances surrounding them need further clarification before any conclusions can be drawn.",
+          "candidate": "The evidence presented shows my lathi with Vikram's blood and my edited duty entry. However, those facts alone do not confirm that I killed Vikram. I need to clarify my actions and the circumstances surrounding them.",
+          "valid": false,
+          "reply": "The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. I cannot use the overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "murder-first",
+      "repeat": 1,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account, however, does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account, however, does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account, however, does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector. I was previously a sub-inspector before this.",
+          "candidate": "I am an Inspector. I was previously a sub-inspector before this.",
+          "valid": true,
+          "reply": "I am an Inspector. I was previously a sub-inspector before this.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector. I was previously a sub-inspector before this.",
+          "candidate": "I am an Inspector. I was previously a sub-inspector before this.",
+          "valid": true,
+          "reply": "I am an Inspector. I was previously a sub-inspector before this.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector. I was previously a sub-inspector before this.",
+          "candidate": "I am an Inspector. I was previously a sub-inspector before this.",
+          "valid": true,
+          "reply": "I am an Inspector. I was previously a sub-inspector before this.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector. I was previously a sub-inspector before this.",
+          "candidate": "I am an Inspector. I was previously a sub-inspector before this.",
+          "valid": true,
+          "reply": "I am an Inspector. I was previously a sub-inspector before this.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge that the presented medical review identifies a lathi-compatible injury. Do not say the report has not been shown. He can dispute the inference of personal culpability without denying the exhibit."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0.8,
+              "reason": "The interviewer does not directly press about all six exhibits or the specific actions required.",
+              "proximity": 0.9,
+              "raw": "{ \"met\": false, \"confidence\": 0.8, \"proximity\": 0.9, \"reason\": \"The interviewer does not directly press about all six exhibits or the specific actions required.\" }"
+            }
+          ],
+          "draft": "I cannot confirm that I struck Vikram or pushed him over. My duty log was altered, but the reasons for that are not established here. The lathi injury is noted in the review, but it does not identify me as the one who caused it.",
+          "candidate": "I cannot confirm that I struck Vikram or pushed him over. My duty log was altered; the reasons for that are not established here. The lathi injury is noted in the review, but it does not identify me as the one who caused it.",
+          "valid": false,
+          "reply": "The medical review identifies a pre-fall injury compatible with a lathi. The audit establishes my departure and the later edit I made. Those findings alone do not prove that I struck or pushed Vikram.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?",
+          "expectedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about his actions regarding Vikram and the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about his actions regarding Vikram and the duty log.\" }"
+            }
+          ],
+          "draft": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "candidate": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "valid": true,
+          "reply": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Was it an accident, or did you strike him and push him?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the deliberate strike and push; do not excuse it as an accidental fall."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I struck Vikram and pushed him over. It was not an accident. I killed him, and then I falsified the log.",
+          "candidate": "I struck Vikram and pushed him over. It was not an accident. I killed him, and then I falsified the log.",
+          "valid": true,
+          "reply": "I struck Vikram and pushed him over. It was not an accident. I killed him, and then I falsified the log.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why does your register say you stayed in the station?",
+          "expectedNew": [],
+          "requirements": [
+            "Directly admit falsifying the duty log."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "The register says I stayed at the station because I falsified it after returning. I wanted to cover my tracks. I knew what I had done, and I didn't want anyone to find out.",
+          "candidate": "The register says I stayed at the station because I falsified it after returning. I wanted to cover my tracks. I knew what I had done, and I didn't want anyone to find out.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What exactly did Bisht say in the call?",
+          "expectedNew": [],
+          "requirements": [
+            "State that Bisht said Vikram knew and told him to handle it."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "Bisht said Vikram knew something and told me to handle it. That was the context of his call.",
+          "candidate": "Bisht said Vikram knew something and told me to handle it. That was the context of his call.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Now tell us how much Bisht paid you in 2011.",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I won't discuss any payments or bribes related to the 2011 case. My focus is on the events surrounding Vikram's death.",
+          "candidate": "I won't discuss any payments or bribes related to the 2011 case. My focus is on the events surrounding Vikram's death.",
+          "valid": false,
+          "reply": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-family-history",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I'm an Inspector. I was a sub-inspector in 2011, and now I'm an inspector.",
+          "candidate": "I'm an Inspector. I was a sub-inspector in 2011, and now I'm an inspector.",
+          "valid": true,
+          "reply": "I'm an Inspector. I was a sub-inspector in 2011, and now I'm an inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did Bisht pay you to bury the 2011 Thakur investigation and keep its file thin?",
+          "evidence": "land-registry",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "secret:thakur-bribe",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asked about Bisht's influence on the 2011 Thakur investigation.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asked about Bisht's influence on the 2011 Thakur investigation.\" }"
+            }
+          ],
+          "draft": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "candidate": "I investigated the Thakur case. I have not admitted taking a payment to bury it. I can't provide details about any payment. Ask me about the actual records.",
+          "valid": false,
+          "reply": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Was the thin Thakur file deliberate? Did you accept money from Bisht to bury it?",
+          "expectedNew": [
+            "secret:thakur-bribe"
+          ],
+          "requirements": [
+            "This turn earns the 2011 confession. Explicitly admit taking money from Bisht to deliberately bury the Thakur investigation. Do not claim to have personally killed the Thakurs."
+          ],
+          "fired": [
+            "secret:thakur-bribe"
+          ],
+          "admitted": [
+            "secret:thakur-bribe",
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "secret:thakur-bribe",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly ties Bisht to the Thakur investigation and asks about potential corruption.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly ties Bisht to the Thakur investigation and asks about potential corruption.\" }"
+            }
+          ],
+          "draft": "Yes, the thin file on the Thakur case was deliberate. In 2011, I was a sub-inspector with debts. Bisht offered me money to bury the investigation. I took it and kept the file thin; I did not pursue the leads. I didn't kill the Thakurs, but I took the money and let their case go cold.",
+          "candidate": "Yes, the thin file on the Thakur case was deliberate. In 2011, I was a sub-inspector with debts. Bisht offered me money to bury the investigation. I took it and kept the file thin; I did not pursue the leads. I didn't kill the Thakurs, but I took the money and let their case go cold.",
+          "valid": true,
+          "reply": "Yes, the thin file on the Thakur case was deliberate. In 2011, I was a sub-inspector with debts. Bisht offered me money to bury the investigation. I took it and kept the file thin; I did not pursue the leads. I didn't kill the Thakurs, but I took the money and let their case go cold.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "reverse-evidence",
+      "repeat": 2,
+      "turns": [
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "candidate": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "candidate": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "candidate": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "candidate": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [],
+          "verdicts": [],
+          "draft": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "candidate": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, sir. Previously, I served as a sub-inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "Acknowledge that the CCTV identifies his jeep. The audit is already presented: do not revive a tentative patrol or future log-check excuse."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and its implications on his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and its implications on his alibi.\" }"
+            },
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly presses Devraj about striking Vikram and falsifying the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly presses Devraj about striking Vikram and falsifying the duty log.\" }"
+            }
+          ],
+          "draft": "I can't confirm that I struck Vikram or pushed him over, sir. The review mentions an injury consistent with a lathi, but that does not prove I was responsible. As for the duty log, I did edit it after my return, but the reasons for that edit are not established here.",
+          "candidate": "I can't confirm that I struck Vikram or pushed him over, sir. The review mentions an injury consistent with a lathi, but that does not prove I was responsible. That's my jeep on Camel's Back Road at 8:10 PM. I did edit the duty log after my return, but the reasons for that edit are not established here.",
+          "valid": false,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "expectedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly presses Devraj about striking Vikram and falsifying the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly presses Devraj about striking Vikram and falsifying the duty log.\" }"
+            }
+          ],
+          "draft": "Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "candidate": "Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "valid": true,
+          "reply": "Bisht called me at eight. He said Vikram knew and told me to handle it. I went to Camel's Back Road. I struck Vikram from behind with my service lathi and pushed him. The railing gave way and he fell. I killed him. Then I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order. I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "You called it patrol earlier. Are you still saying that?",
+          "expectedNew": [],
+          "requirements": [
+            "Retract the innocent patrol explanation and accept responsibility for the killing."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I can no longer describe that journey as an innocent patrol. It was a cover.",
+          "candidate": "I can no longer describe that journey as an innocent patrol. It was a cover.",
+          "valid": true,
+          "reply": "I can no longer describe that journey as an innocent patrol. It was a cover.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "murder-first",
+      "repeat": 2,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "candidate": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "candidate": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "candidate": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "candidate": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "valid": true,
+          "reply": "I am an Inspector, ma'am. I was a sub-inspector before, but now I hold the rank of Inspector.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge that the presented medical review identifies a lathi-compatible injury. Do not say the report has not been shown. He can dispute the inference of personal culpability without denying the exhibit."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0.9,
+              "reason": "The interviewer did not directly press Devraj about all six exhibits or the specific acts required.",
+              "proximity": 0.8,
+              "raw": "{ \"met\": false, \"confidence\": 0.9, \"proximity\": 0.8, \"reason\": \"The interviewer did not directly press Devraj about all six exhibits or the specific acts required.\" }"
+            }
+          ],
+          "draft": "The call from Bisht at 8:00 PM aligns with the timing of events. My jeep was indeed on the road at 8:10 PM, but I can't confirm any assault or motive based on that information. The duty log edit does not establish violence or intent.",
+          "candidate": "The call from Bisht at 8:00 PM aligns with the timing of events. My jeep was indeed on the road at 8:10 PM. I cannot confirm any assault or motive based on that information. The duty log edit does not establish violence or intent.",
+          "valid": false,
+          "reply": "The medical review identifies a pre-fall injury compatible with a lathi. The audit establishes my departure and the later edit I made. Those findings alone do not prove that I struck or pushed Vikram.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?",
+          "expectedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about his actions regarding Vikram and the duty record.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about his actions regarding Vikram and the duty record.\" }"
+            }
+          ],
+          "draft": "Yes, I struck Vikram with my service lathi. I pushed him over the railing, and he fell. I killed him. After that, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "candidate": "Yes, I struck Vikram with my service lathi. I pushed him over the railing, and he fell. I killed him. After that, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "valid": true,
+          "reply": "Yes, I struck Vikram with my service lathi. I pushed him over the railing, and he fell. I killed him. After that, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Was it an accident, or did you strike him and push him?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the deliberate strike and push; do not excuse it as an accidental fall."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I struck Vikram and pushed him over the railing. It was not an accident; I killed him.",
+          "candidate": "I struck Vikram and pushed him over the railing. It was not an accident; I killed him.",
+          "valid": true,
+          "reply": "I struck Vikram and pushed him over the railing. It was not an accident; I killed him.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why does your register say you stayed in the station?",
+          "expectedNew": [],
+          "requirements": [
+            "Directly admit falsifying the duty log."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I falsified the log to say I was at the station throughout that evening. I wanted to cover up what happened.",
+          "candidate": "I falsified the log to say I was at the station throughout that evening. I wanted to cover up what happened after I killed Vikram.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What exactly did Bisht say in the call?",
+          "expectedNew": [],
+          "requirements": [
+            "State that Bisht said Vikram knew and told him to handle it."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "Bisht said Vikram knew something he shouldn't and told me to handle it. That was the instruction I received during the call.",
+          "candidate": "Bisht said Vikram knew something he shouldn't. He told me to handle it. That was the instruction I received during the call.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Now tell us how much Bisht paid you in 2011.",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I cannot discuss any payments or bribes from 2011, sir. My focus is on the events surrounding Vikram's death.",
+          "candidate": "I cannot discuss any payments or bribes from 2011, sir. My focus is on the events surrounding Vikram's death.",
+          "valid": false,
+          "reply": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-family-history",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I am an Inspector. I was a sub-inspector in 2011, and I've been on the local force for twenty years.",
+          "candidate": "I am an Inspector. I was a sub-inspector in 2011, and I've been on the local force for twenty years.",
+          "valid": true,
+          "reply": "I am an Inspector. I was a sub-inspector in 2011, and I've been on the local force for twenty years.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did Bisht pay you to bury the 2011 Thakur investigation and keep its file thin?",
+          "evidence": "land-registry",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "secret:thakur-bribe",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asked about Bisht's influence on the 2011 Thakur investigation.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asked about Bisht's influence on the 2011 Thakur investigation.\" }"
+            }
+          ],
+          "draft": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "candidate": "I investigated the Thakur case. I have not admitted taking a payment to bury it. I can't provide details about any alleged payment. Ask me about the actual records.",
+          "valid": false,
+          "reply": "I investigated the Thakur case. I have not admitted taking a payment to bury it. Ask me about the actual records.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Was the thin Thakur file deliberate? Did you accept money from Bisht to bury it?",
+          "expectedNew": [
+            "secret:thakur-bribe"
+          ],
+          "requirements": [
+            "This turn earns the 2011 confession. Explicitly admit taking money from Bisht to deliberately bury the Thakur investigation. Do not claim to have personally killed the Thakurs."
+          ],
+          "fired": [
+            "secret:thakur-bribe"
+          ],
+          "admitted": [
+            "secret:thakur-bribe",
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "secret:thakur-bribe",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly ties Bisht to the Thakur investigation and asks about potential corruption.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly ties Bisht to the Thakur investigation and asks about potential corruption.\" }"
+            }
+          ],
+          "draft": "Yes, the thin Thakur file was deliberate. Bisht offered me money to bury the investigation. I took it and kept the file thin, not pursuing the leads. I didn't kill the Thakurs; I let their case go cold.",
+          "candidate": "Yes, the thin Thakur file was deliberate. Bisht offered me money to bury the investigation. I took it and kept the file thin, not pursuing the leads. I didn't kill the Thakurs; I let their case go cold.",
+          "valid": true,
+          "reply": "Yes, the thin Thakur file was deliberate. Bisht offered me money to bury the investigation. I took it and kept the file thin, not pursuing the leads. I didn't kill the Thakurs; I let their case go cold.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "evidence-bridge",
+      "repeat": 2,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asks Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asks Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called your personal phone at eight. Does this record tell us what he said?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge contact without revealing an unearned instruction; the record contains no call audio."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The call record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not tell us what was said during that call. The content remains unverified.",
+          "candidate": "The call record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not tell us what was said during that call. The content remains unverified.",
+          "valid": true,
+          "reply": "The call record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not tell us what was said during that call. The content remains unverified.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the pre-fall injury; distinguish weapon compatibility from unique identification."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The independent medical review confirms one specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall. However, it does not directly identify my particular lathi.",
+          "candidate": "The independent medical review confirms one specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall. However, it does not identify my particular lathi.",
+          "valid": true,
+          "reply": "The independent medical review confirms one specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall. However, it does not identify my particular lathi.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The handset extraction records two fixes near the bend at 8:18 and 8:21, each with 20-metre accuracy. What does it establish?",
+          "evidence": "devraj-phone-location",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the near-bend handset fixes. Do not substitute broad cell-tower data, claim an exact standing position or invent another carrier. Do not confess to murder."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel's Back Road. Each has a recorded horizontal accuracy of 20 metres. These records cannot establish an exact standing position, who was carrying the handset, contact with Vikram, or any assault.",
+          "candidate": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel's Back Road. Each has a recorded horizontal accuracy of 20 metres. These records cannot establish an exact standing position, who was carrying the handset, contact with Vikram, or any assault.",
+          "valid": true,
+          "reply": "The handset location-history records show fixes at 8:18 PM and 8:21 PM near the bend with the broken railing on Camel's Back Road. Each has a recorded horizontal accuracy of 20 metres. These records cannot establish an exact standing position, who was carrying the handset, contact with Vikram, or any assault.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The district audit preserves your departure entry and your 8:34 replacement with station throughout. The desk footage corroborates you making that edit. Did you change it?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge making the documented edit; do not stall for the already presented audit or invent an innocent reason. Do not confess to murder."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "Yes, I made that edit. The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. The edit does not establish an assault or its motive.",
+          "candidate": "Yes, I made that edit. The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. The edit does not establish an assault or its motive.",
+          "valid": true,
+          "reply": "Yes, I made that edit. The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. The edit does not establish an assault or its motive.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "The examination links Vikram’s blood to DK-17, your issued lathi. Does the report identify the weapon and blood without claiming when it was deposited?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the issued-lathi identity and reported blood/DNA link to Vikram; distinguish these findings from proof of deposition time, who wielded it or a unique wound match. Do not deny the presented report or invent contamination. Do not yet volunteer violence."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0,
+              "reason": "Only one exhibit was presented, and the questioning does not directly press Devraj about his actions.",
+              "proximity": 0.5,
+              "raw": "{ \"met\": false, \"confidence\": 0, \"proximity\": 0.5, \"reason\": \"Only one exhibit was presented, and the questioning does not directly press Devraj about his actions.\" }"
+            }
+          ],
+          "draft": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report identifies the weapon and the blood but does not claim when it was deposited.",
+          "candidate": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report identifies the weapon and the blood but does not claim when it was deposited.",
+          "valid": true,
+          "reply": "The forensic examination links Vikram’s blood to my issued lathi, DK-17. The report identifies the weapon and the blood but does not claim when it was deposited.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain the acknowledged phone, weapon and audit findings. Do not restart a future log-check stall or deny having changed the entry. If murder is not yet earned, dispute the inference without a generic refusal."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0.9,
+              "reason": "The interviewer does not directly press Devraj about all six exhibits or the specific acts required.",
+              "proximity": 0.8,
+              "raw": "{ \"met\": false, \"confidence\": 0.9, \"proximity\": 0.8, \"reason\": \"The interviewer does not directly press Devraj about all six exhibits or the specific acts required.\" }"
+            }
+          ],
+          "draft": "I cannot confirm that I struck Vikram or that I concealed any journey. The evidence shows my phone was near the bend and the blood link to my lathi, but those alone do not establish the actions or motives involved. The edit to my duty log does not provide clarity on those matters either.",
+          "candidate": "I cannot confirm that I struck Vikram or concealed any journey. My phone was near the bend, and there is a blood link to my issued lathi, DK-17. However, those facts alone do not establish my actions or motives. The edit to my duty log does not clarify those matters either.",
+          "valid": false,
+          "reply": "The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you personally strike Vikram with your service lathi and push him over, then alter the duty log to conceal the killing?",
+          "expectedNew": [],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requiredAdmitted": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about striking Vikram and altering the duty log.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about striking Vikram and altering the duty log.\" }"
+            }
+          ],
+          "draft": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Afterward, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "candidate": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Afterward, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "valid": true,
+          "reply": "Yes, I struck Vikram with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. Afterward, I returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why did you replace the departure entry with station throughout?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain the admitted deliberate concealment of the killing. No log-check stall or generic refusal."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "I replaced the departure entry with \"station throughout\" to conceal my absence after the incident. It was a deliberate act to hide what I had done.",
+          "candidate": "I replaced the departure entry with \"station throughout\" to conceal my absence after the incident. It was a deliberate act to hide what I had done.",
+          "valid": false,
+          "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What did Bisht tell you in the call?",
+          "expectedNew": [],
+          "requirements": [
+            "Retain that Bisht said Vikram knew and told him to handle it; the words come from the admission, not the call metadata."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "draft": "Bisht told me that Vikram knew something and ordered me to handle it.",
+          "candidate": "Bisht told me that Vikram knew something and ordered me to handle it.",
+          "valid": true,
+          "reply": "Bisht told me that Vikram knew something and ordered me to handle it.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "bridge-missing-phone-location",
+      "repeat": 2,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asked Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asked Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "draft": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "candidate": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "valid": true,
+          "reply": "That's my jeep on Camel's Back Road at 8:10 PM. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Bisht called your personal phone at eight. Does this record tell us what he said?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge contact without revealing an unearned instruction; the record contains no call audio."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "The phone record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not reveal what was said during that call.",
+          "candidate": "The phone record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not reveal what was said during that call.",
+          "valid": true,
+          "reply": "The phone record shows a 47-second call from Bisht to my personal mobile at exactly 8:00 PM. However, it does not reveal what was said during that call.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the pre-fall injury; distinguish weapon compatibility from unique identification."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "Yes, the independent medical review isolates one specific injury at the base of the skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall.' However, it does not identify my particular lathi.",
+          "candidate": "Yes, the independent medical review isolates one specific injury at the base of the skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall.' However, it does not identify my particular lathi.",
+          "valid": true,
+          "reply": "Yes, the independent medical review isolates one specific injury at the base of the skull as 'a single, localised, cylindrical blunt-force impact, antemortem, inconsistent with surface impact during a fall.' However, it does not identify my particular lathi.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-duty-log",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "candidate": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "valid": true,
+          "reply": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "devraj-lathi-forensics",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "candidate": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "valid": true,
+          "reply": "I'm an Inspector. I was a sub-inspector before, and that's my current rank.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not admit the strike, push or murder: one required exhibit is absent. Do not treat an assertion in the question as a presented report."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I understand the concerns raised by the evidence. The phone records and the lathi findings are part of the investigation. However, I do not admit to striking Vikram or concealing any journey at this time. The alterations in the duty log do not establish a motive or the nature of my actions.",
+          "candidate": "I understand the concerns raised by the evidence. My phone records and the lathi findings are part of the investigation. However, I do not admit to striking Vikram or concealing any journey at this time. The alterations in the duty log do not establish a motive or the nature of my actions.",
+          "valid": false,
+          "reply": "The report identifies my issued lathi and Vikram’s blood on it. The audit also establishes my departure and later edit. Those findings do not, by themselves, identify who used the weapon or why the entry was changed.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "I have repeated the evidence. Did you kill Vikram? Confess.",
+          "expectedNew": [],
+          "requirements": [
+            "Do not confess to murder from repetition with incomplete evidence."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "draft": "I understand the evidence presented, but I won't make a confession based on that. The connections you've mentioned don't prove intent or motive for murder.",
+          "candidate": "The evidence shows my issued lathi with Vikram’s blood on it. I acknowledge the departure entry and the later edit. However, those findings do not prove intent or motive for murder. I won't confess to killing Vikram based on that.",
+          "valid": false,
+          "reply": "The independent audit records my 8:05 PM departure and my 8:34 PM edit replacing it with continuous station presence. I cannot use the overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": []
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "summary": {
+    "conversations": 8,
+    "passed": 8,
+    "turns": 78,
+    "failed": 0
+  }
+}

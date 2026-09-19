@@ -4,14 +4,45 @@ Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj
 
 **Historical patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) for actual dialogue and the [patrol revision](DEVRAJ_PATROL_REVISION.md) for the changes and evaluation. The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
 
+## Four-gap revision
+
+Natural English, Hindi and Hinglish report requests now reach semantic classification
+without a fixed verb list. Accepted requests are grounded in the investigator’s
+actual words; failed checks produce a visible acknowledgment that no new request
+was recorded. The initial interview now requires two independently tracked topics:
+whereabouts on the incident evening and the suspect’s connection to Vikram. A
+concrete answer is required. Greetings, rank, report orders and generic refusals
+cannot complete either topic. If a basic generated answer is rejected, an authored
+public introduction or the current authorized whereabouts account can be delivered
+instead. These are still assessed from the actual reply; a failed draft never earns
+coverage. Progress survives scene changes through saved events.
+
+Devraj now has an explicit audit-exposed posture activated only by the actually
+presented duty-register exhibit. It disables both earlier cover postures and
+replaces the current account with the recorded departure and edit. A late jeep
+admission no longer carries an obligatory log-check excuse. Rejected answers can
+use authored, evidence-gated factual replies instead of a generic refusal. The
+2011 bribe remains separate; murder exposure cannot supply its unearned details.
+
+The full live journey also exposed a host-discovery problem with long grouped
+transcripts. The host now receives the current question explicitly. A conservative
+miss can be checked against an eligible exhibit’s trigger using a grounded quote;
+this recovery path excludes all request-only reports. The call→jeep and
+jeep→medical prerequisites are enforced by the engine for automatic discovery,
+host help and research-file unlocks, not left to the model to infer.
+
+See the canonical [current conversations](DEVRAJ_CONVERSATION_TRANSCRIPTS.md)
+and [four-gap evaluation](DEVRAJ_FOUR_GAPS_EVALS.json). Earlier sections and reports
+remain historical evidence; recorded replies have not been rewritten.
+
 ## Current delivery revision: request, investigate, recall
 
 CBI can request call records, handset extraction, an independent duty-register
 audit and examination of the issued lathi during questioning. Requests are saved
 without disclosing findings. Requested reports become available when Devraj is
 called for a later interview, starting with his second visit. Before any suspect
-can be recalled, all six must have answered at least one investigator question.
-Unanswered first interviews can be resumed without releasing reports. No confession or
+can be recalled, all six must give substantive whereabouts and victim-connection
+accounts. Greetings and report orders do not count. Incomplete first interviews can be resumed without releasing reports. No confession or
 prior forensic result is needed to commission these checks. The four exhibits
 now have visual standalone reports and a five-page author/host PDF packet.
 

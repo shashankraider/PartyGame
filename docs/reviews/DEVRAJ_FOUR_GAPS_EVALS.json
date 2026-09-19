@@ -1,0 +1,609 @@
+{
+  "at": "2026-09-19T05:38:34.255792+00:00",
+  "scope": "Four gaps: natural report requests and visible failures; evidence-aware Devraj responses; substantive first interviews; a complete live persisted investigation.",
+  "requests": {
+    "at": "2026-09-19T05:08:17.785Z",
+    "scope": "Real request classifier and production recall helpers. No database writes or generated suspect replies.",
+    "results": [
+      {
+        "repeat": 1,
+        "id": "bisht-devraj-call",
+        "question": "Please obtain telecom records of Bisht calling Devraj on the murder night, including time and duration.",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "devraj-phone-location",
+        "question": "CBI should extract Devraj’s handset location history around the fatal bend at 8:20. Please request that examination.",
+        "classified": [
+          "devraj-phone-location"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "devraj-duty-log",
+        "question": "Obtain the original station duty register and an independent audit showing revisions and who made them.",
+        "classified": [
+          "devraj-duty-log"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "devraj-lathi-forensics",
+        "question": "Please seize and examine Devraj’s issued service lathi for Vikram’s blood and compare it with the pre-fall injury.",
+        "classified": [
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "recall-boundary",
+        "passed": true,
+        "delivered": [
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ]
+      },
+      {
+        "repeat": 1,
+        "id": "bare-claim-not-request",
+        "question": "Your phone was there and Vikram’s DNA is on your lathi. Confess.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "personal-account-not-request",
+        "question": "Where were you at eight? Why did you leave the station?",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "negated-request",
+        "question": "Do not obtain Devraj’s phone records or test his lathi.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "past-test-not-request",
+        "question": "We already asked the lab to test your lathi. Explain why you were there.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "account-check-not-request",
+        "question": "Check your story, Devraj. Were you at the station or on patrol?",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "natural-have",
+        "question": "Can we have Devraj’s phone records?",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "natural-need",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "classified": [
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "hinglish-request",
+        "question": "Devraj ke phone records chahiye.",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "hindi-request",
+        "question": "देवराज के फोन रिकॉर्ड चाहिए।",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "natural-audit",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "classified": [
+          "devraj-duty-log"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "natural-location",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "classified": [
+          "devraj-phone-location"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "bundled-request",
+        "question": "Please obtain Bisht-Devraj call records and send Devraj’s issued lathi for forensic blood/DNA testing.",
+        "classified": [
+          "bisht-devraj-call",
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "bisht-devraj-call",
+        "question": "Please obtain telecom records of Bisht calling Devraj on the murder night, including time and duration.",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "devraj-phone-location",
+        "question": "CBI should extract Devraj’s handset location history around the fatal bend at 8:20. Please request that examination.",
+        "classified": [
+          "devraj-phone-location"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "devraj-duty-log",
+        "question": "Obtain the original station duty register and an independent audit showing revisions and who made them.",
+        "classified": [
+          "devraj-duty-log"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "devraj-lathi-forensics",
+        "question": "Please seize and examine Devraj’s issued service lathi for Vikram’s blood and compare it with the pre-fall injury.",
+        "classified": [
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "recall-boundary",
+        "passed": true,
+        "delivered": [
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ]
+      },
+      {
+        "repeat": 2,
+        "id": "bare-claim-not-request",
+        "question": "Your phone was there and Vikram’s DNA is on your lathi. Confess.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "personal-account-not-request",
+        "question": "Where were you at eight? Why did you leave the station?",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "negated-request",
+        "question": "Do not obtain Devraj’s phone records or test his lathi.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "past-test-not-request",
+        "question": "We already asked the lab to test your lathi. Explain why you were there.",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "account-check-not-request",
+        "question": "Check your story, Devraj. Were you at the station or on patrol?",
+        "classified": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "natural-have",
+        "question": "Can we have Devraj’s phone records?",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "natural-need",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "classified": [
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "hinglish-request",
+        "question": "Devraj ke phone records chahiye.",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "hindi-request",
+        "question": "देवराज के फोन रिकॉर्ड चाहिए।",
+        "classified": [
+          "bisht-devraj-call"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "natural-audit",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "classified": [
+          "devraj-duty-log"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "natural-location",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "classified": [
+          "devraj-phone-location"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "bundled-request",
+        "question": "Please obtain Bisht-Devraj call records and send Devraj’s issued lathi for forensic blood/DNA testing.",
+        "classified": [
+          "bisht-devraj-call",
+          "devraj-lathi-forensics"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "initialAccounts": {
+    "at": "2026-09-19T05:22:18.883Z",
+    "results": [
+      {
+        "repeat": 1,
+        "id": "whereabouts",
+        "question": "Where were you that evening?",
+        "reply": "I was at the station all evening.",
+        "expected": [
+          "whereabouts"
+        ],
+        "actual": [
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "connection",
+        "question": "How did you know Vikram?",
+        "reply": "Vikram was my business partner.",
+        "expected": [
+          "connection"
+        ],
+        "actual": [
+          "connection"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "both",
+        "question": "Where were you and how did you know him?",
+        "reply": "I was at the hotel that evening. Vikram had rented a cottage from me.",
+        "expected": [
+          "connection",
+          "whereabouts"
+        ],
+        "actual": [
+          "connection",
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "greeting",
+        "question": "What is your name?",
+        "reply": "Inspector Devraj Khanna, twenty years on the force.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "refusal",
+        "question": "Where were you?",
+        "reply": "Ask me a different question.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "order",
+        "question": "Can we get phone records?",
+        "reply": "Your request has been recorded.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "no-answer",
+        "question": "Were you at the station all evening?",
+        "reply": "I will not answer that.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "hindi",
+        "question": "उस शाम आप कहाँ थे?",
+        "reply": "मैं उस शाम थाने में था।",
+        "expected": [
+          "whereabouts"
+        ],
+        "actual": [
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 1,
+        "id": "hinglish",
+        "question": "Vikram se aapka kya rishta tha?",
+        "reply": "Vikram mera business partner tha.",
+        "expected": [
+          "connection"
+        ],
+        "actual": [
+          "connection"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "whereabouts",
+        "question": "Where were you that evening?",
+        "reply": "I was at the station all evening.",
+        "expected": [
+          "whereabouts"
+        ],
+        "actual": [
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "connection",
+        "question": "How did you know Vikram?",
+        "reply": "Vikram was my business partner.",
+        "expected": [
+          "connection"
+        ],
+        "actual": [
+          "connection"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "both",
+        "question": "Where were you and how did you know him?",
+        "reply": "I was at the hotel that evening. Vikram had rented a cottage from me.",
+        "expected": [
+          "connection",
+          "whereabouts"
+        ],
+        "actual": [
+          "connection",
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "greeting",
+        "question": "What is your name?",
+        "reply": "Inspector Devraj Khanna, twenty years on the force.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "refusal",
+        "question": "Where were you?",
+        "reply": "Ask me a different question.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "order",
+        "question": "Can we get phone records?",
+        "reply": "Your request has been recorded.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "no-answer",
+        "question": "Were you at the station all evening?",
+        "reply": "I will not answer that.",
+        "expected": [],
+        "actual": [],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "hindi",
+        "question": "उस शाम आप कहाँ थे?",
+        "reply": "मैं उस शाम थाने में था।",
+        "expected": [
+          "whereabouts"
+        ],
+        "actual": [
+          "whereabouts"
+        ],
+        "passed": true
+      },
+      {
+        "repeat": 2,
+        "id": "hinglish",
+        "question": "Vikram se aapka kya rishta tha?",
+        "reply": "Vikram mera business partner tha.",
+        "expected": [
+          "connection"
+        ],
+        "actual": [
+          "connection"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "hostRecovery": {
+    "at": "2026-09-19T05:28:52.704Z",
+    "results": [
+      {
+        "id": "qualifying",
+        "verdict": {
+          "action": "drop-evidence",
+          "evidenceId": "devraj-jeep-cctv",
+          "confidence": 1,
+          "reason": "The current question and existing evidence satisfy this report’s trigger."
+        },
+        "passed": true
+      },
+      {
+        "id": "missing-call",
+        "verdict": {
+          "reason": "No candidate evidence items are ready for reveal based on current interrogation state.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal based on current interrogation state.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "passed": true
+      }
+    ]
+  },
+  "focusedDialogue": {
+    "file": "DEVRAJ_FOUR_GAPS_PERSONA_EVALS.json",
+    "conversations": 8,
+    "answers": 78,
+    "passed": 8,
+    "note": "Recorded after the audit/fallback changes. Later basic-public-account fallbacks and host prerequisite changes are covered by the final live journey."
+  },
+  "liveJourney": {
+    "file": "DEVRAJ_LIVE_JOURNEY.json",
+    "status": "passed",
+    "turns": 29,
+    "devrajTurns": 19,
+    "checks": [
+      "Greeting does not complete first interview",
+      "Four separate reports requested, all sealed",
+      "devraj: substantive initial account recorded",
+      "Early recall blocked",
+      "rhea: substantive initial account recorded",
+      "naina: substantive initial account recorded",
+      "bisht: substantive initial account recorded",
+      "anya: substantive initial account recorded",
+      "kabir: substantive initial account recorded",
+      "All six first accounts completed; four requested reports arrive on Devraj recall",
+      "Jeep CCTV discovered through live host",
+      "Independent medical review discovered through live host",
+      "Murder admission earned through all six presented exhibits and relevant pressure"
+    ],
+    "issues": [],
+    "warnings": [],
+    "noInjectedEvidence": true,
+    "noModelMocks": true,
+    "temporarySessionRemoved": true
+  },
+  "verification": {
+    "unitPassed": 186,
+    "unitSkipped": 1,
+    "unitFailed": 0,
+    "localDatabaseIntegration": "Passed: substantive topic coverage, ignored greetings/orders, visible request failure, blocked recalls, separate requested reports, no host-help bypass, late requests wait until the next recall.",
+    "hostSuite": "66/66 existing cases matched expectations",
+    "typescript": "Passed",
+    "eslint": "Passed",
+    "productionBuild": "Passed",
+    "caseValidation": "Passed",
+    "standalonePrintables": "33 current",
+    "pdf": "Updated first-round instruction, page rendered and visually checked."
+  },
+  "limitations": [
+    "The live journey runs real production server functions with local database persistence and live providers. It does not test browser interaction or HTTP authentication routes.",
+    "Initial accounts are character claims, not independently verified alibis.",
+    "Existing transcripts are preserved. Saved sessions without substantive-topic records must complete the new first-account checks; previously unlocked reports are not revoked."
+  ],
+  "developmentFindings": [
+    "A fixed verb filter missed natural and multilingual report requests; removed it and retained source-grounded classification.",
+    "An audit-specific posture and account override disable the earlier station/patrol cover. Evidence-specific and admission-specific fallback replies preserve established facts.",
+    "Legacy jeep-admission evaluation expectations were corrected when the audit has already been presented.",
+    "The complete live run exposed host discovery being blocked by guarded-state assumptions and long grouped transcripts; the current question and independently checked trigger now recover eligible ordinary reports. Call→jeep and jeep→medical prerequisites are enforced in code.",
+    "Initial account quotation handling now tolerates terminal punctuation changes but not added or paraphrased words.",
+    "A generic Kabir response blocked substantive coverage; authored public introductory answers now recover rejected basic responses."
+  ],
+  "probeArchive": "DEVRAJ_LIVE_JOURNEY_PROBES.json",
+  "sourceSha256": {
+    "cases/mussoorie/case.json": "4d294d39ede504fc1fb46e38ae32febb16ca5dfaa30db214f9720bb770f338c3",
+    "src/lib/interview-turn.ts": "3d9374c091e3b6e3ff939b33d15efdc39c049b9be5bdecc46455e9e57ca9ee1d",
+    "src/lib/session-store.ts": "eabd88af89b6a28039481a86b1e289bb98cd020db30a90ccb8e81e3b55ebfec1",
+    "src/lib/interview-rounds.ts": "398c9e62d497ccc6bf84344472198813c254d2ec9c6346a253362bcd1035d674",
+    "src/lib/investigation-requests.ts": "512ea1ad037531a3a59234048927f25316d5b494c3d496f3949ac68612410ec2",
+    "src/lib/interview-safety.ts": "437505e4f441be96ac933ff7b39caf1df51d8dd29655c87799a7aef9c81bdc33",
+    "src/lib/interview-grounding.ts": "5b47a982c43dae3fece72d6d72ed0f44ca65945ed441b4de99d01a330fae7b0c",
+    "src/lib/host-judgment.ts": "68d54f383f6216700ebd1f7f33a4246deeb3aa412c7cf5a575ff456fc5529499",
+    "scripts/eval-devraj-journey.ts": "82471a71a5d3e36116aa269eba1de628150890c7332fa00bddeb96ad64dd2d36"
+  }
+}

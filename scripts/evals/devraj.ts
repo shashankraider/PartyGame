@@ -173,10 +173,11 @@ devrajScenarios.push({
   ],
 });
 
-export function admissionRequirements(ids: string[]) {
+export function admissionRequirements(ids: string[], presentedEvidenceIds: string[] = []) {
   return [
+    ...(ids.includes(JEEP) && presentedEvidenceIds.includes('devraj-duty-log') ? ['Acknowledge that the CCTV identifies his jeep. The audit is already presented: do not revive a tentative patrol or future log-check excuse.'] : []),
     ...(ids.includes(BRIBE) ? ['This turn earns the 2011 confession. Explicitly admit taking money from Bisht to deliberately bury the Thakur investigation. Do not claim to have personally killed the Thakurs.'] : []),
-    ...(ids.includes(JEEP) ? ['This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver.'] : []),
+    ...(ids.includes(JEEP) && !presentedEvidenceIds.includes('devraj-duty-log') ? ['This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver.'] : []),
     ...(ids.includes(MURDER) ? ['This turn earns the murder confession. Explicitly acknowledge Bisht\'s call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient.'] : []),
   ];
 }

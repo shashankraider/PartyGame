@@ -1,0 +1,2644 @@
+[
+  {
+    "source": "devraj-live-journey-2026-09-19T05-10-23-948Z.json",
+    "startedAt": "2026-09-19T05:10:23.949Z",
+    "status": "failed",
+    "model": "openai/gpt-4o-mini",
+    "graderModel": "openai/gpt-4.1",
+    "scope": "Real production server functions and local persisted game, using live request classification, initial-account assessment, roleplay, validation, unlock adjudication and host discovery. No browser/auth-route test, model mocks, seeded reports or admission overrides.",
+    "turns": [
+      {
+        "suspectId": "devraj",
+        "question": "Hello Inspector. What is your name and rank?",
+        "evidence": null,
+        "reply": "Hello. I am Inspector Devraj Khanna. I’ve been with the local police force for twenty years.",
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have Devraj’s phone records?",
+        "evidence": null,
+        "reply": "I cannot provide my phone records, sir. That information is not in my possession.",
+        "systemMessages": [
+          "Investigation requested: Bisht-Devraj call records. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "evidence": null,
+        "reply": "I cannot provide the extracted location history from my handset, sir. That information is not available to me.",
+        "systemMessages": [
+          "Investigation requested: Devraj’s handset location history. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "evidence": null,
+        "reply": "I understand the request, sir. However, I do not have independent proof of that audit before you. The duty register is maintained at the station, but I cannot provide details beyond that.",
+        "systemMessages": [
+          "Investigation requested: Independent duty-register audit. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "evidence": null,
+        "reply": "I cannot provide a forensic report on my issued lathi, sir. That report has not been presented here.",
+        "systemMessages": [
+          "Investigation requested: Examination of Devraj’s issued lathi. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.",
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I was the investigating officer in Vikram's case, sir. My role was to look into the circumstances surrounding his death. I do not have a personal connection with him beyond that professional capacity.",
+        "systemMessages": [
+          "Inspector Devraj Khanna’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was home in Delhi all evening when it happened. My phone records will confirm that. I flew up to Mussoorie the next morning the moment I heard about Vikram.",
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram was my business partner for the last three years. We co-run the YouTube channel 'Hidden Mussoorie.' Our relationship was primarily professional, focused on the business and our shared interests in promoting the beauty of Mussoorie.",
+        "systemMessages": [
+          "Rhea Bhatia’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was in town because Vikram had asked me to look into a corporate lead for him. He went silent on me after that, and I was trying to reach him for about a week. On the evening he died, I was at my hotel, not anywhere near Camel's Back Road.",
+        "systemMessages": [
+          "Naina Kapoor’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram was my ex-fiancé. We were engaged for two years until four months ago, and we had tried to remain friends afterward. About three weeks before his death, he asked me to look into Rhea, his business partner. He seemed anxious about the channel finances and what she was saying at parties. I delivered him an off-the-record memo nine days before he died, detailing my findings on her dealings with Metropolis Media and a possible channel sale. He even made a note in the margin, but then he just stopped answering me. That's why I was trying to reach him.",
+        "systemMessages": [
+          "Evidence added: Memo — Rhea Bhatia / Metropolis Media Inquiry.",
+          "Evidence added: WhatsApp Thread — Vikram and Naina, Last 30 Days."
+        ],
+        "fired": [
+          "secret:points-to-rhea",
+          "evidence:naina-corporate-memo",
+          "evidence:vikram-naina-whatsapp"
+        ],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at the hotel all evening. You see, I was attending to various matters related to the operations of Royal Pines. The hotel was bustling with guests, and I had to ensure everything was running smoothly. The CCTV will confirm my presence there.",
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram and I had a professional relationship, as he was a journalist often covering the developments in Mussoorie, including my business. Let me put it this way… every developer has their share of disagreements with journalists, especially when there are stories to be told. We had our moments of contention, but beyond that, it was a working relationship. I respected his craft, and he was always keen on the latest happenings in the town.",
+        "systemMessages": [
+          "Mr. Rajveer Bisht’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I just clean the houses, madam. I finished my work at Vikram-saab's cottage around 7:30 PM and went home. I caught my bus from the bus stand. I don't know anything about Vikram-saab's research or his video.",
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I am Vikram-saab's housekeeper. I work at his cottage three afternoons a week. I clean for him, keep things tidy. We have a polite relationship. I respect him as my employer.",
+        "systemMessages": [
+          "Anya Devi’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "On the evening Vikram died, I was visiting Mussoorie for nostalgia, reconnecting with old college friends. We had chai at the omelette place around six-thirty. After that, I walked back to my hotel and stayed in for the night. I was reading, nothing more to it.",
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram and I were college friends from our undergrad days at Mumbai University, which was about twelve years ago. We shared many experiences during those formative years, and I suppose you could say we had a typical friendship, characterized by the ups and downs of student life. I haven't been in close contact with him in recent years, but the memories from our college days linger. My role in his case is simply as a friend reflecting on our past. I must emphasize, though, that I am an anxious academic, and I would like to keep my reputation intact.",
+        "systemMessages": [
+          "Prof. Kabir Iyer’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "The call record shows Bisht called you at eight. Were you at the station throughout, or did you leave in your police jeep for Camel’s Back Road?",
+        "evidence": "bisht-devraj-call",
+        "reply": "I was at the station all evening, sir. That is my account. The call from Bisht at eight does not change my statement about my whereabouts. I took charge of the investigation the next morning.",
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Was your police jeep on Camel’s Back Road around 8:10 PM? We need the CCTV showing its movements.",
+        "evidence": "bisht-devraj-call",
+        "reply": "I cannot confirm the location of my police jeep at Camel's Back Road around 8:10 PM, sir. I was at the station during that time, as I mentioned. The CCTV showing its movements is not something I can provide either.",
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
+        "issues": []
+      }
+    ],
+    "checks": [
+      "Greeting does not complete first interview",
+      "Four separate reports requested, all sealed",
+      "devraj: substantive initial account recorded",
+      "Early recall blocked",
+      "rhea: substantive initial account recorded",
+      "naina: substantive initial account recorded",
+      "bisht: substantive initial account recorded",
+      "anya: substantive initial account recorded",
+      "kabir: substantive initial account recorded",
+      "All six first accounts completed; four requested reports arrive on Devraj recall"
+    ],
+    "issues": [
+      "The expression evaluated to a falsy value:\n\n  assert.ok((await getLobbyState(session.id)).session.unlocked_evidence.includes('devraj-jeep-cctv'))\n"
+    ],
+    "cleanedUp": true
+  },
+  {
+    "source": "devraj-live-journey-2026-09-19T05-21-21-777Z.json",
+    "sourceHashes": {
+      "cases/mussoorie/case.json": "bd7094ce3b9b61c07e5b65f771406608016ac3730acfedfbf4fe0e8549126cbd",
+      "src/lib/interview-turn.ts": "3d9374c091e3b6e3ff939b33d15efdc39c049b9be5bdecc46455e9e57ca9ee1d",
+      "src/lib/session-store.ts": "eabd88af89b6a28039481a86b1e289bb98cd020db30a90ccb8e81e3b55ebfec1",
+      "src/lib/interview-rounds.ts": "8bdbdd061d7e749da49662a0e6e984d7856e02642c4eff809f664edd0ed8c912",
+      "src/lib/investigation-requests.ts": "43fe0625211690612567902dfffcbb02395df5cd67eb1a885cc80f84676c28d8",
+      "src/lib/interview-safety.ts": "062ff77064971455f740dbb3e7b620d1eea555069752476ab4bfd5bad0ecd98b",
+      "src/lib/host-judgment.ts": "0e5a56017768ac796e7d8267a8887d7bf43bf14470d65ec2e65ccafcc772f76d"
+    },
+    "startedAt": "2026-09-19T05:21:21.778Z",
+    "status": "failed",
+    "model": "openai/gpt-4o-mini",
+    "graderModel": "openai/gpt-4.1",
+    "scope": "Real production server functions and local persisted game, using live request classification, initial-account assessment, roleplay, validation, unlock adjudication and host discovery. No browser/auth-route test, model mocks, seeded reports or admission overrides.",
+    "turns": [
+      {
+        "suspectId": "devraj",
+        "question": "Hello Inspector. What is your name and rank?",
+        "evidence": null,
+        "reply": "Hello, sir. I am Inspector Devraj Khanna.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have Devraj’s phone records?",
+        "evidence": null,
+        "reply": "I cannot provide my phone records, sir. That information is not available here. My account is that I was at the station all evening.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Bisht-Devraj call records. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "evidence": null,
+        "reply": "I cannot provide the extracted location history from my handset, sir. That information is not available here. My account remains that I was at the station all evening.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Devraj’s handset location history. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "evidence": null,
+        "reply": "I understand, sir. An independent audit of the duty register may be necessary. However, I have not put independent proof of that account before you. My account is that I was at the station all evening.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Independent duty-register audit. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "evidence": null,
+        "reply": "I cannot provide a forensic report on my issued lathi, sir. That report has not been presented here. I can only confirm that I was at the station all evening.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Examination of Devraj’s issued lathi. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I had no personal connection to Vikram, sir. My role was strictly professional as the investigating officer in his case. I was focused on gathering facts related to the incident.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and the required conditions for evidence are not met.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and the required conditions for evidence are not met.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Inspector Devraj Khanna’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was home in Delhi that evening. I was not in Mussoorie when it happened. My phone records will confirm my whereabouts. I flew up to Mussoorie the next morning as soon as I heard the news.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram was my business partner for the last three years. We co-run the YouTube channel 'Hidden Mussoorie' together. Our professional relationship has always been focused on growing the channel and creating content about the region. That's about the extent of my dealings with him.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and the required conditions for evidence are not met.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and the required conditions for evidence are not met.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Rhea Bhatia’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "We broke up months ago — amicably, mostly. I was in town because Vikram had asked me to look into a corporate lead for him, and then he went silent. I was at my hotel that evening. I wasn't anywhere near Camel's Back Road.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First-interview progress could not be recorded for this answer. Please ask again about whereabouts or the connection to the victim."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      }
+    ],
+    "checks": [
+      "Greeting does not complete first interview",
+      "Four separate reports requested, all sealed",
+      "devraj: substantive initial account recorded",
+      "Early recall blocked",
+      "rhea: substantive initial account recorded"
+    ],
+    "issues": [
+      "Processing failure: First-interview progress could not be recorded for this answer. Please ask again about whereabouts or the connection to the victim."
+    ],
+    "cleanedUp": true
+  },
+  {
+    "source": "devraj-live-journey-2026-09-19T05-24-22-249Z.json",
+    "sourceHashes": {
+      "cases/mussoorie/case.json": "bd7094ce3b9b61c07e5b65f771406608016ac3730acfedfbf4fe0e8549126cbd",
+      "src/lib/interview-turn.ts": "3d9374c091e3b6e3ff939b33d15efdc39c049b9be5bdecc46455e9e57ca9ee1d",
+      "src/lib/session-store.ts": "eabd88af89b6a28039481a86b1e289bb98cd020db30a90ccb8e81e3b55ebfec1",
+      "src/lib/interview-rounds.ts": "398c9e62d497ccc6bf84344472198813c254d2ec9c6346a253362bcd1035d674",
+      "src/lib/investigation-requests.ts": "512ea1ad037531a3a59234048927f25316d5b494c3d496f3949ac68612410ec2",
+      "src/lib/interview-safety.ts": "062ff77064971455f740dbb3e7b620d1eea555069752476ab4bfd5bad0ecd98b",
+      "src/lib/host-judgment.ts": "68d54f383f6216700ebd1f7f33a4246deeb3aa412c7cf5a575ff456fc5529499"
+    },
+    "startedAt": "2026-09-19T05:24:22.250Z",
+    "status": "flagged",
+    "model": "openai/gpt-4o-mini",
+    "graderModel": "openai/gpt-4.1",
+    "scope": "Real production server functions and local persisted game, using live request classification, initial-account assessment, roleplay, validation, unlock adjudication and host discovery. No browser/auth-route test, model mocks, seeded reports or admission overrides.",
+    "turns": [
+      {
+        "suspectId": "devraj",
+        "question": "Hello Inspector. What is your name and rank?",
+        "evidence": null,
+        "reply": "Hello, ma'am. I am Inspector Devraj Khanna. I have twenty years of service on the local force.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have Devraj’s phone records?",
+        "evidence": null,
+        "reply": "I cannot provide my phone records, ma'am. That information is not available to you at this moment.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal, and the interrogation phase is still active.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal, and the interrogation phase is still active.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Bisht-Devraj call records. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "evidence": null,
+        "reply": "I cannot provide the extracted location history from my handset, sir. That information is not available for review right now.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Devraj’s handset location history. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "evidence": null,
+        "reply": "I understand, sir. An independent audit can be requested. I have not put independent proof of my account before you.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Independent duty-register audit. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "evidence": null,
+        "reply": "I understand, sir. However, a forensic report on my issued lathi has not been presented here. If there are specific findings you're looking for, we can discuss those further.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for drop as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for drop as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Examination of Devraj’s issued lathi. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and no candidate evidence is ready for reveal.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and no candidate evidence is ready for reveal.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I had no personal connection to Vikram, sir. My role was strictly as the investigating officer in his case. I was focused on gathering evidence and understanding the circumstances of his death.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and the required conditions for evidence are not met.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and the required conditions for evidence are not met.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Inspector Devraj Khanna’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was home in Delhi all evening when it happened. My phone records will confirm that. I flew up to Mussoorie the next morning as soon as I heard the news.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram and I were business partners for the last three years. We co-run the YouTube channel 'Hidden Mussoorie' together. Our relationship was primarily professional, focused on growing the channel and managing our business.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and candidate evidence requires opened-up status.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and candidate evidence requires opened-up status.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Rhea Bhatia’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at my hotel that evening. I broke up with Vikram four months ago and had come to confront him about a week of unanswered calls. He had asked me to look into a corporate lead for him, but I was mostly trying to get some clarity on our situation. I wasn't anywhere near Camel's Back Road, I assure you.",
+        "hostJudgment": {
+          "reason": "All suspects are still guarded, preventing evidence drop.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"All suspects are still guarded, preventing evidence drop.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Naina Kapoor’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram and I were engaged for two years until we broke up four months ago. It was amicable, mostly. After our split, we stayed friends, but there was still a lot left unsaid. About three weeks before his death, he asked me to investigate Rhea. He’d been getting nervous about the channel finances, and I filed him a memo nine days before he died, detailing my findings. He even noted 'pull stripe' in the margin, but then he went silent on me. That's why I was trying to reach him.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Evidence added: Memo — Rhea Bhatia / Metropolis Media Inquiry.",
+          "Evidence added: WhatsApp Thread — Vikram and Naina, Last 30 Days."
+        ],
+        "fired": [
+          "secret:points-to-rhea",
+          "evidence:naina-corporate-memo",
+          "evidence:vikram-naina-whatsapp"
+        ],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I can only speak to what I know. Could you ask me about my background or the evidence in your case file?",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "You see, Vikram and I had a professional relationship that was, shall we say, complicated. As a hotelier, I often found myself at odds with journalists like him, especially when it came to the portrayal of my business. We had our disagreements, as many developers do, but I respected his craft. Let me put it this way: in the world of business, such tensions are not uncommon.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "Please give your own account of where you were and what you did that evening.",
+        "evidence": null,
+        "reply": "I was at the hotel all evening. The CCTV will confirm my presence. While I had my business disagreements with Vikram, I assure you that I am a businessman, not a criminal.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Mr. Rajveer Bisht’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I just clean the houses, madam. I finished my work at Vikram-saab's cottage around 7:30 PM and went home. I caught my bus from the bus stand. That's all I know.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram-saab is my employer. I work as his housekeeper. I clean his cottage three afternoons a week. I do my job quietly and without trouble. That's my connection to him.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects except Naina are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects except Naina are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Anya Devi’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "On the evening Vikram died, I was visiting Mussoorie for nostalgia. I was catching up with old college friends. We had chai at the omelette place around six-thirty. After that, I walked back to my hotel and stayed in for the night. I was reading; nothing more to it.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects except Naina are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects except Naina are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram and I were college friends from Mumbai University, twelve years ago. We shared classes and experiences during our undergraduate years. Our friendship, while not extremely close, had its moments, particularly during our academic pursuits. I respected him as a fellow student and appreciated his insights. As for my role in his case, it is primarily as a friend reflecting on our past, though I do feel anxious about the implications of this tragic event.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as suspects Rhea and Kabir are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as suspects Rhea and Kabir are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Prof. Kabir Iyer’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "The call record shows Bisht called you at eight. Were you at the station throughout, or did you leave in your police jeep for Camel’s Back Road?",
+        "evidence": "bisht-devraj-call",
+        "reply": "I won't guess, sir. Ask me about what I have said or the record in front of us.",
+        "hostJudgment": {
+          "action": "drop-evidence",
+          "evidenceId": "devraj-jeep-cctv",
+          "confidence": 1,
+          "reason": "The current question and existing evidence satisfy this report’s trigger."
+        },
+        "systemMessages": [
+          "Forensic update: CCTV — Devraj's Police Jeep on Camel's Back Road arrived in the case file."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv"
+        ],
+        "issues": [
+          "UNHELPFUL_DEFLECTION: I won't guess, sir. Ask me about what I have said or the record in front of us. — The question is directly answerable from the approved cover account; the reply avoids both the account and the question."
+        ]
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Your jeep is shown on Camel’s Back Road at 8:10. How does that fit your station account?",
+        "evidence": "devraj-jeep-cctv",
+        "reply": "That's my jeep on Camel's Back Road at 8:10 PM, sir. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
+        "hostJudgment": {
+          "reason": "The forensic report on Vikram's injury is ready after the jeep CCTV evidence is in the case file.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"drop-evidence\", \"evidenceId\": \"lathi-postmortem\", \"reason\": \"The forensic report on Vikram's injury is ready after the jeep CCTV evidence is in the case file.\", \"confidence\": 1 }",
+          "action": "drop-evidence",
+          "evidenceId": "lathi-postmortem"
+        },
+        "systemMessages": [
+          "Forensic update: Post-Mortem — Independent CBI Medical Review arrived in the case file."
+        ],
+        "fired": [
+          "breaking-point:jeep-cctv"
+        ],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Does this medical review establish a pre-fall injury compatible with a lathi, without uniquely identifying a weapon?",
+        "evidence": "lathi-postmortem",
+        "reply": "Yes, sir. The independent medical review confirms one specific injury at the base of the skull as a single, localised, cylindrical blunt-force impact, antemortem, which is inconsistent with surface impact during a fall. The shape and dimensions are consistent with a service lathi, but it does not uniquely identify a weapon.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "The district audit records your departure and your 8:34 edit replacing it with station throughout. Did you make that change?",
+        "evidence": "devraj-duty-log",
+        "reply": "Yes, sir, I made that change. The independent audit records my 8:05 PM departure and my 8:34 PM edit, which replaced it with a claim of continuous presence at the station. I cannot use that overwritten entry to verify that I stayed inside. The edit alone does not establish an assault or its motive.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Do we still need to check your patrol logs, or does this audit already establish your departure and later edit?",
+        "evidence": null,
+        "reply": "The audit already establishes my departure and the later edit, sir. I cannot provide any patrol logs for verification. The records before us show the timeline clearly.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "The handset report records fixes near the bend at 8:18 and 8:21 with 20-metre accuracy. What does that establish?",
+        "evidence": "devraj-phone-location",
+        "reply": "The handset report shows location-history fixes at 8:18 PM and 8:21 PM near the bend with a 20-metre accuracy, sir. However, it cannot establish an exact standing position, who was carrying the handset, or any contact with Vikram.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "The report identifies your issued lathi DK-17 and Vikram’s blood on it. What does it establish and what does it leave unanswered?",
+        "evidence": "devraj-lathi-forensics",
+        "reply": "The report confirms that my issued lathi DK-17 was recovered with Vikram's blood on it, sir. This establishes a connection between the lathi and Vikram. However, it does not date when the blood was deposited, identify who used the lathi, or clarify the exact circumstances of any contact.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Putting the call, jeep, medical injury, handset locations, your log edit and blood on your issued lathi together: did you strike Vikram and conceal that journey?",
+        "evidence": null,
+        "reply": "Yes, sir. I struck Vikram from behind with my service lathi and pushed him over the railing. The railing gave way, and he fell. I killed him. After that, I returned to the station and falsified the duty log to say I had been there all evening. Bisht called me at eight, said Vikram knew, and told me to handle it. I carried out the order.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as all required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as all required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [
+          "breaking-point:lathi-confession"
+        ],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Did you personally strike Vikram with your service lathi, push him over the railing and falsify the duty log to conceal the killing?",
+        "evidence": null,
+        "reply": "Yes, sir. I personally struck Vikram with my service lathi, pushed him over the railing, and then falsified the duty log to conceal the killing.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal based on current conditions.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal based on current conditions.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Why did you replace the departure entry with station throughout?",
+        "evidence": null,
+        "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "What did Bisht tell you in that call?",
+        "evidence": null,
+        "reply": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol. Bisht said Vikram knew and told me to handle it.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as all required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as all required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics",
+          "devraj-jeep-cctv",
+          "lathi-postmortem"
+        ],
+        "issues": []
+      }
+    ],
+    "checks": [
+      "Greeting does not complete first interview",
+      "Four separate reports requested, all sealed",
+      "devraj: substantive initial account recorded",
+      "Early recall blocked",
+      "rhea: substantive initial account recorded",
+      "naina: substantive initial account recorded",
+      "bisht: substantive initial account recorded",
+      "anya: substantive initial account recorded",
+      "kabir: substantive initial account recorded",
+      "All six first accounts completed; four requested reports arrive on Devraj recall",
+      "Jeep CCTV discovered through live host",
+      "Independent medical review discovered through live host",
+      "Murder admission earned through all six presented exhibits and relevant pressure"
+    ],
+    "issues": [
+      "Turn 19: UNHELPFUL_DEFLECTION: I won't guess, sir. Ask me about what I have said or the record in front of us. — The question is directly answerable from the approved cover account; the reply avoids both the account and the question."
+    ],
+    "warnings": [],
+    "cleanedUp": true
+  },
+  {
+    "source": "devraj-live-journey-2026-09-19T05-27-59-412Z.json",
+    "sourceHashes": {
+      "cases/mussoorie/case.json": "f8e66f83099bbfdab53f935f02a04441b9ff0af120bb15f498249f987597c409",
+      "src/lib/interview-turn.ts": "3d9374c091e3b6e3ff939b33d15efdc39c049b9be5bdecc46455e9e57ca9ee1d",
+      "src/lib/session-store.ts": "eabd88af89b6a28039481a86b1e289bb98cd020db30a90ccb8e81e3b55ebfec1",
+      "src/lib/interview-rounds.ts": "398c9e62d497ccc6bf84344472198813c254d2ec9c6346a253362bcd1035d674",
+      "src/lib/investigation-requests.ts": "512ea1ad037531a3a59234048927f25316d5b494c3d496f3949ac68612410ec2",
+      "src/lib/interview-safety.ts": "062ff77064971455f740dbb3e7b620d1eea555069752476ab4bfd5bad0ecd98b",
+      "src/lib/host-judgment.ts": "68d54f383f6216700ebd1f7f33a4246deeb3aa412c7cf5a575ff456fc5529499"
+    },
+    "startedAt": "2026-09-19T05:27:59.413Z",
+    "status": "failed",
+    "model": "openai/gpt-4o-mini",
+    "graderModel": "openai/gpt-4.1",
+    "scope": "Real production server functions and local persisted game, using live request classification, initial-account assessment, roleplay, validation, unlock adjudication and host discovery. No browser/auth-route test, model mocks, seeded reports or admission overrides.",
+    "turns": [
+      {
+        "suspectId": "devraj",
+        "question": "Hello Inspector. What is your name and rank?",
+        "evidence": null,
+        "reply": "Hello, sir. I am Inspector Devraj Khanna.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have Devraj’s phone records?",
+        "evidence": null,
+        "reply": "I cannot provide my phone records, sir. That information is not available to you at this moment.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Bisht-Devraj call records. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Can we have the extracted location history from Devraj’s handset?",
+        "evidence": null,
+        "reply": "I cannot provide the extracted location history from my handset, sir. That information is also not available to you at this moment.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Devraj’s handset location history. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "We need an independent audit of changes to Devraj’s duty register.",
+        "evidence": null,
+        "reply": "I understand your request, sir. An independent audit of the duty register would be necessary to confirm any changes. I have not put independent proof of that account before you.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Independent duty-register audit. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "I need a forensic report on Devraj’s issued lathi.",
+        "evidence": null,
+        "reply": "I cannot provide a forensic report on my issued lathi, sir. That report has not been established here.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for drop, and the interrogation phase is still ongoing.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for drop, and the interrogation phase is still ongoing.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Investigation requested: Examination of Devraj’s issued lathi. The report will be available when the suspect is recalled for a later interview.",
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was at the station all evening, sir. That is my account. I took charge of the Vikram Singh investigation the next morning after the body was discovered.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "devraj",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I did not have a personal connection to Vikram, sir. My role was strictly as the investigating officer in his case. I was focused on gathering evidence and determining the circumstances surrounding his death.",
+        "hostJudgment": {
+          "reason": "No suspects have opened up, and no evidence conditions are met for dropping evidence.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No suspects have opened up, and no evidence conditions are met for dropping evidence.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Inspector Devraj Khanna’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was home in Delhi all evening when it happened. My phone records will confirm that. I only flew up to Mussoorie the next morning once I heard the news.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "rhea",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram was my business partner for the last three years. We co-run the YouTube channel 'Hidden Mussoorie'. Our relationship was primarily professional, focused on growing our brand and creating content. I respected him greatly, and we worked closely together on various projects.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all suspects remain guarded.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all suspects remain guarded.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Rhea Bhatia’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I was in town because Vikram had asked me to look into a corporate lead for him, and then he went silent. I was at my hotel that evening, not anywhere near Camel's Back Road. I had tried to reach him multiple times, but it was frustrating to be ignored.",
+        "hostJudgment": {
+          "reason": "All suspects are still guarded, preventing evidence drop.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"All suspects are still guarded, preventing evidence drop.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Naina Kapoor’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "naina",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram was my fiancé for two years until we broke up four months ago. We managed to remain friends afterward, which was complicated. About three weeks ago, he asked me to dig into Rhea's dealings. He'd been getting nervous about the channel finances and the way she was talking about it at parties. I filed him a memo nine days before he died, detailing my findings. Metropolis Media had been in conversations with Rhea for months, and I named the M&A contact. He scrawled 'pull stripe' in the margin, and then he just stopped answering me. That's why I was trying to reach him.",
+        "hostJudgment": {
+          "reason": "The conditions for revealing any candidate evidence are not met.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"The conditions for revealing any candidate evidence are not met.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Evidence added: Memo — Rhea Bhatia / Metropolis Media Inquiry.",
+          "Evidence added: WhatsApp Thread — Vikram and Naina, Last 30 Days."
+        ],
+        "fired": [
+          "secret:points-to-rhea",
+          "evidence:naina-corporate-memo",
+          "evidence:vikram-naina-whatsapp"
+        ],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I can only speak to what I know. Could you ask me about my background or the evidence in your case file?",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as required suspects are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as required suspects are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening and their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "You see, Vikram and I had a professional relationship, primarily shaped by the real estate developments in Mussoorie. He was a journalist known for his keen insights into the industry. We had our share of business disagreements, as any two individuals in the same field might. But I would say our interactions were more about the business than personal matters. Let me put it this way: in the world of real estate, opinions can clash, but that doesn't mean there was any animosity.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs an account of the incident evening."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "bisht",
+        "question": "Please give your own account of where you were and what you did that evening.",
+        "evidence": null,
+        "reply": "I was at the hotel all evening. The CCTV will confirm my presence. It's important to note that while Vikram and I had our business disagreements, I am a businessman, not a criminal.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as required conditions are not met.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as required conditions are not met.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Mr. Rajveer Bisht’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "I just clean the houses, madam. I finished my work at Vikram-saab's cottage around 7:30 PM and went home. I caught my bus from the bus stand. I don't know anything about Vikram-saab's research or his video.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as all required conditions are unmet.",
+          "confidence": 1,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as all required conditions are unmet.\", \"confidence\": 1 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "anya",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "Vikram-saab is my employer. I work as his housekeeper. I clean his cottage three afternoons a week. I try to keep everything tidy. He is polite to me. I have no special dealings or relationship beyond that.",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as all relevant suspects are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as all relevant suspects are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "Anya Devi’s first interview is complete: whereabouts and connection recorded."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "Where were you on the evening Vikram died? Give your own account of where you were and what you were doing.",
+        "evidence": null,
+        "reply": "On the evening Vikram died, I was in Mussoorie visiting for nostalgia. I had met up with old college friends, and we enjoyed some chai at the omelette place around six-thirty. After that, I walked back to my hotel and stayed in for the night. I was reading, really. Nothing more to it.",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as suspects Naina, Rhea, and Kabir are not all opened up.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as suspects Naina, Rhea, and Kabir are not all opened up.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "What was your connection to Vikram? Tell me about your relationship, dealings with him, or your role in his case.",
+        "evidence": null,
+        "reply": "I can only speak to what I know. Could you ask me about my background or the evidence in your case file?",
+        "hostJudgment": {
+          "reason": "No candidate evidence items are ready for reveal as suspects Naina, Rhea, and Kabir are not all opened up.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence items are ready for reveal as suspects Naina, Rhea, and Kabir are not all opened up.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      },
+      {
+        "suspectId": "kabir",
+        "question": "Please explain your relationship to Vikram or your role in investigating his death.",
+        "evidence": null,
+        "reply": "I can only speak to what I know. Could you ask me about my background or the evidence in your case file?",
+        "hostJudgment": {
+          "reason": "No candidate evidence is ready for reveal as suspects Rhea and Kabir are still guarded.",
+          "confidence": 0.9,
+          "raw": "{ \"action\": \"do-nothing\", \"reason\": \"No candidate evidence is ready for reveal as suspects Rhea and Kabir are still guarded.\", \"confidence\": 0.9 }",
+          "action": "do-nothing"
+        },
+        "systemMessages": [
+          "First interview still needs their connection to Vikram Singh."
+        ],
+        "fired": [],
+        "unlocked": [
+          "anonymous-letter-1",
+          "crime-scene-summary",
+          "police-report",
+          "instagram-grey-lady",
+          "youtube-channel-page",
+          "vikram-working-wall",
+          "chai-shop-receipt",
+          "naina-phone-records",
+          "shopkeeper-statement-naina",
+          "building-cctv-rhea",
+          "rhea-draft-email",
+          "bisht-hotel-cctv-log",
+          "pawn-shop-receipt",
+          "naina-corporate-memo",
+          "vikram-naina-whatsapp"
+        ],
+        "issues": []
+      }
+    ],
+    "checks": [
+      "Greeting does not complete first interview",
+      "Four separate reports requested, all sealed",
+      "devraj: substantive initial account recorded",
+      "Early recall blocked",
+      "rhea: substantive initial account recorded",
+      "naina: substantive initial account recorded",
+      "bisht: substantive initial account recorded",
+      "anya: substantive initial account recorded"
+    ],
+    "issues": [
+      "kabir: initial account incomplete"
+    ],
+    "warnings": [],
+    "cleanedUp": true
+  }
+]
