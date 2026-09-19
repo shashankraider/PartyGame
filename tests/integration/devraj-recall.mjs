@@ -1,9 +1,9 @@
 /** Local database integration, with deterministic model responses. Removes only its own session. */
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { createSupabaseServerClient } from '../../src/lib/supabase.ts';
-import { createSession, joinSessionByCode, startSession, advanceSessionChapter, setSessionScene, getLobbyState, getPublicLobbyState, loadInvestigationEvents, setSessionInterviewer, getInterrogationEntryChapter } from '../../src/lib/session-store.ts';
-import { executeInterview } from '../../src/lib/interview-turn.ts';
+import { createSession, joinSessionByCode, startSession, advanceSessionChapter, setSessionScene, getLobbyState, getPublicLobbyState, loadInvestigationEvents, setSessionInterviewer, getInterrogationEntryChapter, commitGameUpdate } from '../../src/lib/session-store.ts';
+import { executeInterview, listHostHelp, applyHostHelp } from '../../src/lib/interview-turn.ts';
 import { loadCase } from '../../src/engine/case-loader.ts';
 if(!['localhost','127.0.0.1'].includes(new URL(process.env.SUPABASE_URL).hostname))throw Error('Local database required');
 const db=createSupabaseServerClient();const originalFetch=globalThis.fetch;const oldKey=process.env.OPENROUTER_API_KEY;process.env.OPENROUTER_API_KEY='local-test';
@@ -29,18 +29,30 @@ try{
  const leave=()=>setSessionScene({sessionId:session.id,scene:'case_board',chapterId:board.id});
  await enter();
  await setSessionInterviewer({sessionId:session.id,playerId:joined.player.id});
+ // Exhaust ordinary discoveries: generic host assistance must not offer or queue any deferred report.
+ await commitGameUpdate((await getLobbyState(session.id)).session,{patch:{unlocked_evidence:c.evidence.filter(e=>!e.investigationRequest).map(e=>e.id)}});
+ assert.ok(!(await listHostHelp(session.id)).some(h=>h.label==='Request the next forensic update'));
+ for(const report of c.evidence.filter(e=>e.investigationRequest)){
+  const helpId=createHash('sha256').update(`${session.id}:devraj:forensic:${report.id}`).digest('hex');
+  await assert.rejects(()=>applyHostHelp(session.id,helpId),/no longer available/);
+ }
+ assert.ok(!(await loadInvestigationEvents(session.id)).some(e=>e.type==='investigation.requested'));
  const turn=await executeInterview({sessionId:session.id,playerId:joined.player.id,question:'Please obtain Devraj’s handset location history.',requestId:randomUUID()});
  assert.ok(turn.systemMessages.some(m=>m.content.startsWith('Investigation requested:')));
  assert.ok(!turn.session.unlocked_evidence.includes(evidenceId));
  assert.ok(!(await getPublicLobbyState(session.id)).caseData.evidence.some(e=>e.id===evidenceId));
  await enter();assert.ok(!(await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
  await leave();await enter();assert.ok((await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
+ const revealed=(await getPublicLobbyState(session.id)).caseData.evidence;
+ assert.deepEqual(revealed.filter(e=>c.evidence.find(original=>original.id===e.id)?.investigationRequest).map(e=>e.id),[evidenceId]);
  const count=(await loadInvestigationEvents(session.id)).length;await enter();assert.equal((await loadInvestigationEvents(session.id)).length,count);
  evidenceId='devraj-lathi-forensics';
  await executeInterview({sessionId:session.id,playerId:joined.player.id,question:'Please examine Devraj’s issued lathi for blood.',requestId:randomUUID()});
  assert.ok(!(await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
  await leave();await enter();assert.ok((await getLobbyState(session.id)).session.unlocked_evidence.includes(evidenceId));
- console.log('PASS: atomic request persistence, sealed public evidence, no same-view recall, delivery on second interview, idempotent reopening, late request waits until third.');
+ const unrequested=['bisht-devraj-call','devraj-duty-log'];
+ assert.ok(!(await getPublicLobbyState(session.id)).caseData.evidence.some(e=>unrequested.includes(e.id)));
+ console.log('PASS: separate request-only reports; no generic host-help bypass; unrequested reports stay hidden; atomic persistence, second-interview delivery, same-view idempotency and late requests wait until third.');
 }finally{
  globalThis.fetch=originalFetch;if(oldKey===undefined)delete process.env.OPENROUTER_API_KEY;else process.env.OPENROUTER_API_KEY=oldKey;
  if(session){const {error}=await db.from('sessions').delete().eq('id',session.id);if(error)throw error;}

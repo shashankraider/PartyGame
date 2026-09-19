@@ -9,6 +9,21 @@ const evidence=caseData.evidence.find(e=>e.id==='devraj-lathi-forensics');
 const board={current_scene:'case_board',current_interview_suspect_id:null,unlocked_evidence:[]};
 const active={...board,current_scene:'interview',current_interview_suspect_id:'devraj'};
 
+test('each requested report arrives independently; the other three stay sealed across recalls',()=>{
+ const reports=caseData.evidence.filter(e=>e.investigationRequest?.suspectId==='devraj');
+ assert.equal(reports.length,4);
+ assert.equal(new Set(reports.map(e=>e.printableHtml)).size,4);
+ for(const report of reports){
+  const first=planRecallDelivery(caseData,board,'devraj',[]);
+  const events=[first.event];
+  events.push(planInvestigationRequest(report,events,[],'devraj').event);
+  const second=planRecallDelivery(caseData,board,'devraj',events);
+  assert.deepEqual(second.evidence.map(e=>e.id),[report.id]);
+  const third=planRecallDelivery(caseData,{...board,unlocked_evidence:[report.id]},'devraj',[...events,second.event]);
+  assert.deepEqual(third.evidence,[]);
+ }
+});
+
 test('request in first visit remains sealed until an actual recall, once only',()=>{
  const first=planRecallDelivery(caseData,board,'devraj',[]);assert.equal(first.evidence.length,0);
  const events=[first.event];

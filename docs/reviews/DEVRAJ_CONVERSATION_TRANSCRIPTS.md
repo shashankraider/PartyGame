@@ -34,6 +34,13 @@ Round 2. The reports remain filed under Round 4 for author organization.
 | DV-R01-03 | Obtain the original duty register and independently audit its edits. | `devraj-duty-log` |
 | DV-R01-04 | Seize and examine Devraj’s issued lathi for blood/DNA and compare the injury. | `devraj-lathi-forensics` |
 
+Each of these is a separate evidence item with its own printable. Asking for one
+does not order or reveal any of the other three. Only a specific investigator
+request can queue it; automatic host judgment and generic host-help controls
+cannot order these reports. Request during interview N → receive that report on
+Devraj’s next recall (N+1). The combined PDF is an author/host preparation aid,
+not a player evidence item or a bundle released by the game.
+
 During the first interview, a recognized request receives an acknowledgment only.
 It does not unlock a report, reveal its findings or count as presented evidence.
 Leave the interview and call Devraj again: requested reports enter the case file,

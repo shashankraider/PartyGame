@@ -70,13 +70,8 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
       })) });
       if (hostJudgment.action === 'drop-evidence' && !unlocked.has(hostJudgment.evidenceId)) {
         const evidence = caseData.evidence.find(e => e.id === hostJudgment!.evidenceId)!;
-        if (evidence.investigationRequest) {
-          const request = planInvestigationRequest(evidence, investigationEvents, [...unlocked], suspect.id);
-          if (request) {
-            requestEvents.push(request.event);
-            newMessages.push({ suspect_id: suspect.id, role: 'system', content: request.message });
-          }
-        } else {
+        // Only an explicit investigator request can queue a deferred report.
+        if (!evidence.investigationRequest) {
           unlocked.add(evidence.id);
           newMessages.push({ suspect_id: suspect.id, role: 'system', content: `Forensic update: ${evidence.title} arrived in the case file.` });
         }
@@ -113,8 +108,8 @@ async function availableHelp(sessionId: string) {
   const conditions = pending.filter(c => evidenceGate(c, presented));
   const investigationEvents = await loadInvestigationEvents(sessionId);
   const requested = investigationProgress(investigationEvents).requests;
-  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !context.session.unlocked_evidence.includes(e.id) && !requested.has(e.id));
-  return { context, states, conditions, hostEvidence, investigationEvents };
+  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !e.investigationRequest && !context.session.unlocked_evidence.includes(e.id) && !requested.has(e.id));
+  return { context, states, conditions, hostEvidence };
 }
 export async function listHostHelp(sessionId: string): Promise<ActiveHostFallback[]> {
   const { context, states, conditions, hostEvidence } = await availableHelp(sessionId);
@@ -126,14 +121,13 @@ export async function listHostHelp(sessionId: string): Promise<ActiveHostFallbac
   return result;
 }
 export async function applyHostHelp(sessionId: string, conditionId: string) {
-  const { context, states, conditions, hostEvidence, investigationEvents } = await availableHelp(sessionId);
+  const { context, states, conditions, hostEvidence } = await availableHelp(sessionId);
   const { session, suspect } = context;
   const condition = conditions.find(c => helpId(sessionId, suspect.id, c.conditionId) === conditionId);
   const evidence = hostEvidence.find((e,i) => i === 0 && helpId(sessionId, suspect.id, `forensic:${e.id}`) === conditionId);
   if (!condition && !evidence) throw new SessionStoreError('invalid_request', 'That assistance is no longer available', 409);
   const unlocked = new Set(session.unlocked_evidence);
   const pendingStates: InterviewUnlockStateRow[] = [];
-  const requestEvents: InvestigationEvent[] = [];
   let content: string;
   if (condition) {
     const prior = states.find(s => s.suspect_id === suspect.id && s.condition_id === condition.conditionId);
@@ -143,11 +137,10 @@ export async function applyHostHelp(sessionId: string, conditionId: string) {
     if (condition.evidenceId) unlocked.add(condition.evidenceId);
     content = condition.subject === 'evidence' ? `Evidence added: ${condition.label}.` : `${suspect.name}: ${condition.revealedText}`;
   } else {
-    const request = planInvestigationRequest(evidence!, investigationEvents, [...unlocked], suspect.id);
-    if (request) { requestEvents.push(request.event); content = request.message; }
-    else { unlocked.add(evidence!.id); content = `Forensic update: ${evidence!.title} arrived in the case file.`; }
+    unlocked.add(evidence!.id);
+    content = `Forensic update: ${evidence!.title} arrived in the case file.`;
   }
   const saved = await commitGameUpdate(session, { patch: { unlocked_evidence: [...unlocked] }, states: pendingStates,
-    messages: [{ suspect_id: suspect.id, role: 'system', content }], events: [...requestEvents, { type: 'interview.completed' }] });
+    messages: [{ suspect_id: suspect.id, role: 'system', content }], events: [{ type: 'interview.completed' }] });
   return { session: saved.session, systemMessage: saved.messages[0] };
 }

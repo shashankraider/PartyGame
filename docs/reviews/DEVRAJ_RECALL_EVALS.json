@@ -226,5 +226,24 @@
     "scripts/eval-devraj-recall.ts": "75d68c1e5c727c664380a3ebc71857efe5a72fe0e266cdc0d6879741d2ebc342",
     "scripts/render-devraj-packet.py": "3f214f8d695e68968de18858ff31a04b166f3361fe60949d8455faae1aea6c6d",
     "scripts/style-devraj-exhibits.mjs": "8aacb2743a127373f76947e460d5ed1837a60fc2f59c3400383b6e96bc2b946c"
+  },
+  "requestOnlyFollowup": {
+    "at": "2026-09-19T04:48:43.396501+00:00",
+    "baseCommit": "8b97f7a",
+    "change": "Each report remains separate. Removed generic host-help ordering and defensive host-judgment ordering of deferred reports; only a specific investigator request can queue them. Delivery remains the next Devraj interview visit.",
+    "verification": {
+      "unitPassed": 176,
+      "unitSkipped": 1,
+      "unitFailed": 0,
+      "localDatabaseIntegration": "Passed: generic help exposes no deferred report; direct fallback attempts rejected; requesting phone location reveals only that report at recall; unrequested call and duty-log reports remain hidden after later recalls.",
+      "typescript": "Passed",
+      "eslint": "Passed"
+    },
+    "sourceSha256": {
+      "src/lib/interview-turn.ts": "97a77ee04d3e83b402ef4a7c3fe193ebc0853ea2493a1908cf7c558fc2deb7da",
+      "tests/investigation-requests.test.mjs": "0c4e4cd101b2d36d11eb5dec6afa1be177b73d7ad7dcbf3e1d409990fd7f1575",
+      "tests/integration/devraj-recall.mjs": "317ab2b27ac0964476621814133faeadc2f7d8ffee1adf894eb2a0ffdbfb5237"
+    },
+    "liveClassifier": "Unchanged from the recorded 22/22 run above; no new model conversations generated."
   }
 }
