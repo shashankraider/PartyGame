@@ -438,6 +438,13 @@ export interface Evidence {
    */
   triggersChapter?: string;
   unlockBehavior?: UnlockBehavior2;
+  /**
+   * Queue a requested report without revealing it. Deliver when the named suspect is recalled for a later interview.
+   */
+  investigationRequest?: {
+    suspectId: SlugId;
+    label: string;
+  };
 }
 /**
  * Optional. How the Phase 2g adjudicator decides whether this evidence should unlock dynamically during a live interview. If omitted, this evidence is unlocked only when its unlockedAtChapter completes (current default behavior).

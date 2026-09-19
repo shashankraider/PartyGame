@@ -1,3 +1,4 @@
+import { classifyInvestigationRequests, investigationProgress, planInvestigationRequest, type InvestigationEvent } from './investigation-requests';
 import { createHash } from 'node:crypto';
 import { createSupabaseServerClient, type InterviewUnlockStateRow, type MessageRow, type SessionRow } from './supabase';
 import { listPendingConditions, type ActiveHostFallback } from './interview-unlocks';
@@ -5,7 +6,7 @@ import { advanceUnlockState, evidenceGate } from './interview-planner';
 export { advanceUnlockState, planUnlocks } from './interview-planner';
 import { runInterviewGraph } from './interview-graph';
 import { judgeHostAction, type HostJudgmentVerdict } from './host-judgment';
-import { assertSessionActive, commitGameUpdate, getInterviewContext, getLobbyState, SessionStoreError, type AskSuspectInput, type AskSuspectResult, type GameMessage } from './session-store';
+import { assertSessionActive, commitGameUpdate, getInterviewContext, getLobbyState, loadInvestigationEvents, SessionStoreError, type AskSuspectInput, type AskSuspectResult, type GameMessage } from './session-store';
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 async function loadStates(sessionId: string): Promise<InterviewUnlockStateRow[]> {
@@ -39,6 +40,9 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
     const { updates, updatedStates, answer, trace } = await runInterviewGraph({
       context, question, presentedEvidenceId: evidenceId, states,
     });
+    const investigationEvents = await loadInvestigationEvents(session.id);
+    const pendingEvidenceIds = [...investigationProgress(investigationEvents).requests.keys()];
+    const requestEvents: InvestigationEvent[] = [];
     const unlocked = new Set(session.unlocked_evidence);
     const newMessages: GameMessage[] = [];
     for (const { condition, outcome } of updates) if (outcome.fired && condition.evidenceId) {
@@ -50,15 +54,32 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
     const { data: allMessages, error: transcriptError } = await db.from('messages').select('suspect_id,role,content').eq('session_id', session.id).order('created_at');
     if (transcriptError) throw new SessionStoreError('database_error', 'Could not read the investigation', 503);
     try {
-      hostJudgment = await judgeHostAction({ caseData, session, unlockedEvidence: [...unlocked], allTranscripts: caseData.suspects.map(s => ({
+      const requestedReports = await classifyInvestigationRequests(caseData, question, investigationEvents, [...unlocked]);
+      for (const evidence of requestedReports) {
+        const request = planInvestigationRequest(evidence, investigationEvents, [...unlocked], suspect.id);
+        if (request) {
+          requestEvents.push(request.event);
+          pendingEvidenceIds.push(evidence.id);
+          newMessages.push({ suspect_id: suspect.id, role: 'system', content: request.message });
+        }
+      }
+      hostJudgment = await judgeHostAction({ caseData, session, pendingEvidenceIds, unlockedEvidence: [...unlocked], allTranscripts: caseData.suspects.map(s => ({
         suspectId: s.id, suspectName: s.name,
         hasOpenedUp: updatedStates.some(state => state.suspect_id === s.id && state.condition_id.startsWith('secret:') && state.met_at),
         messages: (allMessages ?? []).filter(m => m.suspect_id === s.id).map(m => ({ role: m.role, content: m.content })).concat(s.id === suspect.id ? [{ role: 'user', content: question }, { role: 'assistant', content: reply }] : []),
       })) });
       if (hostJudgment.action === 'drop-evidence' && !unlocked.has(hostJudgment.evidenceId)) {
         const evidence = caseData.evidence.find(e => e.id === hostJudgment!.evidenceId)!;
-        unlocked.add(evidence.id);
-        newMessages.push({ suspect_id: suspect.id, role: 'system', content: `Forensic update: ${evidence.title} arrived in the case file.` });
+        if (evidence.investigationRequest) {
+          const request = planInvestigationRequest(evidence, investigationEvents, [...unlocked], suspect.id);
+          if (request) {
+            requestEvents.push(request.event);
+            newMessages.push({ suspect_id: suspect.id, role: 'system', content: request.message });
+          }
+        } else {
+          unlocked.add(evidence.id);
+          newMessages.push({ suspect_id: suspect.id, role: 'system', content: `Forensic update: ${evidence.title} arrived in the case file.` });
+        }
       }
       // Phase changes are deliberate host actions, never decisions taken in an
       // in-flight answer. In particular an AI call cannot resume a paused game.
@@ -67,7 +88,7 @@ export async function executeInterview(input: AskSuspectInput & { requestId: str
     const saved = await commitGameUpdate(session, { turnId: input.requestId, attemptId: lease.attemptId,
       patch: { unlocked_evidence: [...unlocked], current_interviewer_player_id: session.current_interviewer_player_id },
       messages: [userMessage, { suspect_id: suspect.id, role: 'assistant', content: reply }, ...newMessages], states: updates.map(u => u.state),
-      events: [{ type: 'interview.completed', payload: { validated: valid, graphVersion: 'interview-v1', graphPath: trace, repairAttempted: answer.repairAttempted } }, { type: 'interview.host_judgment', payload: { reason: 'The investigation is progressing.' } }],
+      events: [...requestEvents, { type: 'interview.completed', payload: { validated: valid, graphVersion: 'interview-v1', graphPath: trace, repairAttempted: answer.repairAttempted } }, { type: 'interview.host_judgment', payload: { reason: 'The investigation is progressing.' } }],
     });
     saved.session = (await getLobbyState(session.id)).session;
     return { ...resultFromCommit(saved), unlockOutcomes: updates.map(u => u.outcome), hostJudgment };
@@ -90,8 +111,10 @@ async function availableHelp(sessionId: string) {
   // A manual host rescue is always available for the next eligible discovery.
   // It does not depend on an LLM's confidence or unavailable adjudicator calls.
   const conditions = pending.filter(c => evidenceGate(c, presented));
-  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !context.session.unlocked_evidence.includes(e.id));
-  return { context, states, conditions, hostEvidence };
+  const investigationEvents = await loadInvestigationEvents(sessionId);
+  const requested = investigationProgress(investigationEvents).requests;
+  const hostEvidence = context.caseData.evidence.filter(e => e.arrivesWhen && !context.session.unlocked_evidence.includes(e.id) && !requested.has(e.id));
+  return { context, states, conditions, hostEvidence, investigationEvents };
 }
 export async function listHostHelp(sessionId: string): Promise<ActiveHostFallback[]> {
   const { context, states, conditions, hostEvidence } = await availableHelp(sessionId);
@@ -103,13 +126,14 @@ export async function listHostHelp(sessionId: string): Promise<ActiveHostFallbac
   return result;
 }
 export async function applyHostHelp(sessionId: string, conditionId: string) {
-  const { context, states, conditions, hostEvidence } = await availableHelp(sessionId);
+  const { context, states, conditions, hostEvidence, investigationEvents } = await availableHelp(sessionId);
   const { session, suspect } = context;
   const condition = conditions.find(c => helpId(sessionId, suspect.id, c.conditionId) === conditionId);
   const evidence = hostEvidence.find((e,i) => i === 0 && helpId(sessionId, suspect.id, `forensic:${e.id}`) === conditionId);
   if (!condition && !evidence) throw new SessionStoreError('invalid_request', 'That assistance is no longer available', 409);
   const unlocked = new Set(session.unlocked_evidence);
   const pendingStates: InterviewUnlockStateRow[] = [];
+  const requestEvents: InvestigationEvent[] = [];
   let content: string;
   if (condition) {
     const prior = states.find(s => s.suspect_id === suspect.id && s.condition_id === condition.conditionId);
@@ -119,9 +143,11 @@ export async function applyHostHelp(sessionId: string, conditionId: string) {
     if (condition.evidenceId) unlocked.add(condition.evidenceId);
     content = condition.subject === 'evidence' ? `Evidence added: ${condition.label}.` : `${suspect.name}: ${condition.revealedText}`;
   } else {
-    unlocked.add(evidence!.id); content = `Forensic update: ${evidence!.title} arrived in the case file.`;
+    const request = planInvestigationRequest(evidence!, investigationEvents, [...unlocked], suspect.id);
+    if (request) { requestEvents.push(request.event); content = request.message; }
+    else { unlocked.add(evidence!.id); content = `Forensic update: ${evidence!.title} arrived in the case file.`; }
   }
   const saved = await commitGameUpdate(session, { patch: { unlocked_evidence: [...unlocked] }, states: pendingStates,
-    messages: [{ suspect_id: suspect.id, role: 'system', content }], events: [{ type: 'interview.completed' }] });
+    messages: [{ suspect_id: suspect.id, role: 'system', content }], events: [...requestEvents, { type: 'interview.completed' }] });
   return { session: saved.session, systemMessage: saved.messages[0] };
 }

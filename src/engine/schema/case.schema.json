@@ -425,6 +425,24 @@
         "unlockBehavior": {
           "$ref": "#/$defs/UnlockBehavior",
           "description": "Optional. How the Phase 2g adjudicator decides whether this evidence should unlock dynamically during a live interview. If omitted, this evidence is unlocked only when its unlockedAtChapter completes (current default behavior)."
+        },
+        "investigationRequest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "suspectId",
+            "label"
+          ],
+          "properties": {
+            "suspectId": {
+              "$ref": "#/$defs/SlugId"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "Queue a requested report without revealing it. Deliver when the named suspect is recalled for a later interview."
         }
       }
     },

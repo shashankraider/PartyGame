@@ -1,0 +1,230 @@
+{
+  "at": "2026-09-19T04:42:43.519Z",
+  "scope": "Real request classifier and production recall helpers. No database writes or generated suspect replies.",
+  "results": [
+    {
+      "repeat": 1,
+      "id": "bisht-devraj-call",
+      "question": "Please obtain telecom records of Bisht calling Devraj on the murder night, including time and duration.",
+      "classified": [
+        "bisht-devraj-call"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "devraj-phone-location",
+      "question": "CBI should extract Devraj’s handset location history around the fatal bend at 8:20. Please request that examination.",
+      "classified": [
+        "devraj-phone-location"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "devraj-duty-log",
+      "question": "Obtain the original station duty register and an independent audit showing revisions and who made them.",
+      "classified": [
+        "devraj-duty-log"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "devraj-lathi-forensics",
+      "question": "Please seize and examine Devraj’s issued service lathi for Vikram’s blood and compare it with the pre-fall injury.",
+      "classified": [
+        "devraj-lathi-forensics"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "recall-boundary",
+      "passed": true,
+      "delivered": [
+        "bisht-devraj-call",
+        "devraj-phone-location",
+        "devraj-duty-log",
+        "devraj-lathi-forensics"
+      ]
+    },
+    {
+      "repeat": 1,
+      "id": "bare-claim-not-request",
+      "question": "Your phone was there and Vikram’s DNA is on your lathi. Confess.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "personal-account-not-request",
+      "question": "Where were you at eight? Why did you leave the station?",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "negated-request",
+      "question": "Do not obtain Devraj’s phone records or test his lathi.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "past-test-not-request",
+      "question": "We already asked the lab to test your lathi. Explain why you were there.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "account-check-not-request",
+      "question": "Check your story, Devraj. Were you at the station or on patrol?",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 1,
+      "id": "bundled-request",
+      "question": "Please obtain Bisht-Devraj call records and send Devraj’s issued lathi for forensic blood/DNA testing.",
+      "classified": [
+        "bisht-devraj-call",
+        "devraj-lathi-forensics"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "bisht-devraj-call",
+      "question": "Please obtain telecom records of Bisht calling Devraj on the murder night, including time and duration.",
+      "classified": [
+        "bisht-devraj-call"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "devraj-phone-location",
+      "question": "CBI should extract Devraj’s handset location history around the fatal bend at 8:20. Please request that examination.",
+      "classified": [
+        "devraj-phone-location"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "devraj-duty-log",
+      "question": "Obtain the original station duty register and an independent audit showing revisions and who made them.",
+      "classified": [
+        "devraj-duty-log"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "devraj-lathi-forensics",
+      "question": "Please seize and examine Devraj’s issued service lathi for Vikram’s blood and compare it with the pre-fall injury.",
+      "classified": [
+        "devraj-lathi-forensics"
+      ],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "recall-boundary",
+      "passed": true,
+      "delivered": [
+        "bisht-devraj-call",
+        "devraj-phone-location",
+        "devraj-duty-log",
+        "devraj-lathi-forensics"
+      ]
+    },
+    {
+      "repeat": 2,
+      "id": "bare-claim-not-request",
+      "question": "Your phone was there and Vikram’s DNA is on your lathi. Confess.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "personal-account-not-request",
+      "question": "Where were you at eight? Why did you leave the station?",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "negated-request",
+      "question": "Do not obtain Devraj’s phone records or test his lathi.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "past-test-not-request",
+      "question": "We already asked the lab to test your lathi. Explain why you were there.",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "account-check-not-request",
+      "question": "Check your story, Devraj. Were you at the station or on patrol?",
+      "classified": [],
+      "passed": true
+    },
+    {
+      "repeat": 2,
+      "id": "bundled-request",
+      "question": "Please obtain Bisht-Devraj call records and send Devraj’s issued lathi for forensic blood/DNA testing.",
+      "classified": [
+        "bisht-devraj-call",
+        "devraj-lathi-forensics"
+      ],
+      "passed": true
+    }
+  ],
+  "model": "openai/gpt-4o-mini",
+  "summary": {
+    "passed": 22,
+    "total": 22
+  },
+  "validation": {
+    "unit": {
+      "passed": 175,
+      "skipped": 1,
+      "failed": 0
+    },
+    "localDatabaseIntegration": "Passed against an existing local stack with deterministic model responses; verified atomic request persistence, hidden public evidence, second-visit delivery, same-screen idempotency and late-request delivery on the third visit. Test session removed.",
+    "typescript": "Passed",
+    "eslint": "Passed",
+    "caseValidation": "Passed",
+    "standalonePrintables": "33 current",
+    "productionBuild": "Passed",
+    "visualQA": "Five PDF pages rendered and inspected; desktop duty-log exhibit inspected; three other exhibits inspected at 390px mobile width with no horizontal overflow; PDF text and page count checked."
+  },
+  "limitations": [
+    "The 22 checks comprise 20 classifier/control checks and 2 deterministic recall-boundary checks, across two repetitions. They are not 22 new suspect conversations.",
+    "The local integration test mocks model responses; live provider classification is evaluated separately.",
+    "Existing recorded persona dialogues and six-exhibit confession gate were not regenerated in this timing revision.",
+    "A report is queued only when a recognized request receives a system acknowledgment. Invalid or ungrounded classifier output cannot queue a report.",
+    "Previously unlocked reports in existing saved sessions remain available."
+  ],
+  "developmentFindings": [
+    "Initial use of host arrival judgment rejected valid work orders; requests now have a separate classifier.",
+    "An intermediate classifier mistook allegations and candidate definitions for requests; action-word screening, separate message placement and grounded source quotations addressed this. The final repeated run passed all listed checks."
+  ],
+  "sourceSha256": {
+    "cases/mussoorie/case.json": "11b13c597dbb9c4f52d323ba3940a546de60171b83ce71067540bd5f2041de58",
+    "src/lib/investigation-requests.ts": "4e21001ab85746ce5fca54a431aac35684a1ad981335132089db8efa7a70c176",
+    "src/lib/interview-turn.ts": "1849d7218d1b0ffd495eb1b88bd9affc92a5fc4e2a17551c369b0358d41da222",
+    "src/lib/session-store.ts": "0bac86ef334e04b2889da000efe4d3aa4a4dece27966103ad80bdeb100583f1b",
+    "src/lib/host-judgment.ts": "e1e3e818d22e36512380c35c9a41d800dde2ee3344bd55d0ad0be536fa55b71d",
+    "scripts/eval-devraj-recall.ts": "75d68c1e5c727c664380a3ebc71857efe5a72fe0e266cdc0d6879741d2ebc342",
+    "scripts/render-devraj-packet.py": "3f214f8d695e68968de18858ff31a04b166f3361fe60949d8455faae1aea6c6d",
+    "scripts/style-devraj-exhibits.mjs": "8aacb2743a127373f76947e460d5ed1837a60fc2f59c3400383b6e96bc2b946c"
+  }
+}

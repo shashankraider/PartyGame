@@ -1510,9 +1510,8 @@
       ]
     },
     {
-      "name": "positive: bisht-devraj-call — players connect Bisht Devraj and the 8 PM hotel CCTV gap",
-      "expected": "drop-evidence",
-      "expectedEvidenceId": "bisht-devraj-call",
+      "name": "deferred request, not immediate reveal: positive: bisht-devraj-call — players connect Bisht Devraj and the 8 PM hotel CCTV gap",
+      "expected": "do-nothing",
       "unlockedEvidence": [
         "police-report",
         "anonymous-letter-1",
@@ -2860,9 +2859,8 @@
       ]
     },
     {
-      "name": "devraj-bridge: discover before confession — devraj-phone-location",
-      "expected": "drop-evidence",
-      "expectedEvidenceId": "devraj-phone-location",
+      "name": "deferred request, not immediate reveal: devraj-bridge: discover before confession — devraj-phone-location",
+      "expected": "do-nothing",
       "unlockedEvidence": [
         "devraj-jeep-cctv"
       ],
@@ -2901,9 +2899,8 @@
       ]
     },
     {
-      "name": "devraj-bridge: discover before confession — devraj-duty-log",
-      "expected": "drop-evidence",
-      "expectedEvidenceId": "devraj-duty-log",
+      "name": "deferred request, not immediate reveal: devraj-bridge: discover before confession — devraj-duty-log",
+      "expected": "do-nothing",
       "unlockedEvidence": [
         "devraj-jeep-cctv",
         "devraj-phone-location"
@@ -2944,9 +2941,8 @@
       ]
     },
     {
-      "name": "devraj-bridge: discover before confession — devraj-lathi-forensics",
-      "expected": "drop-evidence",
-      "expectedEvidenceId": "devraj-lathi-forensics",
+      "name": "deferred request, not immediate reveal: devraj-bridge: discover before confession — devraj-lathi-forensics",
+      "expected": "do-nothing",
       "unlockedEvidence": [
         "devraj-jeep-cctv",
         "lathi-postmortem"

@@ -222,6 +222,8 @@ export function crossReferenceChecks(caseObj, options = {}) {
   for (const e of caseObj.evidence ?? []) {
     const ctx = `evidence "${e.id}"`;
     checkRef("chapter id", chapterIds, e.unlockedAtChapter, `${ctx}.unlockedAtChapter`);
+    checkRef("suspect id", suspectIds, e.investigationRequest?.suspectId, `${ctx}.investigationRequest.suspectId`);
+    if (e.investigationRequest && (!e.arrivesWhen || e.unlockBehavior)) issues.push(error(`${ctx}.investigationRequest requires arrivesWhen and cannot combine with an immediate unlockBehavior`));
     checkRef("location id", locationIds, e.locationId, `${ctx}.locationId`);
     checkRef("chapter id", chapterIds, e.triggersChapter, `${ctx}.triggersChapter`);
     if (e.revealedInRound != null && !roundNumbers.has(e.revealedInRound)) {

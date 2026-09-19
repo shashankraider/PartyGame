@@ -1,3 +1,4 @@
+import { INVESTIGATION_EVENT_TYPES, planRecallDelivery, type InvestigationEvent } from './investigation-requests';
 import { randomUUID } from "node:crypto";
 import { toPublicCase, type PublicCase } from "./public-case";
 import { loadCase } from "@/engine/case-loader";
@@ -160,7 +161,7 @@ export function getChapterNavigability(caseData: Case, currentChapterId: string 
   };
 }
 
-function getUnlockedEvidenceForChapter(caseData: Case, chapter: Chapter, currentUnlocked: string[]) {
+export function getUnlockedEvidenceForChapter(caseData: Case, chapter: Chapter, currentUnlocked: string[]) {
   const unlocked = new Set(currentUnlocked);
 
   // An evidence row with unlockBehavior is governed by the Phase 2g adjudicator
@@ -173,13 +174,13 @@ function getUnlockedEvidenceForChapter(caseData: Case, chapter: Chapter, current
   if (chapter.type === "evidence-reveal") {
     chapter.evidenceIds.forEach((evidenceId) => {
       const evidence = evidenceById.get(evidenceId);
-      if (evidence?.unlockBehavior) return;
+      if (evidence?.unlockBehavior || evidence?.investigationRequest) return;
       unlocked.add(evidenceId);
     });
   }
 
   caseData.evidence.forEach((evidence) => {
-    if (evidence.unlockBehavior) return;
+    if (evidence.unlockBehavior || evidence.investigationRequest) return;
     if (evidence.unlockedAtChapter === chapter.id) {
       unlocked.add(evidence.id);
     }
@@ -330,6 +331,16 @@ export async function transitionSessionPhase(input: { sessionId: string; targetP
   } })).session;
 }
 
+export async function loadInvestigationEvents(sessionId: string): Promise<InvestigationEvent[]> {
+  const events: InvestigationEvent[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await createSupabaseServerClient().from('events').select('type,payload').eq('session_id', sessionId).in('type', [...INVESTIGATION_EVENT_TYPES]).order('created_at').range(offset, offset + 999);
+    if (error) databaseError(error);
+    events.push(...(data ?? []));
+    if (!data || data.length < 1000) return events;
+  }
+}
+
 export async function setSessionScene(input: { sessionId: string; scene: SessionScene; chapterId?: string | null; actorPlayerId?: string }) {
   const { session } = await getLobbyState(input.sessionId);
   assertSessionActive(session);
@@ -340,10 +351,15 @@ export async function setSessionScene(input: { sessionId: string; scene: Session
   if (session.phase === 'reveal' || session.phase === 'accusation') throw new SessionStoreError('invalid_request', 'Use the ending controls', 409);
   if (session.phase === 'briefing' && !isChapterUnlocked(caseData, chapter, session.current_chapter_id)) throw new SessionStoreError('invalid_request', 'Finish the preceding chapter first', 409);
   if (session.phase === 'interrogation' && chapter.type !== 'interview' && chapter.id !== getInterrogationEntryChapter(caseData)?.id) throw new SessionStoreError('invalid_request', 'Choose an available interview', 409);
+  const recall = chapter.type === 'interview'
+    ? planRecallDelivery(caseData, session, chapter.suspectId, await loadInvestigationEvents(session.id)) : null;
   return (await commitGameUpdate(session, { patch: { current_scene: input.scene, current_chapter_id: chapter.id,
     current_interview_suspect_id: chapter.type === 'interview' ? chapter.suspectId : null,
-    unlocked_evidence: getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence),
-  } })).session;
+    unlocked_evidence: [...new Set([...getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence), ...(recall?.evidence.map(e => e.id) ?? [])])],
+  }, ...(recall ? {
+    events: [recall.event],
+    messages: recall.evidence.map(e => ({ suspect_id: chapter.type === 'interview' ? chapter.suspectId : '', role: 'system' as const, content: `Requested report received: ${e.title}. It is now available in the case file for this interview.` })),
+  } : {}) })).session;
 }
 
 /** Host-directed research sequence, independent of free-choice suspect interviews. */

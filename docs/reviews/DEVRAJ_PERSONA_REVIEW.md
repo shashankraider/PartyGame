@@ -4,6 +4,22 @@ Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj
 
 **Historical patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) for actual dialogue and the [patrol revision](DEVRAJ_PATROL_REVISION.md) for the changes and evaluation. The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
 
+## Current delivery revision: request, investigate, recall
+
+CBI can request call records, handset extraction, an independent duty-register
+audit and examination of the issued lathi during questioning. Requests are saved
+without disclosing findings. Requested reports become available when Devraj is
+called for a later interview, starting with his second visit. No confession or
+prior forensic result is needed to commission these checks. The four exhibits
+now have visual standalone reports and a five-page author/host PDF packet.
+
+See [DV-R01 in the canonical conversation document](DEVRAJ_CONVERSATION_TRANSCRIPTS.md#dv-r01)
+for ordering and delivery rules, and [the recall evaluation](DEVRAJ_RECALL_EVALS.json)
+for verification. This revision changes shared request/recall scheduling using
+existing persisted events; it adds no database schema. The persona, six-exhibit
+murder gate and recorded dialogue are unchanged. The immediate-discovery wording
+in the historical bridge review below describes the preceding revision.
+
 ## Evidence bridge accepted after DV-C04-T10
 
 The phone-location, audited-log and issued-lathi chain supersedes the old

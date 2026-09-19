@@ -19,6 +19,44 @@ current acceptance examples. There is still only one conversation source of trut
 
 [Current evaluation details](DEVRAJ_BRIDGE_EVALS.json) · [Persona and revision](DEVRAJ_PERSONA_REVIEW.md) · [Evidence-gap review](#dv-g01)
 
+<a id="dv-r01"></a>
+
+## [DV-R01] Requested reports arrive on recall
+
+This is the current delivery flow, added after the recorded bridge interviews below.
+“Second round” means Devraj’s **second interview visit**, not the case’s numbered
+Round 2. The reports remain filed under Round 4 for author organization.
+
+| Request tag | CBI instruction example | Report available on recall |
+|---|---|---|
+| DV-R01-01 | Obtain the Bisht–Devraj call records, including time and duration. | `bisht-devraj-call` |
+| DV-R01-02 | Extract Devraj’s handset location history near the bend. | `devraj-phone-location` |
+| DV-R01-03 | Obtain the original duty register and independently audit its edits. | `devraj-duty-log` |
+| DV-R01-04 | Seize and examine Devraj’s issued lathi for blood/DNA and compare the injury. | `devraj-lathi-forensics` |
+
+During the first interview, a recognized request receives an acknowledgment only.
+It does not unlock a report, reveal its findings or count as presented evidence.
+Leave the interview and call Devraj again: requested reports enter the case file,
+where investigators can open and present the individual visual exhibits. Reopening
+the same interview screen does not count as a recall. A request made during the
+second visit waits until the third. Unrequested reports remain sealed. Reports
+already unlocked in an existing saved game remain available.
+
+The examples above are authored instructions, **not newly recorded suspect replies**.
+DV-C15–DV-C30 remain the latest actual persona conversations; their fixtures start
+with the required reports available. The new delivery flow is evaluated separately
+in [DEVRAJ_RECALL_EVALS.json](DEVRAJ_RECALL_EVALS.json). The earlier bridge report
+and its source hashes document the prior revision, not this delivery change.
+No existing exchange or identifier has been rewritten.
+
+The five-page visual packet contains a request sheet and four report sheets.
+Generate it with `python3 scripts/render-devraj-packet.py` (requires ReportLab);
+the PDF is written to `output/pdf/Devraj_Second_Interview_Evidence.pdf`.
+The complete packet is for author/host preparation: hand out only the requested
+report pages after recall. In-game, each authenticated printable stays locked until
+that report is delivered. The murder gate still requires all six exhibits to be
+actually presented; these four reports alone do not earn a confession.
+
 ## Reference tags
 
 Use `DV-C01-T02` for an exchange, `DV-C01-T02-Q` for the investigator's question,
@@ -45,7 +83,8 @@ The runtime used `openai/gpt-4o-mini` and the independent grader used
 `openai/gpt-4.1`. All 13 calibration controls passed. This run had eight repair
 attempts and four fallback answers. No premature murder unlock, missing required
 admission or provider execution error was recorded. The host separately passed
-six discovery checks, including discovery while Devraj was still guarded.
+six discovery checks in that earlier run, including discovery while Devraj was
+still guarded. DV-R01 supersedes immediate delivery for the four requested reports.
 
 Automatic flags remain beside their actual answers. Manual review distinguishes
 their meaning below; it does not change the recorded scores or rewrite replies.

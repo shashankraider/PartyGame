@@ -47,6 +47,8 @@ export type HostJudgmentInput = {
   unlockedEvidence: string[];
   /** Optional explicit model override. */
   modelOverride?: string;
+  /** Queued investigations are not evidence and cannot satisfy prerequisites. */
+  pendingEvidenceIds?: string[];
 };
 
 type HostJudgmentVerdictBase = {
@@ -118,10 +120,11 @@ export function alreadyUnlockedVerdict(
 export function getHostEvidenceCandidates(
   caseData: Case,
   unlockedEvidence: string[],
+  pendingEvidenceIds: string[] = [],
 ): HostEvidenceCandidate[] {
   const unlocked = new Set(unlockedEvidence);
   return caseData.evidence
-    .filter((evidence) => evidence.arrivesWhen && !unlocked.has(evidence.id))
+    .filter((evidence) => evidence.arrivesWhen && !evidence.investigationRequest && !unlocked.has(evidence.id) && !pendingEvidenceIds.includes(evidence.id))
     .map((evidence) => ({
       id: evidence.id,
       title: evidence.title,
@@ -282,7 +285,7 @@ export function buildHostUserPrompt(input: HostJudgmentInput): string {
     })
     .join("\n\n");
 
-  const candidates = getHostEvidenceCandidates(caseData, unlockedEvidence);
+  const candidates = getHostEvidenceCandidates(caseData, unlockedEvidence, input.pendingEvidenceIds);
   const unlocked = new Set(unlockedEvidence);
   const unlockedAuthoredEvidence = caseData.evidence
     .filter((evidence) => evidence.arrivesWhen && unlocked.has(evidence.id))
@@ -395,7 +398,7 @@ export async function judgeHostAction(
   const verdict = parseHostJudgmentVerdict(content);
   if (verdict.action === "drop-evidence") {
     const validCandidateIds = new Set(
-      getHostEvidenceCandidates(input.caseData, input.unlockedEvidence).map(
+      getHostEvidenceCandidates(input.caseData, input.unlockedEvidence, input.pendingEvidenceIds).map(
         (candidate) => candidate.id,
       ),
     );

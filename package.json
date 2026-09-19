@@ -29,7 +29,9 @@
     "test:integration:local": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/game.mjs",
     "eval:investigators": "tsx scripts/eval-investigators.ts",
     "eval:rhea": "tsx scripts/eval-rhea.ts",
-    "eval:devraj": "tsx scripts/eval-devraj.ts"
+    "eval:devraj": "tsx scripts/eval-devraj.ts",
+    "eval:devraj:recall": "tsx scripts/eval-devraj-recall.ts",
+    "test:integration:devraj": "node scripts/with-local-supabase.mjs node --import tsx tests/integration/devraj-recall.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

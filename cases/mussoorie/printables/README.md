@@ -6,7 +6,7 @@ Each evidence item has its own self-contained HTML file. The app renders that st
 
 The four `RoundN_*.html` files remain the editable source bundles and print-all-round versions. Run `npm run printables:split` after changing a source bundle to regenerate the 33 standalone exhibits. CI verifies they are current with `npm run printables:check`.
 
-The app serves only standalone exhibits unlocked for an authenticated session. Round source bundles are for local author/host preparation and are not served through the player printable route. PDF export is not part of the implemented pipeline.
+The app serves only standalone exhibits unlocked for an authenticated session. Round source bundles are for local author/host preparation and are not served through the player printable route. The app has no PDF export control. The author/host Devraj packet can be generated separately as described below.
 
 ## Source bundles
 
@@ -28,3 +28,16 @@ The app serves only standalone exhibits unlocked for an authenticated session. R
 ## Reusing across cases
 
 These printables are **Mussoorie-specific**. Future cases should map every evidence item to its own standalone `printableHtml` file.
+
+## Devraj recall packet
+
+`python3 scripts/render-devraj-packet.py` (from the repository root, with ReportLab
+installed) produces `output/pdf/Devraj_Second_Interview_Evidence.pdf`: a request
+sheet, call record, handset location examination, duty-register audit and
+issued-lathi examination. All pages are fictional game documents. Keep the full
+packet with the host and release only requested report pages after Devraj’s recall.
+
+The four corresponding HTML reports are also styled for the in-game evidence
+viewer. `node scripts/style-devraj-exhibits.mjs` refreshes those source blocks from
+the case lore; then run `npm run printables:split`. The PDF is separately authored:
+when case facts change, update its renderer and visually inspect every page.

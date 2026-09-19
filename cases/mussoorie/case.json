@@ -1478,8 +1478,15 @@
       "loreText": "Telecom records pulled under CBI warrant. Show a 47-second call from Rajveer Bisht's personal mobile to Inspector Devraj Khanna's personal mobile at exactly 8:00 PM on the night of the murder. Both phones are personal numbers, not the hotel or station landlines. The call's start time aligns precisely with the start of the unexplained 'maintenance gap' in the Royal Pines CCTV.",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
-      "arrivesWhen": "Prerequisites: bisht-family-history AND land-registry are already unlocked in the case file. No suspect confession or opened-up state is required. With those prerequisites satisfied, reveal when the players ask about ANY ONE of: Bisht and Devraj coordinating on the murder night; the Royal Pines CCTV maintenance gap that night; why Devraj would protect Bisht now; or what happened around 8:00 PM that night. Do NOT fire for old Thakur-case questions alone, including questions about whether Bisht influenced Devraj in 2011. Do NOT fire for generic friendship, corruption, station activity, or hotel-security questions unless the present-day 8:00 PM gap or present-day Bisht-Devraj coordination is part of the thread.",
-      "relatesToSuspectIds": ["bisht", "devraj"]
+      "arrivesWhen": "The CBI explicitly asks to obtain, pull or check telecom/call records linking Bisht and Devraj on the murder night, or asks for records of Bisht calling Devraj around 8 PM. A general question about friendship, an allegation of an order or a request to confess does not count. No confession or previously unlocked forensic result is required. This condition authorizes recording an investigation request. It does not authorize immediate delivery. The application queues the result until Devraj is recalled for a later interview.",
+      "relatesToSuspectIds": [
+        "bisht",
+        "devraj"
+      ],
+      "investigationRequest": {
+        "suspectId": "devraj",
+        "label": "Bisht-Devraj call records"
+      }
     },
     {
       "id": "devraj-jeep-cctv",
@@ -1549,14 +1556,18 @@
       "category": "digital",
       "description": "Recovered handset location records place Devraj’s personal phone near the fatal bend at 8:18 and 8:21 PM, within the recorded accuracy areas.",
       "loreText": "CBI digital examination of the personal handset seized from Inspector Devraj Khanna, identified by its device identifier and the SIM associated with his personal number. The examiner records the seizure, sealed transfer and forensic extraction. Retained device location-history records show fixes at 8:18 PM and 8:21 PM on the murder night. Both plotted positions lie near the bend with the broken railing on Camel’s Back Road; each has a recorded horizontal accuracy of 20 metres. These are handset location-history records, not a location inferred from the 47-second call or a broad cell-tower sector. The accuracy areas include the bend but cannot establish an exact standing position, who was carrying the handset, contact with Vikram or an assault. No audio or call contents were recovered.",
-      "arrivesWhen": "Prerequisite: devraj-jeep-cctv is already unlocked. Reveal when players ask to independently check Devraj’s personal phone location, whether his patrol reached the fatal bend, or where he was around 8:20 PM. No admission or confession is required. Do not fire for old Thakur questions or generic phone calls without a present-night location inquiry.",
+      "arrivesWhen": "The CBI explicitly asks to obtain, extract or examine Devraj’s handset location history, trace his phone near Camel’s Back Road or independently establish its location around the incident. A mere assertion that his phone was at the bend does not count. Do not require phone or jeep results before accepting the request. This condition authorizes recording an investigation request. It does not authorize immediate delivery. The application queues the result until Devraj is recalled for a later interview.",
       "locationId": "camels-back-road",
       "printableHtml": "devraj-phone-location.html",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
       "relatesToSuspectIds": [
         "devraj"
-      ]
+      ],
+      "investigationRequest": {
+        "suspectId": "devraj",
+        "label": "Devraj’s handset location history"
+      }
     },
     {
       "id": "devraj-duty-log",
@@ -1564,14 +1575,18 @@
       "category": "document",
       "description": "A district-held audit preserves an 8:05 PM departure entry and its replacement at 8:34 PM with a station-only account. Desk CCTV corroborates Devraj making the alteration.",
       "loreText": "CBI comparison of the station’s electronic duty register, its district-held append-only audit copy and the station desk CCTV. The original entry at 8:05 PM on the murder night reads: “Inspector Devraj Khanna — left station on round.” At 8:34 PM, Devraj’s authenticated account replaced it with: “8:00–8:30 PM — Inspector Devraj Khanna present at station throughout; no departure.” The district copy preserves both versions and the edit time. The desk CCTV shows Devraj at that terminal making the revision after his return; it corroborates the account attribution rather than relying on a username alone. The CCTV does not show the assault. The preserved departure entry records a claimed round, not a verified route, and the replacement contradicts the earlier departure and the road CCTV. This establishes a deliberate alteration of his whereabouts record, not by itself the reason for it, a murder or the words of Bisht’s call.",
-      "arrivesWhen": "Prerequisites: devraj-jeep-cctv AND devraj-phone-location are already unlocked. Reveal when players pursue the actual patrol or station log, ask who changed the record, request the original entry or independent audit, or compare the claimed round with the phone’s location. No confession or admission is required. Do not require the suspect to supply the exhibit or complete an offscreen check.",
+      "arrivesWhen": "The CBI asks investigators to obtain the original duty/patrol log, independently audit its revisions or establish who altered it. Asking Devraj merely to recall his own timings is not enough. A demand to show/check the patrol logs counts as a request to obtain them, not as completed verification. No phone result or confession is required before requesting this independent check. This condition authorizes recording an investigation request. It does not authorize immediate delivery. The application queues the result until Devraj is recalled for a later interview.",
       "locationId": "police-station",
       "printableHtml": "devraj-duty-log.html",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
       "relatesToSuspectIds": [
         "devraj"
-      ]
+      ],
+      "investigationRequest": {
+        "suspectId": "devraj",
+        "label": "Independent duty-register audit"
+      }
     },
     {
       "id": "devraj-lathi-forensics",
@@ -1579,14 +1594,18 @@
       "category": "document",
       "description": "Blood recovered from Devraj’s seized service lathi yields a DNA profile matching Vikram. Issue and recovery records identify the particular weapon; the injury is compatible with its dimensions.",
       "loreText": "Combined CBI seizure record, police equipment issue record and laboratory examination. The equipment record assigns service lathi DK-17 to Inspector Devraj Khanna. Investigators recovered that marked lathi from his locked equipment cabinet at the station and documented its sealing, transfers and receipt by the laboratory. Blood recovered from its striking end yielded a single-source DNA profile matching Vikram Singh’s reference sample. The laboratory records satisfactory controls and no indication of contamination in those controls. Comparison with the independent medical review finds the pre-fall head injury consistent with the seized lathi’s dimensions and cylindrical shape; the wound is not a unique impression identifying this weapon to the exclusion of all others. The DNA finding connects Vikram’s biological material to this particular recovered lathi. It does not date the deposit, identify who wielded it, establish the mechanism of transfer or show a push.",
-      "arrivesWhen": "Prerequisites: devraj-jeep-cctv AND lathi-postmortem are already unlocked. Reveal when players ask to seize, identify or test Devraj’s issued service lathi, compare the specific weapon with the injury, or look for Vikram’s blood or DNA on it. No confession or admission is required. Do not fire merely because a player asserts a made-up positive forensic result or asks about the antique Thakur rifle.",
+      "arrivesWhen": "The CBI explicitly requests seizure or forensic examination of Devraj’s issued service lathi, a test for Vikram’s blood/DNA on it, or comparison of that particular weapon with the injury. Do not count a bare assertion that a DNA match already exists, a demand to confess or a question about the antique Thakur rifle. No confession or other laboratory result is required to request the examination. This condition authorizes recording an investigation request. It does not authorize immediate delivery. The application queues the result until Devraj is recalled for a later interview.",
       "locationId": "police-station",
       "printableHtml": "devraj-lathi-forensics.html",
       "revealedInRound": 4,
       "unlockedAtChapter": "r4-evidence",
       "relatesToSuspectIds": [
         "devraj"
-      ]
+      ],
+      "investigationRequest": {
+        "suspectId": "devraj",
+        "label": "Examination of Devraj’s issued lathi"
+      }
     }
   ],
 
