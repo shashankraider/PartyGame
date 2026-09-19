@@ -52,7 +52,7 @@ for n,title,body in items:
  text(86,y-27,n+'  '+title,12,'Helvetica-Bold');para(86,y-41,body,W-150,9)
  y-=91
 text(46,178,'SECOND INTERVIEW',11,'Helvetica-Bold',TEAL)
-para(46,158,'Recall Devraj after the requested reports return. Present each exhibit separately. Ask him to explain the findings, then confront the combined sequence. Do not read unrequested results into the interview.',size=10)
+para(46,158,'First obtain at least one answer from every suspect. Then recall Devraj: only the reports you requested become available. Present each exhibit separately. Unrequested reports remain sealed.',size=10)
 text(46,77,'Requested by: ____________________     Interview: ______     Date: __________',8,'Courier',MUTED)
 finish()
 

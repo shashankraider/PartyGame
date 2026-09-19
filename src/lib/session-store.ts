@@ -1,4 +1,5 @@
-import { INVESTIGATION_EVENT_TYPES, planRecallDelivery, type InvestigationEvent } from './investigation-requests';
+import { INVESTIGATION_EVENT_TYPES, investigationProgress, planRecallDelivery, type InvestigationEvent } from './investigation-requests';
+import { firstRoundRecallBlock } from './interview-rounds';
 import { randomUUID } from "node:crypto";
 import { toPublicCase, type PublicCase } from "./public-case";
 import { loadCase } from "@/engine/case-loader";
@@ -341,6 +342,18 @@ export async function loadInvestigationEvents(sessionId: string): Promise<Invest
   }
 }
 
+async function loadAnsweredSuspectIds(sessionId: string): Promise<Set<string>> {
+  const answered = new Set<string>();
+  const db = createSupabaseServerClient();
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await db.from('messages').select('suspect_id')
+      .eq('session_id', sessionId).eq('role', 'assistant').order('id').range(offset, offset + 999);
+    if (error) databaseError(error);
+    for (const message of data ?? []) if (message.suspect_id) answered.add(message.suspect_id);
+    if (!data || data.length < 1000) return answered;
+  }
+}
+
 export async function setSessionScene(input: { sessionId: string; scene: SessionScene; chapterId?: string | null; actorPlayerId?: string }) {
   const { session } = await getLobbyState(input.sessionId);
   assertSessionActive(session);
@@ -351,8 +364,17 @@ export async function setSessionScene(input: { sessionId: string; scene: Session
   if (session.phase === 'reveal' || session.phase === 'accusation') throw new SessionStoreError('invalid_request', 'Use the ending controls', 409);
   if (session.phase === 'briefing' && !isChapterUnlocked(caseData, chapter, session.current_chapter_id)) throw new SessionStoreError('invalid_request', 'Finish the preceding chapter first', 409);
   if (session.phase === 'interrogation' && chapter.type !== 'interview' && chapter.id !== getInterrogationEntryChapter(caseData)?.id) throw new SessionStoreError('invalid_request', 'Choose an available interview', 409);
-  const recall = chapter.type === 'interview'
-    ? planRecallDelivery(caseData, session, chapter.suspectId, await loadInvestigationEvents(session.id)) : null;
+  let recall: ReturnType<typeof planRecallDelivery> = null;
+  if (chapter.type === 'interview') {
+    const answered = await loadAnsweredSuspectIds(session.id);
+    const blocked = firstRoundRecallBlock(caseData, session, chapter.suspectId, answered);
+    if (blocked) throw new SessionStoreError('invalid_request', blocked, 409);
+    const events = await loadInvestigationEvents(session.id);
+    // Returning to an unanswered first interview resumes it; it cannot advance
+    // the visit counter or deliver a report ordered in another interview.
+    const unfinishedVisit = !answered.has(chapter.suspectId) && (investigationProgress(events).visits.get(chapter.suspectId) ?? 0) > 0;
+    if (!unfinishedVisit) recall = planRecallDelivery(caseData, session, chapter.suspectId, events);
+  }
   return (await commitGameUpdate(session, { patch: { current_scene: input.scene, current_chapter_id: chapter.id,
     current_interview_suspect_id: chapter.type === 'interview' ? chapter.suspectId : null,
     unlocked_evidence: [...new Set([...getUnlockedEvidenceForChapter(caseData, chapter, session.unlocked_evidence), ...(recall?.evidence.map(e => e.id) ?? [])])],

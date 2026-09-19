@@ -41,9 +41,18 @@ cannot order these reports. Request during interview N → receive that report o
 Devraj’s next recall (N+1). The combined PDF is an author/host preparation aid,
 not a player evidence item or a bundle released by the game.
 
+**DV-R01-05 — Finish the first interview round before recalls.** Rhea, Devraj,
+Naina, Bisht, Anya and Kabir must each have at least one answered investigator
+question before any completed interview can be recalled. Merely opening a suspect
+card does not count. The active interview can continue, and an unanswered first
+interview can be resumed without advancing its visit counter. Both host and
+player recall attempts are blocked until coverage is complete, with the waiting
+suspects named. A blocked attempt changes no scene, visit count or evidence.
+Existing recorded answers count toward coverage when a saved game resumes.
+
 During the first interview, a recognized request receives an acknowledgment only.
 It does not unlock a report, reveal its findings or count as presented evidence.
-Leave the interview and call Devraj again: requested reports enter the case file,
+After all first interviews are complete, call Devraj again: requested reports enter the case file,
 where investigators can open and present the individual visual exhibits. Reopening
 the same interview screen does not count as a recall. A request made during the
 second visit waits until the third. Unrequested reports remain sealed. Reports

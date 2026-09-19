@@ -245,5 +245,28 @@
       "tests/integration/devraj-recall.mjs": "317ab2b27ac0964476621814133faeadc2f7d8ffee1adf894eb2a0ffdbfb5237"
     },
     "liveClassifier": "Unchanged from the recorded 22/22 run above; no new model conversations generated."
+  },
+  "firstRoundCoverageFollowup": {
+    "at": "2026-09-19T04:56:35.560219+00:00",
+    "baseCommit": "dcd7bad",
+    "rule": "Before recalling any completed interview, all six interviewable suspects must have at least one persisted assistant answer. Active interviews can continue; an unanswered first visit can resume without incrementing its visit counter or releasing reports. Existing saved answers count.",
+    "verification": {
+      "unitPassed": 179,
+      "unitSkipped": 1,
+      "unitFailed": 0,
+      "localDatabaseIntegration": "Passed: blocked host and player recalls leave session revision, events and evidence unchanged; opening the final waiting suspect still blocks recall; after all six have answered, Devraj recall delivers only the requested report; completed non-Devraj interviews are also blocked until coverage completes.",
+      "typescript": "Passed",
+      "eslint": "Passed",
+      "productionBuild": "Passed",
+      "visualQA": "Updated request-sheet instruction in the host PDF; rendered and inspected page 1. Individual evidence reports unchanged."
+    },
+    "sourceSha256": {
+      "src/lib/interview-rounds.ts": "5bd3679b0f3ac1b147a179e912dea1106393f97a7503483cd5521997e6558ce0",
+      "src/lib/session-store.ts": "270396449f15d27f671b0c53ee7e0bc1fc8e702c72ee108bf109121aaf711996",
+      "tests/interview-rounds.test.mjs": "4586a45aa35431900ce623675b2450ffc7d9880a6775c13e36bc6636a519d2d0",
+      "tests/integration/devraj-recall.mjs": "44da9a9fad93f117f25cde366ae3ef182b3a8f4d5925e20472e5c94d0c6448bd",
+      "scripts/render-devraj-packet.py": "4719da1b02f477605104fc0bc16e58a1e8ddab3a67302b75f864a5d778452852"
+    },
+    "liveClassifier": "Unchanged; existing 22/22 classifier/recall result retained as prior evidence. No new persona conversation claimed."
   }
 }

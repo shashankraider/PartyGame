@@ -9,7 +9,9 @@ Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj
 CBI can request call records, handset extraction, an independent duty-register
 audit and examination of the issued lathi during questioning. Requests are saved
 without disclosing findings. Requested reports become available when Devraj is
-called for a later interview, starting with his second visit. No confession or
+called for a later interview, starting with his second visit. Before any suspect
+can be recalled, all six must have answered at least one investigator question.
+Unanswered first interviews can be resumed without releasing reports. No confession or
 prior forensic result is needed to commission these checks. The four exhibits
 now have visual standalone reports and a five-page author/host PDF packet.
 
