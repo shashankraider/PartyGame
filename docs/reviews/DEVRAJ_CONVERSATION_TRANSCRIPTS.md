@@ -16,6 +16,8 @@ Known output issues are retained: extra quotation marks in parts of the second
 patrol-log conversation, one generic pre-confession Hinglish fallback, and the
 failed post-confession log answers at DV-C13-T13-A and DV-C14-T13-A.
 
+**Story-logic review:** DV-C04-T09/T10 currently jump from circumstantial evidence to a full confession. See [DV-G01: missing evidence bridge](#dv-g01). Earlier automated passes tested the authored unlock rules; they do not establish that this confession is narratively earned.
+
 [Persona and changes](DEVRAJ_PATROL_REVISION.md) · [Patrol evaluation details](DEVRAJ_PATROL_EVALS.json) · [Split evaluation details](DEVRAJ_SPLIT_EVALS.json)
 
 ## Reference tags
@@ -396,6 +398,55 @@ cover the killing?
 
 > I can no longer describe that journey as an innocent patrol, sir. I falsified the duty log
 > to cover what happened.
+
+
+<a id="dv-g01"></a>
+
+### [DV-G01] Evidence gap raised at DV-C04-T10
+
+**Confirmed authoring gap; the recorded replies above remain unchanged.**
+The confession starts at DV-C04-T09. DV-C04-T10 retains it, but supplies no
+new evidence to earn it. Splitting the accusation into shorter questions in
+DV-C13/C14 improves questioning clarity without closing this gap.
+
+| Tag | Established by the presented record | Still missing |
+| --- | --- | --- |
+| DV-G01-E01 | Bisht called Devraj's personal phone at 8:00 PM for 47 seconds. | What was said, and whether an order was given. |
+| DV-G01-E02 | Devraj's assigned jeep appears near the road at 8:10 PM. | Contact with Vikram or participation in the assault. A possible patrol remains an available explanation. |
+| DV-G01-E03 | The review identifies a pre-fall injury consistent with a service lathi. | Identification of Devraj's particular weapon or Devraj as the attacker. |
+| DV-G01-E04 | The CCTV exhibit summarizes the duty log's station-all-evening claim. | The actual log, who authored or altered it, and independent support for deliberate falsification. |
+
+**Why the current evaluation missed it:** the authored murder gate requires
+these three exhibits and two eligible pressure turns. The same allegation can
+supply the second turn. One unlock releases the strike, push, killing, call
+instruction and log falsification together. The tests previously treated this
+configured behavior as the expected result; they did not test whether the
+inspector had a believable reason to abandon his remaining cover story.
+
+**Proposed story repair, not existing evidence:** provide an independently
+sourced link between Devraj and the assault, then confront the incompatible
+station record. For example, an authenticated continuation of the shop footage
+could establish Devraj personally intercepting Vikram; a separately authored
+weapon examination could connect the recovered service lathi to the victim.
+Neither should be presented as existing evidence until it is written into the
+case, its player exhibit and its discovery path. The log needs its own source
+and authorship support; absence of patrol corroboration alone is not proof
+that Devraj forged it. Do not invent a recording of Bisht's call or treat the
+medical shape comparison as a unique weapon match.
+
+**Interrogation progression:** jeep admission → challenge the unverified patrol
+account → establish contact with Vikram → confront evidence linking him to the
+injury → press his own actions → confront the supported log contradiction.
+Call contents and the push may be new facts he admits when his cover collapses;
+the investigator must not pretend the current exhibits already prove them.
+His reason for talking should be self-preservation and assigning responsibility
+to Bisht, without invented immunity or a fabricated Bisht confession.
+
+**Evaluation acceptance:** repeating the existing three-exhibit accusation must
+not by itself count as closing DV-G01. A new exhibit asserted only in a question
+must be treated as unverified. Partial chains should preserve the remaining
+cover; the completed authored chain should earn an explicit first-person
+admission. Keep admission retention as a separate check after that point.
 
 
 <a id="patrol-split-interrogation"></a>
