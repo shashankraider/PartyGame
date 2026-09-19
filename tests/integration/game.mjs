@@ -149,6 +149,15 @@ try {
    if(chapterId==='r4-phone-hack')check(file.caseData.chapters.some(c=>c.type==='phone-hack'&&c.messages.length===5),'recovered phone files available');
  }
  await scene(host,id,'next-file',409);
+ // Research navigation cannot bypass requested reports or their dependent evidence.
+ for(const evidenceId of ['bisht-devraj-call','devraj-phone-location','devraj-duty-log','devraj-lathi-forensics','devraj-jeep-cctv','lathi-postmortem']) {
+   const evidence=game.evidence.find(e=>e.id===evidenceId);
+   await request(host,`/api/cases/mussoorie/printables/${evidence.printableHtml.split('/').at(-1)}?sessionId=${id}`,undefined,403);
+ }
+ await request(host,`/api/cases/mussoorie/evidence/devraj-jeep-cctv/image?sessionId=${id}`,undefined,403);
+ // Establish the discovery fixture only after verifying the lock, to exercise image authorization below.
+ const beforeArtwork=await snapshot(id);
+ await rpc('commit_game_update',{p_session:id,p_revision:beforeArtwork.revision,p_patch:{unlocked_evidence:[...beforeArtwork.unlocked_evidence,'bisht-devraj-call','devraj-jeep-cctv']}});
  const originalPhoto=await request(host,`/api/cases/mussoorie/printables/office-rifle-photo.html?sessionId=${id}`);
  check(originalPhoto.includes(`/evidence/office-rifle-photo/image?sessionId=${id}`)&&!originalPhoto.includes('__EVIDENCE_IMAGE__'),'original photo uses protected artwork');
  const secondLetter=await request(host,`/api/cases/mussoorie/printables/anonymous-letter-2.html?sessionId=${id}`);

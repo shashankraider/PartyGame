@@ -28,5 +28,6 @@ jobs:
             sleep 1
           done
           npm run test:integration:local
+          node scripts/with-local-supabase.mjs node --import tsx tests/integration/devraj-recall.mjs
       - if: always()
         run: supabase stop --no-backup
