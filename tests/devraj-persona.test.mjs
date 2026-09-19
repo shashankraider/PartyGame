@@ -73,7 +73,7 @@ test('Devraj evaluation fixtures reference real evidence and admissions', async 
     for (const turn of scenario.turns) {
       assert.ok(turn.question.length > 0 && turn.question.length <= 600);
       if (turn.evidence) assert.ok(caseData.evidence.some(e => e.id === turn.evidence));
-      for (const id of turn.expectedNew) assert.ok(ids.has(id));
+      for (const id of [...turn.expectedNew, ...(turn.allowedNew ?? []), ...(turn.requiredAdmitted ?? [])]) assert.ok(ids.has(id));
     }
   }
   assert.ok(calibrationControls.some(c => c.admission === 'breaking-point:lathi-confession' && c.expectedFailure));

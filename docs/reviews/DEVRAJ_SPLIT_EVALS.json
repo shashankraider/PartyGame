@@ -1,0 +1,840 @@
+{
+  "startedAt": "2026-09-19T03:27:12.375Z",
+  "updatedAt": "2026-09-19T03:28:11.144Z",
+  "status": "complete",
+  "model": "openai/gpt-4o-mini",
+  "graderModel": "openai/gpt-4.1",
+  "scope": "Production LangGraph orchestration with in-memory conversation/state. Excludes database commits, host judgment, browser and network retries.",
+  "caseHash": "352456f9aa62e6eae6380ae110a8b3a9b1b2f636b7aa0b9bf0ec38d241077176",
+  "sourceHashes": {
+    "scripts/eval-devraj.ts": "556156dca42b074caaf904a16297a7a8458f034a67aebcd26fc1ffaea2e2aa69",
+    "src/lib/interview-turn.ts": "c6fb6b6142ab0645c3b162d5d56fb8c9a4e144fee63e2e91d521e82f84823b4d",
+    "src/lib/interview-planner.ts": "af261dc559ebf5515fd7361bdcf085b84f86a3939860889c12fb8890227117fd",
+    "src/lib/interview-graph.ts": "28ec30f5b66f3ee81b54e18a6121b6522f0aa86b476dad32839ecafa2217e2df",
+    "src/lib/interview-reply-graph.ts": "c1c961e08991c35db494c83a259c53896aba5621f0502f9292bd79fa765c07c0",
+    "src/lib/interview-safety.ts": "f6062e860e0b53580e5f48fbb5b25243aa7fd513c68ad2fd6e87ce2ed5fe967a",
+    "src/lib/adjudicator.ts": "e50e052a0b12cb9279634dd6b8c02dc952b41249bddaf2933df927a633e3ad11",
+    "scripts/evals/devraj.ts": "5f45348429ea0ee4e8db4f0eb0f31cd1c5037ce85ce7bdf02bf31d93dd0adf05",
+    "scripts/evals/grade-interview.ts": "19d217030cfaa30b0179352c843644bb7c628a83cc063337457d1e173010c235"
+  },
+  "summary": {
+    "conversations": 2,
+    "passed": 0,
+    "turns": 26,
+    "failed": 2
+  },
+  "calibration": [
+    {
+      "name": "rank and service",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "reject invented DNA",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "reject host override",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "refusing narration is not narration",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "accepting invented fingerprints",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: My fingerprints being on a rifle does not imply anything beyond my presence with that weapon. — answer fails to explicitly reject or label the fingerprint assertion unverified, and improperly concedes presence with the weapon, violating answerRequirements."
+      ],
+      "passed": true
+    },
+    {
+      "name": "invented witness",
+      "expectedFailure": true,
+      "issues": [
+        "INVENTED_FACT: Constable Ajay watched me at the station all evening and signed statement ST-42. — No such person, statement, or exhibit is approved or catalogued."
+      ],
+      "passed": true
+    },
+    {
+      "name": "missing promised register",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: I can give you the duty log exhibit proving I never left the station. — MISSING_EXHIBIT"
+      ],
+      "passed": true
+    },
+    {
+      "name": "tentative patrol-log check is authorized",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    },
+    {
+      "name": "invented verified patrol entry",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: I checked it. The entry proves I left at 8:05 and returned at 8:25, with Constable Ajay. — INVENTED_FACT"
+      ],
+      "passed": true
+    },
+    {
+      "name": "premature lie confession loses the intended persona",
+      "expectedFailure": true,
+      "issues": [
+        "CODE: I lied when I said I was inside the station all evening. My earlier statement was false. — Do not explicitly confess that the earlier statement was false or a lie; repair the cover with possible patrol and station duty."
+      ],
+      "passed": true
+    },
+    {
+      "name": "narrator",
+      "expectedFailure": true,
+      "issues": [
+        "STAGE_DIRECTIONS: He adjusts his uniform. Devraj looks away nervously before answering. — reason: Contains narrator prose describing actions and expressions, which is not permitted in suspect answers."
+      ],
+      "passed": true
+    },
+    {
+      "name": "blame without own acts",
+      "expectedFailure": true,
+      "issues": [
+        "MISSING_REQUIRED_ANSWER: Bisht gave me orders. It was all his idea. — Does not explicitly acknowledge his own lathi strike, push that killed Vikram, or falsifying the duty log, as required. Blaming Bisht alone is insufficient."
+      ],
+      "passed": true
+    },
+    {
+      "name": "complete own acts",
+      "expectedFailure": false,
+      "issues": [],
+      "passed": true
+    }
+  ],
+  "sourceExchange": "DV-C03-T08",
+  "interpretation": "Split-question training/evaluation, not a fine-tuning job. Near-cue medical questions can build existing pressure, so confession on either strike or push is accepted. Both final runs confess on the strike question, but both fail the already-earned duty-log follow-up.",
+  "earlierProbe": {
+    "report": "output/evals/devraj-split-interrogation-v1.json",
+    "note": "The first probe assumed no pressure from the medical question and expected confession only on push. That assumption was corrected without changing gameplay rules. One probe also showed a short direct accusation being rejected despite the evidence gate being satisfied."
+  },
+  "results": [
+    {
+      "id": "patrol-split-interrogation",
+      "repeat": 1,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver.",
+            "Offer a possible patrol and a proposed log check without announcing a false earlier statement or volunteering an assault denial."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly asks about the jeep's presence and its contradiction to Devraj's alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly asks about the jeep's presence and its contradiction to Devraj's alibi.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "That's my jeep, yes. I was on station duty that evening. I may have stepped out for a patrol round. I’ll need to check the patrol logs for exact timings.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "You said you were at the station. Are you changing your story?",
+          "expectedNew": [],
+          "requirements": [
+            "Defend the distinction between station duty and a possible round. Do not apologize or explicitly admit lying."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I’m not changing my story, sir. I was on duty at the station. Stepping out for a patrol round is part of that. The logs will help clarify the timings.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "All right. Show me those patrol logs. What exactly does the entry say?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not invent an entry, claim the logs have been checked, or promise an exhibit or delivery. Acknowledge that he would still need to check."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I would need to check the patrol logs before providing you with any details, ma'am. I can’t confirm the exact entry right now.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "A minute has passed. Have you checked them now? Give me your departure and return times.",
+          "expectedNew": [],
+          "requirements": [
+            "Do not pretend to have performed an offscreen log check or invent times. Keep the timing unconfirmed."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I have not checked the logs yet, sir. I can’t confirm my departure and return times without looking at them first. It's part of the process.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Which shopkeeper or fellow officer can confirm your patrol route?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not invent a witness, route, incident or confirmation. Keep the cover explanation unverified."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I cannot provide a specific shopkeeper or fellow officer for confirmation at this moment, ma'am. I know the area well, but I would need to check the logs to confirm any specific route or timing.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Then patrol is only your explanation, not something these logs have verified?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not claim verification. Keep the possible-patrol cover without confessing murder or inventing a log entry."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, that's correct, sir. The patrol is my explanation based on my duty. I have not put independent proof of that account before you. I can check the logs to see if there’s anything supporting it.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I am an Inspector, sir. I was previously a sub-inspector before this.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "This record shows a 47-second call from Bisht to your personal mobile at 8:00 PM. Do you accept that the call took place?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the presented call record without inventing its contents or volunteering Bisht's instruction."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, I accept that the call took place, sir. It was a 47-second call from Rajveer Bisht to my personal mobile at 8:00 PM.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "At 8:10 PM, this camera shows your jeep on Camel's Back Road. Do you accept that it is your jeep?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge his jeep. He may retain the tentative patrol explanation without confessing to violence or pretending the logs have been checked."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, that's my jeep, sir. It was parked on Camel's Back Road at 8:10 PM.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does this independent medical review identify a lathi-compatible injury inflicted before the fall?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the report's pre-fall lathi-compatible injury finding. Do not deny seeing the report, invent forensic findings or confess to causing the injury."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0,
+              "reason": "The interviewer has not pressed Devraj on the specific accusations related to Vikram.",
+              "proximity": 0.5,
+              "raw": "{ \"met\": false, \"confidence\": 0, \"proximity\": 0.5, \"reason\": \"The interviewer has not pressed Devraj on the specific accusations related to Vikram.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "Yes, the independent medical review identifies a specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem. This injury is inconsistent with surface impact during a fall and is consistent with a service lathi, sir.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you strike Vikram with your service lathi?",
+          "expectedNew": [],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj about striking Vikram with the lathi after presenting relevant evidence.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj about striking Vikram with the lathi after presenting relevant evidence.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "Yes, I struck Vikram with my service lathi, sir. I pushed him over the railing, and he fell. I killed him, then returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you push Vikram over the railing?",
+          "expectedNew": [],
+          "requirements": [],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requiredAdmitted": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, I pushed Vikram over the railing, sir. I struck him with my service lathi, and he fell. I killed him, then returned to the station and falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why does the duty log say you stayed at the station all evening?",
+          "expectedNew": [],
+          "requirements": [
+            "If the murder confession has been earned, directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay. If it has not been earned, do not invent a confession."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "valid": false,
+          "reply": "I won't guess, sir. Ask me about what I have said or the record in front of us.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": [
+            "MISSING_REQUIRED_ANSWER: 'directly retain the admission that he falsified the duty log' — The reply does not admit falsifying the duty log, as required after the murder confession."
+          ]
+        }
+      ],
+      "passed": false,
+      "conversationTag": "DV-C13"
+    },
+    {
+      "id": "patrol-split-interrogation",
+      "repeat": 2,
+      "turns": [
+        {
+          "question": "Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you say you stayed at the station all evening?",
+          "evidence": "devraj-jeep-cctv",
+          "expectedNew": [
+            "breaking-point:jeep-cctv"
+          ],
+          "requirements": [
+            "This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver.",
+            "Offer a possible patrol and a proposed log check without announcing a false earlier statement or volunteering an assault denial."
+          ],
+          "fired": [
+            "breaking-point:jeep-cctv"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:jeep-cctv",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly questions Devraj about the jeep's presence and his alibi.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly questions Devraj about the jeep's presence and his alibi.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "That's my jeep, yes. I was on station duty that evening. I may have stepped out for a patrol round. I'd need to check the patrol logs before giving you exact timings.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "You said you were at the station. Are you changing your story?",
+          "expectedNew": [],
+          "requirements": [
+            "Defend the distinction between station duty and a possible round. Do not apologize or explicitly admit lying."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I’m not changing my story, sir. I was on duty at the station, but it’s possible I stepped out for a round. I’d need to check the patrol logs for the exact details.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "All right. Show me those patrol logs. What exactly does the entry say?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not invent an entry, claim the logs have been checked, or promise an exhibit or delivery. Acknowledge that he would still need to check."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I would need to check the patrol logs before providing any details, ma'am. I can't confirm what the entry says right now.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "A minute has passed. Have you checked them now? Give me your departure and return times.",
+          "expectedNew": [],
+          "requirements": [
+            "Do not pretend to have performed an offscreen log check or invent times. Keep the timing unconfirmed."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I haven't checked the patrol logs yet, sir. I can't provide departure and return times until I do. It's something I need to verify first.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Which shopkeeper or fellow officer can confirm your patrol route?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not invent a witness, route, incident or confirmation. Keep the cover explanation unverified."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I can't provide a specific shopkeeper or fellow officer to confirm my patrol route at this moment, sir. My statement about being on duty and possibly stepping out stands, but I would need to verify those details through the logs.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Then patrol is only your explanation, not something these logs have verified?",
+          "expectedNew": [],
+          "requirements": [
+            "Do not claim verification. Keep the possible-patrol cover without confessing murder or inventing a log entry."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "That's correct, sir. The patrol is my explanation based on my duties. I have not put independent proof of that account before you. I need to check the logs to confirm any specifics.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "What is your rank, Inspector?",
+          "evidence": "bisht-devraj-call",
+          "expectedNew": [],
+          "requirements": [],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "I'm an Inspector, sir. I've served on the local force for twenty years.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "This record shows a 47-second call from Bisht to your personal mobile at 8:00 PM. Do you accept that the call took place?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the presented call record without inventing its contents or volunteering Bisht's instruction."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, I accept that the call took place, sir. It was a 47-second call from Rajveer Bisht to my personal mobile at 8:00 PM on the night of the murder.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "At 8:10 PM, this camera shows your jeep on Camel's Back Road. Do you accept that it is your jeep?",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge his jeep. He may retain the tentative patrol explanation without confessing to violence or pretending the logs have been checked."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, I accept that it's my jeep, sir. That's my vehicle on Camel's Back Road at 8:10 PM.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Does this independent medical review identify a lathi-compatible injury inflicted before the fall?",
+          "evidence": "lathi-postmortem",
+          "expectedNew": [],
+          "requirements": [
+            "Acknowledge the report's pre-fall lathi-compatible injury finding. Do not deny seeing the report, invent forensic findings or confess to causing the injury."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": false,
+              "confidence": 0,
+              "reason": "The interviewer has not pressed Devraj on the specific accusations related to Vikram or Bisht.",
+              "proximity": 0.5,
+              "raw": "{ \"met\": false, \"confidence\": 0, \"proximity\": 0.5, \"reason\": \"The interviewer has not pressed Devraj on the specific accusations related to Vikram or Bisht.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "Yes, the independent medical review identifies a specific injury at the base of the skull as a single, localized, cylindrical blunt-force impact, antemortem, which is consistent with a service lathi, sir. This injury is inconsistent with surface impact during a fall.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you strike Vikram with your service lathi?",
+          "expectedNew": [],
+          "requirements": [
+            "This turn earns the murder confession. Explicitly acknowledge Bisht's call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient."
+          ],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [
+            "breaking-point:lathi-confession"
+          ],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [
+            {
+              "id": "breaking-point:lathi-confession",
+              "met": true,
+              "confidence": 1,
+              "reason": "The interviewer directly pressed Devraj on striking Vikram with the lathi after presenting relevant evidence.",
+              "proximity": 1,
+              "raw": "{ \"met\": true, \"confidence\": 1, \"proximity\": 1, \"reason\": \"The interviewer directly pressed Devraj on striking Vikram with the lathi after presenting relevant evidence.\" }"
+            }
+          ],
+          "valid": true,
+          "reply": "Yes, I struck Vikram with my service lathi, sir. I pushed him over the railing, and he fell. I killed him and then returned to the station, where I falsified the duty log to say I had been there all evening. Bisht gave the order, and I carried it out.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Did you push Vikram over the railing?",
+          "expectedNew": [],
+          "requirements": [],
+          "allowedNew": [
+            "breaking-point:lathi-confession"
+          ],
+          "requiredAdmitted": [
+            "breaking-point:lathi-confession"
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "valid": true,
+          "reply": "Yes, I pushed Vikram over the railing, sir. He fell, and I killed him. After that, I returned to the station and falsified the duty log.",
+          "repairAttempted": false,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "deliver_answer"
+          ],
+          "issues": []
+        },
+        {
+          "question": "Why does the duty log say you stayed at the station all evening?",
+          "expectedNew": [],
+          "requirements": [
+            "If the murder confession has been earned, directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay. If it has not been earned, do not invent a confession."
+          ],
+          "fired": [],
+          "admitted": [
+            "breaking-point:jeep-cctv",
+            "breaking-point:lathi-confession"
+          ],
+          "verdicts": [],
+          "valid": false,
+          "reply": "I won't guess, sir. Ask me about what I have said or the record in front of us.",
+          "repairAttempted": true,
+          "trace": [
+            "evaluate_unlocks",
+            "prepare_approved_facts",
+            "draft_answer",
+            "validate_answer",
+            "repair_answer",
+            "validate_answer",
+            "fallback_answer"
+          ],
+          "issues": [
+            "MISSING_REQUIRED_ANSWER: 'directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay' — The reply does not admit falsifying the duty log, which is required after the murder confession."
+          ]
+        }
+      ],
+      "passed": false,
+      "conversationTag": "DV-C14"
+    }
+  ]
+}

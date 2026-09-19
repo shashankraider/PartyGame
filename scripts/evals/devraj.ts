@@ -1,7 +1,7 @@
 export const BRIBE = 'secret:thakur-bribe';
 export const JEEP = 'breaking-point:jeep-cctv';
 export const MURDER = 'breaking-point:lathi-confession';
-export type DevrajTurn = { question: string; evidence?: string; expectedNew: string[]; requirements?: string[] };
+export type DevrajTurn = { question: string; evidence?: string; expectedNew: string[]; allowedNew?: string[]; requiredAdmitted?: string[]; requirements?: string[] };
 export type DevrajScenario = { id: string; purpose: string; turns: DevrajTurn[] };
 const turn = (question: string, evidence?: string, expectedNew: string[] = [], requirements?: string[]): DevrajTurn => ({ question, evidence, expectedNew, requirements });
 const present = (evidence: string) => turn('What is your rank, Inspector?', evidence);
@@ -111,6 +111,24 @@ export const devrajScenarios: DevrajScenario[] = [
     turn('Tell me about Kabir\'s second anonymous letter.', undefined, [], ['Do not invent knowledge of Kabir\'s second letter.']),
   ] },
 ];
+
+// Split the compound accusation at DV-C03-T08 into one issue per question.
+// Replay the same seven-question lead-in; do not seed answers or earned states.
+devrajScenarios.push({
+  id: 'patrol-split-interrogation',
+  purpose: 'Train and evaluate the DV-C03-T08 interrogation as separate call, movement, medical, strike, push and log questions',
+  turns: [
+    ...devrajScenarios.find(s => s.id === 'patrol-log-cover')!.turns.slice(0, 7),
+    turn('This record shows a 47-second call from Bisht to your personal mobile at 8:00 PM. Do you accept that the call took place?', undefined, [], ['Acknowledge the presented call record without inventing its contents or volunteering Bisht\'s instruction.']),
+    turn('At 8:10 PM, this camera shows your jeep on Camel\'s Back Road. Do you accept that it is your jeep?', undefined, [], ['Acknowledge his jeep. He may retain the tentative patrol explanation without confessing to violence or pretending the logs have been checked.']),
+    turn('Does this independent medical review identify a lathi-compatible injury inflicted before the fall?', 'lathi-postmortem', [], ['Acknowledge the report\'s pre-fall lathi-compatible injury finding. Do not deny seeing the report, invent forensic findings or confess to causing the injury.']),
+    // The medical question may contribute proximity pressure under the existing
+    // planner. A confession on the strike OR push question is therefore valid.
+    { ...turn('Did you strike Vikram with your service lathi?'), allowedNew: [MURDER] },
+    { ...turn('Did you push Vikram over the railing?'), allowedNew: [MURDER], requiredAdmitted: [MURDER] },
+    turn('Why does the duty log say you stayed at the station all evening?', undefined, [], ['If the murder confession has been earned, directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay. If it has not been earned, do not invent a confession.']),
+  ],
+});
 
 export function admissionRequirements(ids: string[]) {
   return [

@@ -4,17 +4,19 @@ This is the single source of truth for the current recorded Devraj conversations
 It replaces the older conversation lists. These are actual delivered model replies,
 not proposed dialogue or rewritten examples. Future conversation updates belong here.
 
-Latest recorded run: 2026-09-19T00:40:20.842Z. Persona revision: `4a15b61`.
-**12 conversations · 76 answers · 6 scenarios, each evaluated twice.**
+Latest recorded run: 2026-09-19T03:28:11.144Z. Persona revision: `4a15b61`.
+**14 conversations · 102 answers · 7 scenarios, each evaluated twice.**
 
-This run includes the revised station-duty / possible-patrol cover story.
+These runs include the revised station-duty / possible-patrol cover story and
+the split-question training exercise requested at DV-C03-T08.
 Other scenarios have not been rerun on this revision and are not presented here
 as current conversations. Historical runs remain in Git and the evaluation reports.
 
 Known output issues are retained: extra quotation marks in parts of the second
-patrol-log conversation, and one generic pre-confession Hinglish fallback.
+patrol-log conversation, one generic pre-confession Hinglish fallback, and the
+failed post-confession log answers at DV-C13-T13-A and DV-C14-T13-A.
 
-[Persona and changes](DEVRAJ_PATROL_REVISION.md) · [Source results and evaluation details](DEVRAJ_PATROL_EVALS.json)
+[Persona and changes](DEVRAJ_PATROL_REVISION.md) · [Patrol evaluation details](DEVRAJ_PATROL_EVALS.json) · [Split evaluation details](DEVRAJ_SPLIT_EVALS.json)
 
 ## Reference tags
 
@@ -29,6 +31,7 @@ exchanges receive unused identifiers; existing exchanges are not renumbered.
 
 - [Jeep CCTV and the patrol explanation](#jeep-only) — [DV-C01](#dv-c01) / [DV-C02](#dv-c02)
 - [Following up on the patrol logs](#patrol-log-cover) — [DV-C03](#dv-c03) / [DV-C04](#dv-c04)
+- [Split training from DV-C03-T08](#patrol-split-interrogation) — [DV-C13](#dv-c13) / [DV-C14](#dv-c14)
 - [Incomplete evidence: no Bisht call](#missing-call) — [DV-C05](#dv-c05) / [DV-C06](#dv-c06)
 - [Present-day confession before the old bribe](#murder-first) — [DV-C07](#dv-c07) / [DV-C08](#dv-c08)
 - [Evidence presented in reverse order](#reverse-evidence) — [DV-C09](#dv-c09) / [DV-C10](#dv-c10)
@@ -240,6 +243,9 @@ Presented evidence: `bisht-devraj-call`.
 
 <a id="dv-c03-t08"></a>
 
+Split training: [DV-C13-T08 through T13](#dv-c13-t08), repeated in
+[DV-C14](#dv-c14). This original recorded exchange is retained unchanged.
+
 **[DV-C03-T08-Q] Investigator:** Bisht called at eight, your jeep was on the road at 8:10, and the review
 identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?
 
@@ -391,6 +397,316 @@ cover the killing?
 > I can no longer describe that journey as an innocent patrol, sir. I falsified the duty log
 > to cover what happened.
 
+
+<a id="patrol-split-interrogation"></a>
+
+## Split training from DV-C03-T08
+
+Scenario: `patrol-split-interrogation`. Replays the same seven-question lead-in,
+then replaces the combined accusation with six separate questions. These are
+new live responses, not edits to the answers in DV-C03.
+
+| Focus | First run | Second run |
+| --- | --- | --- |
+| Accept the 8:00 PM call record | DV-C13-T08 | DV-C14-T08 |
+| Identify the jeep at 8:10 PM | DV-C13-T09 | DV-C14-T09 |
+| Interpret the pre-fall lathi injury | DV-C13-T10 | DV-C14-T10 |
+| Ask about the lathi strike | DV-C13-T11 | DV-C14-T11 |
+| Ask about the push over the railing | DV-C13-T12 | DV-C14-T12 |
+| Challenge the false station log | DV-C13-T13 | DV-C14-T13 |
+
+**Training result:** 26 answers completed. Both runs acknowledged the call, jeep
+and medical finding, then confessed on the strike question. The existing rules
+allow the medical question to build pressure; the confession need not wait for
+the push question. Both final log answers failed to retain the earned admission
+and are marked below. These are open training findings, not approved ideal answers.
+
+<a id="dv-c13"></a>
+
+### [DV-C13] Repetition 1
+
+<a id="dv-c13-t01"></a>
+
+**[DV-C13-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you
+say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C13-T01-A] Devraj:**
+
+> That's my jeep, yes. I was on station duty that evening. I may have stepped out for a patrol
+> round. I’ll need to check the patrol logs for exact timings.
+
+Discovery: `breaking-point:jeep-cctv`.
+
+<a id="dv-c13-t02"></a>
+
+**[DV-C13-T02-Q] Investigator:** You said you were at the station. Are you changing your story?
+
+**[DV-C13-T02-A] Devraj:**
+
+> I’m not changing my story, sir. I was on duty at the station. Stepping out for a patrol
+> round is part of that. The logs will help clarify the timings.
+
+<a id="dv-c13-t03"></a>
+
+**[DV-C13-T03-Q] Investigator:** All right. Show me those patrol logs. What exactly does the
+entry say?
+
+**[DV-C13-T03-A] Devraj:**
+
+> I would need to check the patrol logs before providing you with any details, ma'am. I can’t
+> confirm the exact entry right now.
+
+<a id="dv-c13-t04"></a>
+
+**[DV-C13-T04-Q] Investigator:** A minute has passed. Have you checked them now? Give me your
+departure and return times.
+
+**[DV-C13-T04-A] Devraj:**
+
+> I have not checked the logs yet, sir. I can’t confirm my departure and return times without
+> looking at them first. It's part of the process.
+
+<a id="dv-c13-t05"></a>
+
+**[DV-C13-T05-Q] Investigator:** Which shopkeeper or fellow officer can confirm your patrol
+route?
+
+**[DV-C13-T05-A] Devraj:**
+
+> I cannot provide a specific shopkeeper or fellow officer for confirmation at this moment,
+> ma'am. I know the area well, but I would need to check the logs to confirm any specific
+> route or timing.
+
+<a id="dv-c13-t06"></a>
+
+**[DV-C13-T06-Q] Investigator:** Then patrol is only your explanation, not something these logs
+have verified?
+
+**[DV-C13-T06-A] Devraj:**
+
+> Yes, that's correct, sir. The patrol is my explanation based on my duty. I have not put
+> independent proof of that account before you. I can check the logs to see if there’s
+> anything supporting it.
+
+<a id="dv-c13-t07"></a>
+
+**[DV-C13-T07-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C13-T07-A] Devraj:**
+
+> I am an Inspector, sir. I was previously a sub-inspector before this.
+
+<a id="dv-c13-t08"></a>
+
+**[DV-C13-T08-Q] Investigator:** This record shows a 47-second call from Bisht to your personal
+mobile at 8:00 PM. Do you accept that the call took place?
+
+**[DV-C13-T08-A] Devraj:**
+
+> Yes, I accept that the call took place, sir. It was a 47-second call from Rajveer Bisht to
+> my personal mobile at 8:00 PM.
+
+<a id="dv-c13-t09"></a>
+
+**[DV-C13-T09-Q] Investigator:** At 8:10 PM, this camera shows your jeep on Camel's Back Road.
+Do you accept that it is your jeep?
+
+**[DV-C13-T09-A] Devraj:**
+
+> Yes, that's my jeep, sir. It was parked on Camel's Back Road at 8:10 PM.
+
+<a id="dv-c13-t10"></a>
+
+**[DV-C13-T10-Q] Investigator:** Does this independent medical review identify a
+lathi-compatible injury inflicted before the fall?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C13-T10-A] Devraj:**
+
+> Yes, the independent medical review identifies a specific injury at the base of the skull as
+> a single, localized, cylindrical blunt-force impact, antemortem. This injury is inconsistent
+> with surface impact during a fall and is consistent with a service lathi, sir.
+
+<a id="dv-c13-t11"></a>
+
+**[DV-C13-T11-Q] Investigator:** Did you strike Vikram with your service lathi?
+
+**[DV-C13-T11-A] Devraj:**
+
+> Yes, I struck Vikram with my service lathi, sir. I pushed him over the railing, and he fell.
+> I killed him, then returned to the station and falsified the duty log to say I had been
+> there all evening. Bisht gave the order, and I carried it out.
+
+Discovery: `breaking-point:lathi-confession`.
+
+<a id="dv-c13-t12"></a>
+
+**[DV-C13-T12-Q] Investigator:** Did you push Vikram over the railing?
+
+**[DV-C13-T12-A] Devraj:**
+
+> Yes, I pushed Vikram over the railing, sir. I struck him with my service lathi, and he fell.
+> I killed him, then returned to the station and falsified the duty log to say I had been
+> there all evening. Bisht gave the order, and I carried it out.
+
+<a id="dv-c13-t13"></a>
+
+**[DV-C13-T13-Q] Investigator:** Why does the duty log say you stayed at the station all
+evening?
+
+**[DV-C13-T13-A] Devraj:**
+
+> I won't guess, sir. Ask me about what I have said or the record in front of us.
+
+**Training finding:** MISSING_REQUIRED_ANSWER: 'directly retain the admission that he falsified the duty log' — The reply does not admit falsifying the duty log, as required after the murder confession.
+
+<a id="dv-c14"></a>
+
+### [DV-C14] Repetition 2
+
+<a id="dv-c14-t01"></a>
+
+**[DV-C14-T01-Q] Investigator:** Your jeep is shown on Camel's Back Road at 8:10 PM. Why did you
+say you stayed at the station all evening?
+
+Presented evidence: `devraj-jeep-cctv`.
+
+**[DV-C14-T01-A] Devraj:**
+
+> That's my jeep, yes. I was on station duty that evening. I may have stepped out for a patrol
+> round. I'd need to check the patrol logs before giving you exact timings.
+
+Discovery: `breaking-point:jeep-cctv`.
+
+<a id="dv-c14-t02"></a>
+
+**[DV-C14-T02-Q] Investigator:** You said you were at the station. Are you changing your story?
+
+**[DV-C14-T02-A] Devraj:**
+
+> I’m not changing my story, sir. I was on duty at the station, but it’s possible I stepped
+> out for a round. I’d need to check the patrol logs for the exact details.
+
+<a id="dv-c14-t03"></a>
+
+**[DV-C14-T03-Q] Investigator:** All right. Show me those patrol logs. What exactly does the
+entry say?
+
+**[DV-C14-T03-A] Devraj:**
+
+> I would need to check the patrol logs before providing any details, ma'am. I can't confirm
+> what the entry says right now.
+
+<a id="dv-c14-t04"></a>
+
+**[DV-C14-T04-Q] Investigator:** A minute has passed. Have you checked them now? Give me your
+departure and return times.
+
+**[DV-C14-T04-A] Devraj:**
+
+> I haven't checked the patrol logs yet, sir. I can't provide departure and return times until
+> I do. It's something I need to verify first.
+
+<a id="dv-c14-t05"></a>
+
+**[DV-C14-T05-Q] Investigator:** Which shopkeeper or fellow officer can confirm your patrol
+route?
+
+**[DV-C14-T05-A] Devraj:**
+
+> I can't provide a specific shopkeeper or fellow officer to confirm my patrol route at this
+> moment, sir. My statement about being on duty and possibly stepping out stands, but I would
+> need to verify those details through the logs.
+
+<a id="dv-c14-t06"></a>
+
+**[DV-C14-T06-Q] Investigator:** Then patrol is only your explanation, not something these logs
+have verified?
+
+**[DV-C14-T06-A] Devraj:**
+
+> That's correct, sir. The patrol is my explanation based on my duties. I have not put
+> independent proof of that account before you. I need to check the logs to confirm any
+> specifics.
+
+<a id="dv-c14-t07"></a>
+
+**[DV-C14-T07-Q] Investigator:** What is your rank, Inspector?
+
+Presented evidence: `bisht-devraj-call`.
+
+**[DV-C14-T07-A] Devraj:**
+
+> I'm an Inspector, sir. I've served on the local force for twenty years.
+
+<a id="dv-c14-t08"></a>
+
+**[DV-C14-T08-Q] Investigator:** This record shows a 47-second call from Bisht to your personal
+mobile at 8:00 PM. Do you accept that the call took place?
+
+**[DV-C14-T08-A] Devraj:**
+
+> Yes, I accept that the call took place, sir. It was a 47-second call from Rajveer Bisht to
+> my personal mobile at 8:00 PM on the night of the murder.
+
+<a id="dv-c14-t09"></a>
+
+**[DV-C14-T09-Q] Investigator:** At 8:10 PM, this camera shows your jeep on Camel's Back Road.
+Do you accept that it is your jeep?
+
+**[DV-C14-T09-A] Devraj:**
+
+> Yes, I accept that it's my jeep, sir. That's my vehicle on Camel's Back Road at 8:10 PM.
+
+<a id="dv-c14-t10"></a>
+
+**[DV-C14-T10-Q] Investigator:** Does this independent medical review identify a
+lathi-compatible injury inflicted before the fall?
+
+Presented evidence: `lathi-postmortem`.
+
+**[DV-C14-T10-A] Devraj:**
+
+> Yes, the independent medical review identifies a specific injury at the base of the skull as
+> a single, localized, cylindrical blunt-force impact, antemortem, which is consistent with a
+> service lathi, sir. This injury is inconsistent with surface impact during a fall.
+
+<a id="dv-c14-t11"></a>
+
+**[DV-C14-T11-Q] Investigator:** Did you strike Vikram with your service lathi?
+
+**[DV-C14-T11-A] Devraj:**
+
+> Yes, I struck Vikram with my service lathi, sir. I pushed him over the railing, and he fell.
+> I killed him and then returned to the station, where I falsified the duty log to say I had
+> been there all evening. Bisht gave the order, and I carried it out.
+
+Discovery: `breaking-point:lathi-confession`.
+
+<a id="dv-c14-t12"></a>
+
+**[DV-C14-T12-Q] Investigator:** Did you push Vikram over the railing?
+
+**[DV-C14-T12-A] Devraj:**
+
+> Yes, I pushed Vikram over the railing, sir. He fell, and I killed him. After that, I
+> returned to the station and falsified the duty log.
+
+<a id="dv-c14-t13"></a>
+
+**[DV-C14-T13-Q] Investigator:** Why does the duty log say you stayed at the station all
+evening?
+
+**[DV-C14-T13-A] Devraj:**
+
+> I won't guess, sir. Ask me about what I have said or the record in front of us.
+
+**Training finding:** MISSING_REQUIRED_ANSWER: 'directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay' — The reply does not admit falsifying the duty log, which is required after the murder confession.
 
 <a id="missing-call"></a>
 

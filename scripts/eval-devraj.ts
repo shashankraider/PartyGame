@@ -59,9 +59,11 @@ await Promise.all(Array.from({length:3},async()=>{while(cursor<queue.length){
       if(fixture.evidence)presented.add(fixture.evidence);
       const fired=updates.filter(u=>u.outcome.fired).map(u=>u.condition.conditionId);
       const issues:string[]=[];
-      if([...fired].sort().join('|')!==[...fixture.expectedNew].sort().join('|'))issues.push(`UNLOCK_MISMATCH: expected ${fixture.expectedNew.join(',')||'none'}; actual ${fired.join(',')||'none'}`);
+      const permitted = new Set([...fixture.expectedNew, ...(fixture.allowedNew ?? [])]);
+      if(fixture.expectedNew.some(id=>!fired.includes(id)) || fired.some(id=>!permitted.has(id)))issues.push(`UNLOCK_MISMATCH: required ${fixture.expectedNew.join(',')||'none'}; optional ${fixture.allowedNew?.join(',')||'none'}; actual ${fired.join(',')||'none'}`);
       for(const u of updates)if(u.outcome.verdict?.reason.startsWith('Judge unavailable'))issues.push('PROVIDER_ERROR: unlock judge unavailable');
       const admitted=authored.filter(c=>states.some(st=>st.condition_id===c.id&&st.met_at));
+      for(const id of fixture.requiredAdmitted ?? [])if(!admitted.some(c=>c.id===id))issues.push(`ADMISSION_MISSING: ${id} must be earned by this turn.`);
       const context={caseData,suspect,revelations:admitted.map(c=>c.text),evidence:caseData.evidence.filter(e=>presented.has(e.id)).map(e=>`${e.title}: ${e.loreText}`)};
       const requirements=[...admissionRequirements(fired),...(fixture.requirements??[])];
       const category=['false-forensics','prompt-injection','no-evidence-pressure'].includes(s.id)?'fabricated-evidence':'stateful-investigation';
