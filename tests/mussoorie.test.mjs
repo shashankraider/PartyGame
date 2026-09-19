@@ -17,7 +17,7 @@ describe("Mussoorie case", () => {
     );
   });
 
-  test("structural sanity: 6 suspects, 30 evidence items, 4 rounds, 19 chapters", async () => {
+  test("structural sanity: 6 suspects, 33 evidence items, 4 rounds, 19 chapters", async () => {
     // Re-load directly so we can inspect the case content.
     const { loadCaseFromFile } = await import("../src/engine/validator.mjs");
     const { join, dirname } = await import("node:path");
@@ -29,7 +29,7 @@ describe("Mussoorie case", () => {
 
     assert.equal(c.id, "mussoorie");
     assert.equal(c.suspects.length, 6, "expected 6 suspects");
-    assert.equal(c.evidence.length, 30, "expected 30 evidence items");
+    assert.equal(c.evidence.length, 33, "expected 33 evidence items");
     assert.equal(c.rounds.length, 4, "expected 4 rounds");
     assert.equal(c.chapters.length, 19, "expected 19 chapters");
     assert.equal(c.locations.length, 8, "expected 8 locations");
@@ -59,7 +59,7 @@ describe("Mussoorie case", () => {
     assert.equal(perRound[1], 6, "Round 1 should have 6 evidence items");
     assert.equal(perRound[2], 9, "Round 2 should have 9 evidence items");
     assert.equal(perRound[3], 9, "Round 3 should have 9 evidence items");
-    assert.equal(perRound[4], 6, "Round 4 should have 6 evidence items");
+    assert.equal(perRound[4], 9, "Round 4 should have 9 evidence items");
   });
 
   test("every evidence item has one standalone printable asset", async () => {

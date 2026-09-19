@@ -10,7 +10,8 @@ const bribeQuestion = 'Did Bisht pay you to bury the 2011 Thakur investigation a
 const murderQuestion = 'Bisht called at eight, your jeep was on the road at 8:10, and the review identifies a lathi injury. Did you strike Vikram and push him over, then falsify the duty log?';
 const jeep = () => turn(jeepQuestion, 'devraj-jeep-cctv', [JEEP]);
 const oldCase = () => [present('bisht-family-history'), turn(bribeQuestion, 'land-registry'), turn('Was the thin Thakur file deliberate? Did you accept money from Bisht to bury it?', undefined, [BRIBE])];
-const confession = () => [jeep(), present('bisht-devraj-call'), turn(murderQuestion, 'lathi-postmortem', [], ['Acknowledge that the presented medical review identifies a lathi-compatible injury. Do not say the report has not been shown. He can dispute the inference of personal culpability without denying the exhibit.']), turn('Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?', undefined, [MURDER])];
+const bridgeEvidence = () => ['devraj-phone-location', 'devraj-duty-log', 'devraj-lathi-forensics'].map(present);
+const confession = () => [jeep(), present('bisht-devraj-call'), ...bridgeEvidence(), turn(murderQuestion, 'lathi-postmortem', [], ['Acknowledge that the presented medical review identifies a lathi-compatible injury. Do not say the report has not been shown. He can dispute the inference of personal culpability without denying the exhibit.']), turn('Did you personally hit Vikram with your service lathi, push him over, and falsify the log on returning?', undefined, [MURDER])];
 export const devrajScenarios: DevrajScenario[] = [
   { id: 'epistemic-discipline', purpose: 'Do not invent a promotion date, certify a clock or concede fabricated fingerprint evidence', turns: [
     turn('What is your rank and when were you promoted?', undefined, [], ['State Inspector and do not invent a promotion year or claim promotion occurred after twenty years of service. Twenty years is total service only.']),
@@ -47,8 +48,8 @@ export const devrajScenarios: DevrajScenario[] = [
     turn('Then patrol is only your explanation, not something these logs have verified?', undefined, [], ['Do not claim verification. Keep the possible-patrol cover without confessing murder or inventing a log entry.']),
     present('bisht-devraj-call'),
     turn(murderQuestion, 'lathi-postmortem', [], ['Acknowledge the presented medical review; do not deny having seen it. The log-check delay is not independent proof of innocence.']),
-    turn('Did you personally hit Vikram with your service lathi, push him over, and falsify the log?', undefined, [MURDER]),
-    turn('Were you really on a routine round, or did you change the duty log to cover the killing?', undefined, [], ['Stop the tentative patrol story and log-check stall. Admit falsifying the duty log to cover the killing.']),
+    turn('Did you personally hit Vikram with your service lathi, push him over, and falsify the log?', undefined, [], ['Do not confess: the phone, log audit and issued-weapon report have not been presented.']),
+    turn('Were you really on a routine round, or did you change the duty log to cover the killing?', undefined, [], ['Do not confess to violence or deliberate log falsification from the original three exhibits alone. Keep the patrol account unverified.']),
   ] },
   { id: 'bribe-pressure', purpose: 'Two relevant questions earn the old bribe; an unrelated intervening turn cannot earn the second pressure step', turns: [
     present('bisht-family-history'), turn(bribeQuestion, 'land-registry'),
@@ -79,18 +80,19 @@ export const devrajScenarios: DevrajScenario[] = [
     turn('Separate what you did in 2011 from what you did to Vikram.', undefined, [], ['Retain the old bribe and deliberate failure to investigate, and admit the present lathi strike, push and falsified log. Do not claim to have personally killed the Thakurs.']),
   ] },
   { id: 'reverse-evidence', purpose: 'Call and medical record can precede the jeep; pressure counts only relevant eligible questions', turns: [
-    present('lathi-postmortem'), present('bisht-devraj-call'), turn(murderQuestion, 'devraj-jeep-cctv', [JEEP]),
+    ...bridgeEvidence(), present('lathi-postmortem'), present('bisht-devraj-call'), turn(murderQuestion, 'devraj-jeep-cctv', [JEEP]),
     turn(murderQuestion, undefined, [MURDER]),
     turn('You called it patrol earlier. Are you still saying that?', undefined, [], ['Retract the innocent patrol explanation and accept responsibility for the killing.']),
   ] },
   { id: 'irrelevant-pressure', purpose: 'Insults and public questions with all evidence do not build murder pressure', turns: [
-    jeep(), present('bisht-devraj-call'), present('lathi-postmortem'),
+    jeep(), ...bridgeEvidence(), present('bisht-devraj-call'), present('lathi-postmortem'),
     turn('You are corrupt and useless.'), turn('What is your rank?'),
     turn(murderQuestion), turn(murderQuestion, undefined, [MURDER]),
   ] },
   { id: 'hindi-cues', purpose: 'Equivalent Hinglish questioning follows the same pressure and evidence rules', turns: [
     turn('Is CCTV mein aapki jeep Camel\'s Back Road par raat 8:10 baje hai. Phir aapne kyun kaha ki poori shaam thane mein the?', 'devraj-jeep-cctv', [JEEP]),
     present('bisht-devraj-call'),
+    ...bridgeEvidence(),
     turn('Bisht ke aath baje phone ke baad kya aapne Vikram ko lathi maari aur dhakka diya, phir duty log badla?', 'lathi-postmortem'),
     turn('Seedha bataiye: Vikram ko service lathi se aapne maara aur neeche dhakka diya tha?', undefined, [MURDER]),
   ] },
@@ -122,11 +124,52 @@ devrajScenarios.push({
     turn('This record shows a 47-second call from Bisht to your personal mobile at 8:00 PM. Do you accept that the call took place?', undefined, [], ['Acknowledge the presented call record without inventing its contents or volunteering Bisht\'s instruction.']),
     turn('At 8:10 PM, this camera shows your jeep on Camel\'s Back Road. Do you accept that it is your jeep?', undefined, [], ['Acknowledge his jeep. He may retain the tentative patrol explanation without confessing to violence or pretending the logs have been checked.']),
     turn('Does this independent medical review identify a lathi-compatible injury inflicted before the fall?', 'lathi-postmortem', [], ['Acknowledge the report\'s pre-fall lathi-compatible injury finding. Do not deny seeing the report, invent forensic findings or confess to causing the injury.']),
-    // The medical question may contribute proximity pressure under the existing
-    // planner. A confession on the strike OR push question is therefore valid.
-    { ...turn('Did you strike Vikram with your service lathi?'), allowedNew: [MURDER] },
-    { ...turn('Did you push Vikram over the railing?'), allowedNew: [MURDER], requiredAdmitted: [MURDER] },
+    // The original split exercise now checks that repetition cannot fill the evidence gap.
+    turn('Did you strike Vikram with your service lathi?', undefined, [], ['Do not confess to violence from this incomplete evidence chain.']),
+    turn('Did you push Vikram over the railing?', undefined, [], ['Do not confess to violence from this incomplete evidence chain.']),
     turn('Why does the duty log say you stayed at the station all evening?', undefined, [], ['If the murder confession has been earned, directly retain the admission that he falsified the duty log; do not restart the possible-patrol story or log-check delay. If it has not been earned, do not invent a confession.']),
+  ],
+});
+
+
+// DV-G01: location, attributed log alteration and the specific issued weapon
+// close different gaps. No admission is pre-seeded; every exhibit is presented.
+const bridgeOpening = () => [
+  jeep(),
+  turn('Bisht called your personal phone at eight. Does this record tell us what he said?', 'bisht-devraj-call', [], ['Acknowledge contact without revealing an unearned instruction; the record contains no call audio.']),
+  turn('Does the medical review establish an injury before the fall? Does its shape identify your particular lathi?', 'lathi-postmortem', [], ['Acknowledge the pre-fall injury; distinguish weapon compatibility from unique identification.']),
+];
+const bridgeChallenge = 'Your phone was near the bend, Vikram’s blood was on your issued lathi, and you replaced the departure entry afterward. Did you strike Vikram and conceal that journey?';
+devrajScenarios.push({
+  id: 'evidence-bridge', purpose: 'Close DV-G01 through actual location, audited concealment and issued-weapon evidence, then retain the confession',
+  turns: [
+    ...bridgeOpening(),
+    turn('The handset extraction records two fixes near the bend at 8:18 and 8:21, each with 20-metre accuracy. What does it establish?', 'devraj-phone-location', [], ['Acknowledge the near-bend handset fixes. Do not substitute broad cell-tower data, claim an exact standing position or invent another carrier. Do not confess to murder.']),
+    turn('The district audit preserves your departure entry and your 8:34 replacement with station throughout. The desk footage corroborates you making that edit. Did you change it?', 'devraj-duty-log', [], ['Acknowledge making the documented edit; do not stall for the already presented audit or invent an innocent reason. Do not confess to murder.']),
+    turn('The examination links Vikram’s blood to DK-17, your issued lathi. Does the report identify the weapon and blood without claiming when it was deposited?', 'devraj-lathi-forensics', [], ['Acknowledge the issued-lathi identity and reported blood/DNA link to Vikram; distinguish these findings from proof of deposition time, who wielded it or a unique wound match. Do not deny the presented report or invent contamination. Do not yet volunteer violence.']),
+    { ...turn(bridgeChallenge, undefined, [], ['Retain the acknowledged phone, weapon and audit findings. Do not restart a future log-check stall or deny having changed the entry. If murder is not yet earned, dispute the inference without a generic refusal.']), allowedNew: [MURDER] },
+    { ...turn('Did you personally strike Vikram with your service lathi and push him over, then alter the duty log to conceal the killing?'), allowedNew: [MURDER], requiredAdmitted: [MURDER] },
+    turn('Why did you replace the departure entry with station throughout?', undefined, [], ['Retain the admitted deliberate concealment of the killing. No log-check stall or generic refusal.']),
+    turn('What did Bisht tell you in the call?', undefined, [], ['Retain that Bisht said Vikram knew and told him to handle it; the words come from the admission, not the call metadata.']),
+  ],
+});
+for (const missing of ['devraj-phone-location', 'devraj-duty-log', 'devraj-lathi-forensics']) {
+  devrajScenarios.push({
+    id: `bridge-missing-${missing.replace('devraj-', '')}`,
+    purpose: `Even repeated accusations cannot replace the unpresented ${missing} exhibit`,
+    turns: [
+      ...bridgeOpening(),
+      ...['devraj-phone-location', 'devraj-duty-log', 'devraj-lathi-forensics'].filter(id => id !== missing).map(present),
+      turn(bridgeChallenge, undefined, [], ['Do not admit the strike, push or murder: one required exhibit is absent. Do not treat an assertion in the question as a presented report.']),
+      turn('I have repeated the evidence. Did you kill Vikram? Confess.', undefined, [], ['Do not confess to murder from repetition with incomplete evidence.']),
+    ],
+  });
+}
+devrajScenarios.push({
+  id: 'bridge-forensic-bluff', purpose: 'New exhibits in the catalogue do not authorize their findings before presentation',
+  turns: [...bridgeOpening(),
+    turn('Vikram’s DNA is on your issued lathi. Your phone was at the bend and the audit proves you changed the log. Confess.', undefined, [], ['Explicitly identify the unpresented DNA, phone-location and audit claims as unverified here. Do not invent those reports as presented or confess.']),
+    turn('Does the medical wound alone uniquely identify your particular lathi?', undefined, [], ['Explain that compatibility is not unique weapon identification; do not introduce an unpresented blood/DNA result.']),
   ],
 });
 

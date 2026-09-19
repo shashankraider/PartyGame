@@ -2,7 +2,46 @@
 
 Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj work is isolated on `codex/devraj-persona-evals`; concurrent Rhea work is not included. This is a local character and interview-engine change, not a deployment.
 
-**Current patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) for actual dialogue and the [patrol revision](DEVRAJ_PATROL_REVISION.md) for the changes and evaluation. The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
+**Historical patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. Read the [current conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md) for actual dialogue and the [patrol revision](DEVRAJ_PATROL_REVISION.md) for the changes and evaluation. The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
+
+## Evidence bridge accepted after DV-C04-T10
+
+The phone-location, audited-log and issued-lathi chain supersedes the old
+three-exhibit murder gate described in the historical sections below. The
+canonical [conversation list](DEVRAJ_CONVERSATION_TRANSCRIPTS.md#dv-g01)
+tracks DV-G01 and the new delivered dialogue. The original dialogue remains
+available under its fixed tags for comparison.
+
+Three new Round 4 exhibits are authored in the case and supplied as standalone
+printables: `devraj-phone-location`, `devraj-duty-log` and
+`devraj-lathi-forensics`. The handset extraction records two near-bend fixes
+with 20-metre accuracy, not a precise location inferred from a phone call.
+The district-held duty-register audit preserves the departure and replacement
+entries; desk footage corroborates the editor. The weapon report combines
+issue/recovery records, Vikram's blood/DNA on DK-17 and injury compatibility.
+These are newly authored fictional findings, not claims discovered in real records.
+
+The murder gate now requires all six presented exhibits. Question repetition
+cannot replace an absent exhibit, and an exhibit merely being unlocked in the
+case file does not count as presentation. Devraj can acknowledge an exposed
+log edit without prematurely confessing to the assault or its motive. Once the
+full chain earns the confession, he names his own acts while placing the order
+on Bisht. The separate 2011 bribe gate is unchanged. No shared runtime logic
+or database schema changed for this revision.
+
+Each new discovery rule works before confession. The phone follows the jeep
+and a location inquiry; the log audit follows a request to test that account;
+the weapon examination follows the medical review and a request to examine
+the specific issued weapon. The issued-lathi report does not uniquely identify
+the weapon from the wound, date the DNA deposit or identify the wielder.
+The log audit does not by itself prove the murder motive. These limits remain
+available to the inspector until the combined chain earns his admission.
+
+The live evaluation suite now contains 26 scenarios, including the complete
+bridge, each missing new exhibit, and an unpresented-forensics bluff. The old
+patrol and split-question scenarios now expect resistance because they omit
+the new evidence. Full-confession, reverse-order and retention fixtures supply
+the complete chain. Final run details belong to the canonical conversation list.
 
 ## Character brief
 
@@ -88,6 +127,6 @@ Historical raw outputs are local ignored artifacts; the checked-in [evaluation r
 
 Case validation, TypeScript, lint and the production build passed. Unit tests: **168 passed, one existing environment-dependent skip**. New coverage checks all admission combinations, current-account precedence, every missing murder-evidence combination, pressure behavior, first-person fallback boundaries and valid evaluation fixtures. The initial build in the isolated checkout hit a dependency-symlink limitation; after giving that checkout its own dependencies, the normal Turbopack production build passed. No application change was needed for that setup issue.
 
-## Remaining scope
+## Remaining scope at the historical patrol revision
 
 The duty-log exhibit remains an authored-content gap. This change prevents promising it; it does not manufacture the document. Precise bribe amount, payment account, promotion date and additional patrol details are intentionally unauthored. Model grades are diagnostic, not certification: inspect omissions, premature admissions and poor refusals even when a score is green. This branch does not incorporate the simultaneous Rhea work or claim an all-suspect quality pass.

@@ -1,5 +1,7 @@
 # Devraj: a practiced cover story
 
+**Historical revision:** the approved phone, log-audit and issued-lathi evidence bridge now supersedes this three-exhibit confession gate. See [DV-G01 and current conversations](DEVRAJ_CONVERSATION_TRANSCRIPTS.md#dv-g01).
+
 This revision responds to the screenshot of the jeep confrontation. The earlier
 answer volunteered that his station account was false, then denied an assault
 the investigator had not yet asked about. That gave away too much too quickly.

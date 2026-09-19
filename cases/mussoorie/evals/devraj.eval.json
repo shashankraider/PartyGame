@@ -5,7 +5,10 @@
       {
         "name": "both old-case evidence pieces and asks about Bisht burying file",
         "expected": "met",
-        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "presentedEvidenceIds": [
+          "bisht-family-history",
+          "land-registry"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -17,7 +20,10 @@
       {
         "name": "both old-case evidence pieces and asks about missing statement",
         "expected": "met",
-        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "presentedEvidenceIds": [
+          "bisht-family-history",
+          "land-registry"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -29,7 +35,9 @@
       {
         "name": "right question with only one required evidence piece",
         "expected": "not-met",
-        "presentedEvidenceIds": ["land-registry"],
+        "presentedEvidenceIds": [
+          "land-registry"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -41,7 +49,10 @@
       {
         "name": "both evidence pieces but generic corruption question",
         "expected": "not-met",
-        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "presentedEvidenceIds": [
+          "bisht-family-history",
+          "land-registry"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -53,7 +64,10 @@
       {
         "name": "both evidence pieces but asks present-day murder only",
         "expected": "not-met",
-        "presentedEvidenceIds": ["bisht-family-history", "land-registry"],
+        "presentedEvidenceIds": [
+          "bisht-family-history",
+          "land-registry"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -63,12 +77,13 @@
         ]
       }
     ],
-
     "breaking-point:jeep-cctv": [
       {
         "name": "jeep cctv presented and asks why jeep was there",
         "expected": "met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -80,7 +95,9 @@
       {
         "name": "jeep cctv presented and asks about false duty log",
         "expected": "met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -102,7 +119,9 @@
       {
         "name": "jeep evidence presented but asks patrol routes generally",
         "expected": "not-met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -112,12 +131,18 @@
         ]
       }
     ],
-
     "breaking-point:lathi-confession": [
       {
-        "name": "all three evidence pieces and direct lathi accusation",
+        "name": "all six evidence pieces and direct lathi accusation",
         "expected": "met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -127,9 +152,16 @@
         ]
       },
       {
-        "name": "all three evidence pieces and asks if Bisht ordered him",
+        "name": "all six evidence pieces and asks if Bisht ordered him",
         "expected": "met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -141,7 +173,13 @@
       {
         "name": "missing Bisht call evidence",
         "expected": "not-met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -153,7 +191,14 @@
       {
         "name": "all evidence but asks about Thakur case only",
         "expected": "not-met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
         "transcript": [
           {
             "role": "user",
@@ -165,12 +210,34 @@
       {
         "name": "all evidence but only insults him",
         "expected": "not-met",
-        "presentedEvidenceIds": ["devraj-jeep-cctv", "lathi-postmortem", "bisht-devraj-call"],
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "bisht-devraj-call",
+          "devraj-phone-location",
+          "devraj-duty-log",
+          "devraj-lathi-forensics"
+        ],
         "transcript": [
           {
             "role": "user",
             "content": "You're corrupt and incompetent. You have ruined this whole town.",
             "presentedEvidenceId": "devraj-jeep-cctv"
+          }
+        ]
+      },
+      {
+        "name": "old three-exhibit chain cannot earn confession",
+        "expected": "not-met",
+        "presentedEvidenceIds": [
+          "devraj-jeep-cctv",
+          "lathi-postmortem",
+          "bisht-devraj-call"
+        ],
+        "transcript": [
+          {
+            "role": "user",
+            "content": "Bisht called you, your jeep was there and the injury fits a lathi. Did you kill Vikram and falsify the log?"
           }
         ]
       }

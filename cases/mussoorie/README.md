@@ -24,7 +24,7 @@ A misty hill-town noir set in present-day Mussoorie, Uttarakhand. Players are a 
 
 ## Story structure (4 rounds)
 
-The case contains **30 evidence items, 19 chapters, four content rounds, eight locations and two authored ending branches**. Round groups contain 6, 9, 9 and 6 exhibits respectively. The live engine walks the opening briefing, then uses free-form interrogation across the later evidence groups, followed by accusation and staged reveal; it does not force a linear playthrough of all 19 chapters.
+The case contains **33 evidence items, 19 chapters, four content rounds, eight locations and two authored ending branches**. Round groups contain 6, 9, 9 and 9 exhibits respectively. The live engine walks the opening briefing, then uses free-form interrogation across the later evidence groups, followed by accusation and staged reveal; it does not force a linear playthrough of all 19 chapters.
 
 
 ## Cast (6 suspects)

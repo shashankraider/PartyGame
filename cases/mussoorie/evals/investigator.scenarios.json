@@ -6,7 +6,12 @@
     "evidenceId": "building-cctv-rhea"
   },
   "devraj": {
-    "proof": { "claim": "The duty log confirms he stayed at the station", "evidenceId": "devraj-duty-log", "status": "missing", "note": "No standalone duty-log exhibit exists. The CCTV lore summarizes its disputed station claim; the public alibi must remain an unverified account and must not promise the missing document. A police death report is not the duty log." },
+    "proof": {
+      "claim": "The station-throughout account is contradicted by the duty-register audit",
+      "evidenceId": "devraj-duty-log",
+      "status": "available",
+      "note": "The standalone audit exists but its contents are usable only after presentation. It preserves departure and replacement entries and corroborates Devraj as editor. It disproves the station-only cover, not by itself the murder. Do not invent an offscreen log check or treat an unpresented audit as already known."
+    },
     "questions": ["Where were you that evening?", "What records support that?", "Show me the duty log you are relying on. Can I inspect the entry?"],
     "challenge": "The jeep CCTV places your vehicle on Camel's Back Road at 8:10 PM. How does that fit your station alibi?",
     "evidenceId": "devraj-jeep-cctv"

@@ -34,7 +34,7 @@ test('Devraj murder requires every exhibit and two eligible pressure turns', asy
   const caseData = await loadCase('mussoorie'); const suspect = caseData.suspects.find(s => s.id === 'devraj');
   const conditions = listPendingConditions({caseData, suspect, session: {unlocked_evidence: caseData.evidence.map(e => e.id)}, existingStates: []});
   const murder = conditions.find(c => c.conditionId === 'breaking-point:lathi-confession');
-  const required = ['devraj-jeep-cctv', 'lathi-postmortem', 'bisht-devraj-call'];
+  const required = ['devraj-jeep-cctv', 'lathi-postmortem', 'bisht-devraj-call', 'devraj-phone-location', 'devraj-duty-log', 'devraj-lathi-forensics'];
   for (const ids of subsets(required)) assert.equal(evidenceGate(murder, new Set(ids)), ids.length === required.length);
   assert.deepEqual(suspect.breakingPoints[1].trigger.conditions.map(c => c.evidenceId).sort(), [...required].sort());
   for (const id of ['secret:thakur-bribe', 'breaking-point:lathi-confession']) {

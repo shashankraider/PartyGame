@@ -380,11 +380,27 @@
             "conditions": [
               {
                 "type": "evidence",
+                "evidenceId": "devraj-jeep-cctv"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "lathi-postmortem"
+              },
+              {
+                "type": "evidence",
                 "evidenceId": "bisht-devraj-call"
               },
               {
                 "type": "evidence",
-                "evidenceId": "devraj-jeep-cctv"
+                "evidenceId": "devraj-phone-location"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-duty-log"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-lathi-forensics"
               }
             ]
           }
@@ -403,8 +419,33 @@
           "locationId": "camels-back-road",
           "action": "Intercepted Vikram on the path, in uniform. Pretext: 'Reports of a woman following you on this road. For your safety, let me walk with you a bit.' Vikram agreed.",
           "revealCondition": {
-            "type": "evidence",
-            "evidenceId": "lathi-postmortem"
+            "type": "all",
+            "conditions": [
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-jeep-cctv"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "lathi-postmortem"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "bisht-devraj-call"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-phone-location"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-duty-log"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-lathi-forensics"
+              }
+            ]
           }
         },
         {
@@ -412,17 +453,42 @@
           "locationId": "camels-back-road",
           "action": "At the bend near Gun Hill, struck Vikram from behind with his service lathi. The blow disoriented Vikram. A push, the old railing gave way, and he went over the edge.",
           "revealCondition": {
-            "type": "evidence",
-            "evidenceId": "lathi-postmortem"
+            "type": "all",
+            "conditions": [
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-jeep-cctv"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "lathi-postmortem"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "bisht-devraj-call"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-phone-location"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-duty-log"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-lathi-forensics"
+              }
+            ]
           }
         },
         {
           "time": "8:25 to 8:45 PM",
           "locationId": "police-station",
-          "action": "Returned to the station. Logged himself as 'on duty, station, all evening'. Falsified the timestamps in the duty register.",
+          "action": "Returned to the station by 8:30 PM. At 8:34 PM replaced his 8:05 PM departure entry in the electronic duty register with a false station-throughout account; the district audit retained both versions.",
           "revealCondition": {
             "type": "evidence",
-            "evidenceId": "devraj-jeep-cctv"
+            "evidenceId": "devraj-duty-log"
           }
         }
       ],
@@ -505,6 +571,18 @@
               {
                 "type": "evidence",
                 "evidenceId": "bisht-devraj-call"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-phone-location"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-duty-log"
+              },
+              {
+                "type": "evidence",
+                "evidenceId": "devraj-lathi-forensics"
               }
             ]
           },
@@ -514,9 +592,12 @@
             "evidenceIds": [
               "devraj-jeep-cctv",
               "lathi-postmortem",
-              "bisht-devraj-call"
+              "bisht-devraj-call",
+              "devraj-phone-location",
+              "devraj-duty-log",
+              "devraj-lathi-forensics"
             ],
-            "cooperationCue": "The interviewer has presented the jeep CCTV, the independent lathi post-mortem, and the Bisht-to-Devraj call, then directly presses Devraj on killing Vikram, striking him with the lathi, leaving the station on Bisht's order, or falsifying the duty log afterward. Off-topic pressure, insults, or questions about the old Thakur case alone should not fire this present-day confession.",
+            "cooperationCue": "All six exhibits must actually have been presented: the Bisht call, jeep CCTV, independent medical review, handset location, duty-register alteration audit, and issued-lathi forensic report. With that chain on the table, the interviewer directly presses Devraj about his own strike or push, killing Vikram, concealing that assault in the duty record, or carrying out Bisht’s order. A direct follow-up about those acts counts without repeating every exhibit. Merely acknowledging a report, asking what GPS or DNA can establish, rank questions, insults, or old Thakur questions do not satisfy the cue. The earlier three-exhibit accusation alone is insufficient. Pressure reflects the combined collapse of his cover, not a claim that GPS identifies a person or DNA proves the time of a strike.",
             "pressureThreshold": 2,
             "hostFallbackAfterTurns": 5
           }
@@ -527,18 +608,18 @@
         "the fact that the original Thakur killers were migrant labourers hired by Bisht — until his secret is fully unlocked"
       ],
       "guiltCategory": "executor",
-      "guiltSummary": "Bisht's enforcer for his entire career. Took a bribe in 2011 to bury the Thakur investigation. Physically killed Vikram with his service lathi on Bisht's orders, then falsified his duty log. Self-preservation collapses fast under pressure.",
+      "guiltSummary": "Bisht's enforcer for his entire career. Took a bribe in 2011 to bury the Thakur investigation. Physically killed Vikram with his service lathi on Bisht's orders, then falsified his duty log. His practiced cover collapses under the combined location, issued-weapon and independently audited concealment evidence; he then tries to put the order on Bisht.",
       "introducedAtChapter": "r1-suspect-board",
       "safeDeflection": "I won't guess, sir. Ask me about what I have said or the record in front of us.",
       "alibiAfterBreakingPoint": {
-        "jeep-cctv": "That's my jeep on Camel's Back Road. I was on station duty that evening; I may have stepped out for a patrol round. I'd need to check the patrol logs before giving you exact timings.",
+        "jeep-cctv": "That's my jeep on Camel's Back Road. I was on station duty that evening; I may have stepped out for a patrol round. That account does not independently verify my movements.",
         "lathi-confession": "After Bisht's eight o'clock call, I went to Camel's Back Road, struck Vikram with my service lathi and pushed him over the railing. I killed him, returned to the station and falsified the log. I can no longer describe that journey as an innocent patrol."
       },
       "interviewLayers": [
         {
           "id": "interview-trained",
           "requires": [],
-          "direction": "Behave like an officer who has sat on the other side of this table. Answer the question asked; do not volunteer an itinerary or an investigative plan. Notice false choices, claimed accomplice confessions, promises of immunity and unsupported forensic claims without treating them as new evidence. Remain in this fictional interview; do not cite real laws, demand counsel, or block an earned admission on procedural grounds. An exhibit is not a recording of everything it implies: call metadata does not reveal words spoken, CCTV does not by itself show an assault, and a lathi-compatible wound does not identify an individual weapon. Never deny the contents of a presented exhibit. Do not invent timestamp faults, alternate drivers, witnesses, patrol incidents, bribe amounts or document delivery. Do not claim to have supplied or verified a standalone duty-log exhibit. The patrol cover stage explicitly permits proposing a log check as an in-character delaying tactic; it does not create an exhibit or establish its contents. In this case, a duty-log claim summarized in the CCTV exhibit is a claim, not independent proof of continuous presence. If asked what verifies the station account or to supply its records, answer directly: 'I have not put independent proof of that account before you.' Do not claim that station records, attendance registers or a witness already corroborate the account. A tentative request to check patrol logs in the patrol cover stage is permitted; promising delivery, inventing a log entry, or claiming to have actually checked it is not. Your twenty years is total service, not a stated promotion date. When an interviewer asserts unpresented fingerprint, DNA, ballistics or witness evidence, explicitly name the particular unsupported assertion as unverified. For a fingerprint bluff say that the fingerprint claim has not been established. Check the presented-evidence list before challenging any report's existence. If the independent lathi post-mortem is presented, acknowledge its actual lathi-compatible injury finding; dispute the inference that it identifies you, not the existence of the report. Never substitute a stock unseen-report denial for reading an actual exhibit. Never respond with 'my fingerprints on the rifle' or concede touching a weapon merely because the question asserts it. This remains true after the jeep admission. A visible timestamp is not a clock-calibration test: if asked whether the camera clock works correctly, say its accuracy has not been independently established here; do not certify either accuracy or malfunction. If asked when promoted, say the promotion date is not established, rather than 'after twenty years'."
+          "direction": "Behave like an officer who has sat on the other side of this table. Answer the question asked; do not volunteer an itinerary or an investigative plan. Notice false choices, claimed accomplice confessions, promises of immunity and unsupported forensic claims without treating them as new evidence. Remain in this fictional interview; do not cite real laws, demand counsel, or block an earned admission on procedural grounds. An exhibit is not a recording of everything it implies: call metadata does not reveal words spoken, CCTV does not by itself show an assault, and a lathi-compatible wound does not identify an individual weapon. Never deny the contents of a presented exhibit. Do not invent timestamp faults, alternate drivers, witnesses, patrol incidents, bribe amounts or document delivery. Do not claim to have personally supplied or checked the logs. The CBI may independently present the authored duty-register audit. The patrol cover stage explicitly permits proposing a log check as an in-character delaying tactic; it does not create an exhibit or establish its contents. In this case, a duty-log claim summarized in the CCTV exhibit is a claim, not independent proof of continuous presence. If asked what verifies the station account or to supply its records, answer directly: 'I have not put independent proof of that account before you.' Do not claim that station records, attendance registers or a witness already corroborate the account. A tentative request to check patrol logs in the patrol cover stage is permitted; promising delivery, inventing a log entry, or claiming to have actually checked it is not. Your twenty years is total service, not a stated promotion date. When an interviewer asserts fingerprint, DNA, ballistics or witness evidence that is not in the presented exhibits, explicitly name the particular unsupported assertion as unverified. For a fingerprint bluff say that the fingerprint claim has not been established. Check the presented-evidence list before challenging any report's existence. If the independent lathi post-mortem is presented, acknowledge its actual lathi-compatible injury finding; dispute the inference that it identifies you, not the existence of the report. Never substitute a stock unseen-report denial for reading an actual exhibit. Never respond with 'my fingerprints on the rifle' or concede touching a weapon merely because the question asserts it. This remains true after the jeep admission. A visible timestamp is not a clock-calibration test: if asked whether the camera clock works correctly, say its accuracy has not been independently established here; do not certify either accuracy or malfunction. If asked when promoted, say the promotion date is not established, rather than 'after twenty years'. Treat every forensic assertion in a question as an allegation until its supporting exhibit appears in Evidence already presented. A report existing in the game is not a report presented to you. Do not acknowledge DNA, handset fixes, a weapon identifier, audit contents or your own log edit merely because the question states them. Say which claimed findings have not been shown. When the supporting exhibit is actually presented, acknowledge the specific finding asked about and its stated limits; do not deny or ask to fetch a record already before you. Do not invent a borrowed phone, alternate weapon handler, earlier encounter, planting or contamination. Abstract limits are not established alternate events. A presented audit can expose your edit without yet earning a murder admission; acknowledge the edit when asked but do not volunteer its motive. All six exhibits and earned pressure are needed for the murder admission. Once earned, the issued-weapon link and independently documented concealment remove your remaining cover: put the order on Bisht for self-preservation while owning your acts. No immunity or fabricated Bisht confession is needed."
         },
         {
           "id": "station-account",
@@ -547,7 +628,7 @@
             "breaking-point:jeep-cctv",
             "breaking-point:lathi-confession"
           ],
-          "direction": "Controlled and professionally defensive. Retain the station account when asked. Distinguish an allegation from an established fact; no unsolicited admissions about the road, bribe, call content, violence or falsification. Evidence and questioning can earn admissions; until then do not fill gaps with invented explanations."
+          "direction": "Controlled and professionally defensive. Retain the station account when asked. Distinguish an allegation from an established fact; no unsolicited admissions about the road, bribe, call content, violence or falsification. Evidence and questioning can earn admissions; until then do not fill gaps with invented explanations. A presented handset report or duty-register audit supersedes the unsupported station account on the facts it actually establishes. Acknowledge the exposed record or edit without volunteering violence or Bisht’s words."
         },
         {
           "id": "patrol-account",
@@ -557,7 +638,7 @@
           "excludes": [
             "breaking-point:lathi-confession"
           ],
-          "direction": "Acknowledge the jeep in the still and repair your cover story like an experienced officer. Reframe the evening as station duty, which you suggest could include stepping out for a round. Offer a possible patrol and a need to check patrol logs before committing to times. This is a deliberately unverified suspect explanation, not proof and not a confession. Do not announce 'I lied', 'my claim was false', 'I was mistaken' or a formal retraction. Do not insist you physically stayed inside the station every minute; allow the possible round without an apologetic confession. If challenged about changing the story, defend the distinction between being on duty and sitting in one building, rather than summarizing the investigator's victory. Mention assault only when asked about violence, murder or what the evidence proves. If asked to produce the logs, say you would need to check; never pretend you checked them between turns, give a fabricated entry, promise delivery, or demand players obtain a missing exhibit to continue. If asked for a route, witness or precise departure/return time, keep it unconfirmed instead of inventing details. Keep acknowledging the jeep; do not claim another driver or a faulty clock. The patrol explanation is the only authored cover possibility at this stage. Once the murder confession is earned, stop the log-check stall and admit the actual acts and falsified log."
+          "direction": "Acknowledge the jeep and keep the narrow distinction between station duty and being physically inside the building. Before an independent log audit is presented, suggest a possible patrol round and, if asked for times or records, that you would need to check the logs. This remains an unverified cover: do not volunteer that you lied, certify a route, invent witnesses, or pretend an offscreen check happened. Do not volunteer assault denials on simple whereabouts questions. Read the Evidence already presented block on each turn. Once it contains the duty-register alteration audit, the log-check delay is over even if the murder admission is still locked: acknowledge your documented edit and departure, stop claiming continuous station presence, and dispute only what those facts imply about the assault. Never ask for log verification after that audit has been presented. If handset or weapon reports are presented, answer the finding asked about using the actual exhibit and its limits; do not invent a replacement cover story. Before any report is presented, its claimed findings remain unverified allegations. After the murder admission is earned, stop defending patrol and admit the own acts and cover-up."
         },
         {
           "id": "old-case-guarded",
@@ -1387,7 +1468,7 @@
       "relatesToSuspectIds": ["anya"]
     },
 
-    // ---- Round 4 (6 items) ---------------------------------------------------
+    // ---- Round 4 (9 items) ---------------------------------------------------
     {
       "id": "bisht-devraj-call",
       "printableHtml": "bisht-devraj-call.html",
@@ -1461,6 +1542,51 @@
       "arrivesWhen": "Reveal this late, after Rhea's 5 AM cottage entry is known and the Thakur evidence trail includes the FIR or land registry, when players ask what Vikram had in his files, what Rhea tried to delete, how Vikram connected Bisht to the Thakur material, or why Anya was named as a possible witness. Do NOT fire for laptop-deletion questions that do not involve the Thakur research. Do NOT fire for Thakur-history questions alone if Rhea's file deletion is not yet part of the case state.",
       "locationId": "vikrams-cottage",
       "relatesToSuspectIds": ["bisht", "anya", "rhea"]
+    },
+    {
+      "id": "devraj-phone-location",
+      "title": "Device Examination — Devraj’s Phone at the Bend",
+      "category": "digital",
+      "description": "Recovered handset location records place Devraj’s personal phone near the fatal bend at 8:18 and 8:21 PM, within the recorded accuracy areas.",
+      "loreText": "CBI digital examination of the personal handset seized from Inspector Devraj Khanna, identified by its device identifier and the SIM associated with his personal number. The examiner records the seizure, sealed transfer and forensic extraction. Retained device location-history records show fixes at 8:18 PM and 8:21 PM on the murder night. Both plotted positions lie near the bend with the broken railing on Camel’s Back Road; each has a recorded horizontal accuracy of 20 metres. These are handset location-history records, not a location inferred from the 47-second call or a broad cell-tower sector. The accuracy areas include the bend but cannot establish an exact standing position, who was carrying the handset, contact with Vikram or an assault. No audio or call contents were recovered.",
+      "arrivesWhen": "Prerequisite: devraj-jeep-cctv is already unlocked. Reveal when players ask to independently check Devraj’s personal phone location, whether his patrol reached the fatal bend, or where he was around 8:20 PM. No admission or confession is required. Do not fire for old Thakur questions or generic phone calls without a present-night location inquiry.",
+      "locationId": "camels-back-road",
+      "printableHtml": "devraj-phone-location.html",
+      "revealedInRound": 4,
+      "unlockedAtChapter": "r4-evidence",
+      "relatesToSuspectIds": [
+        "devraj"
+      ]
+    },
+    {
+      "id": "devraj-duty-log",
+      "title": "Duty Register — Original Entry and Alteration Audit",
+      "category": "document",
+      "description": "A district-held audit preserves an 8:05 PM departure entry and its replacement at 8:34 PM with a station-only account. Desk CCTV corroborates Devraj making the alteration.",
+      "loreText": "CBI comparison of the station’s electronic duty register, its district-held append-only audit copy and the station desk CCTV. The original entry at 8:05 PM on the murder night reads: “Inspector Devraj Khanna — left station on round.” At 8:34 PM, Devraj’s authenticated account replaced it with: “8:00–8:30 PM — Inspector Devraj Khanna present at station throughout; no departure.” The district copy preserves both versions and the edit time. The desk CCTV shows Devraj at that terminal making the revision after his return; it corroborates the account attribution rather than relying on a username alone. The CCTV does not show the assault. The preserved departure entry records a claimed round, not a verified route, and the replacement contradicts the earlier departure and the road CCTV. This establishes a deliberate alteration of his whereabouts record, not by itself the reason for it, a murder or the words of Bisht’s call.",
+      "arrivesWhen": "Prerequisites: devraj-jeep-cctv AND devraj-phone-location are already unlocked. Reveal when players pursue the actual patrol or station log, ask who changed the record, request the original entry or independent audit, or compare the claimed round with the phone’s location. No confession or admission is required. Do not require the suspect to supply the exhibit or complete an offscreen check.",
+      "locationId": "police-station",
+      "printableHtml": "devraj-duty-log.html",
+      "revealedInRound": 4,
+      "unlockedAtChapter": "r4-evidence",
+      "relatesToSuspectIds": [
+        "devraj"
+      ]
+    },
+    {
+      "id": "devraj-lathi-forensics",
+      "title": "Forensic Examination — Devraj’s Issued Lathi",
+      "category": "document",
+      "description": "Blood recovered from Devraj’s seized service lathi yields a DNA profile matching Vikram. Issue and recovery records identify the particular weapon; the injury is compatible with its dimensions.",
+      "loreText": "Combined CBI seizure record, police equipment issue record and laboratory examination. The equipment record assigns service lathi DK-17 to Inspector Devraj Khanna. Investigators recovered that marked lathi from his locked equipment cabinet at the station and documented its sealing, transfers and receipt by the laboratory. Blood recovered from its striking end yielded a single-source DNA profile matching Vikram Singh’s reference sample. The laboratory records satisfactory controls and no indication of contamination in those controls. Comparison with the independent medical review finds the pre-fall head injury consistent with the seized lathi’s dimensions and cylindrical shape; the wound is not a unique impression identifying this weapon to the exclusion of all others. The DNA finding connects Vikram’s biological material to this particular recovered lathi. It does not date the deposit, identify who wielded it, establish the mechanism of transfer or show a push.",
+      "arrivesWhen": "Prerequisites: devraj-jeep-cctv AND lathi-postmortem are already unlocked. Reveal when players ask to seize, identify or test Devraj’s issued service lathi, compare the specific weapon with the injury, or look for Vikram’s blood or DNA on it. No confession or admission is required. Do not fire merely because a player asserts a made-up positive forensic result or asks about the antique Thakur rifle.",
+      "locationId": "police-station",
+      "printableHtml": "devraj-lathi-forensics.html",
+      "revealedInRound": 4,
+      "unlockedAtChapter": "r4-evidence",
+      "relatesToSuspectIds": [
+        "devraj"
+      ]
     }
   ],
 
@@ -1759,9 +1885,12 @@
         "lathi-postmortem",
         "grey-shawl-fresh",
         "anya-payments",
-        "vikram-research-notes"
+        "vikram-research-notes",
+        "devraj-phone-location",
+        "devraj-duty-log",
+        "devraj-lathi-forensics"
       ],
-      "narration": "Forty-eight hours of cross-referencing. The phone call. The jeep. The lathi mark the local autopsy never mentioned. The shawl that shouldn't have been washed. Fifteen years of monthly transfers to a Dehradun education fund. And a line of Vikram's own — 'Anya Devi — housekeeper — possible witness — approach gently.'",
+      "narration": "Forty-eight hours of cross-referencing. The phone call. The jeep. The lathi mark the local autopsy never mentioned. The shawl that shouldn't have been washed. Fifteen years of monthly transfers to a Dehradun education fund. And a line of Vikram's own — 'Anya Devi — housekeeper — possible witness — approach gently.' The handset near the bend. Blood on an issued lathi. A departure entry replaced after the return, preserved in an independent audit.",
       "printablePrompt": "Open Case File 7 — the final dossier."
     },
     {
@@ -1801,7 +1930,7 @@
       {
         "id": "devraj-first",
         "triggerSuspectId": "devraj",
-        "scriptedSuspectLine": "It wasn't my idea. None of it was ever my idea. Bisht made me do it. Fifteen years ago, the Thakurs — that was him. He paid me to bury the file. And Vikram — he called me that night and told me the boy knew everything. He told me to handle it. I'm just a constable who got in too deep.",
+        "scriptedSuspectLine": "It wasn't my idea. None of it was ever my idea. Bisht made me do it. Fifteen years ago, the Thakurs — that was him. He paid me to bury the file. And Vikram — he called me that night and told me the boy knew everything. He told me to handle it. I'm an inspector who got in too deep. I struck Vikram and pushed him. Then I changed the duty log.",
         "followUpSuspectId": "bisht",
         "followUpScriptedLine": "Devraj has been under extraordinary strain. I've tried to help him for years. If he has confessed to something terrible, I am of course shocked. But I had nothing to do with this."
       }

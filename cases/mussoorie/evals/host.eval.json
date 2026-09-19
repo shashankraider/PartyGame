@@ -2858,6 +2858,133 @@
           ]
         }
       ]
+    },
+    {
+      "name": "devraj-bridge: discover before confession — devraj-phone-location",
+      "expected": "drop-evidence",
+      "expectedEvidenceId": "devraj-phone-location",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Can we examine Devraj’s handset location history to check whether his patrol reached the fatal bend around 8:20?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "devraj-bridge: ignore unrelated question — devraj-phone-location",
+      "expected": "do-nothing",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "What is your rank, Inspector?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "devraj-bridge: discover before confession — devraj-duty-log",
+      "expected": "drop-evidence",
+      "expectedEvidenceId": "devraj-duty-log",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv",
+        "devraj-phone-location"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Please obtain the original station duty entry and an independent audit of who changed it after the round."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "devraj-bridge: ignore unrelated question — devraj-duty-log",
+      "expected": "do-nothing",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv",
+        "devraj-phone-location"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "What is your rank, Inspector?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "devraj-bridge: discover before confession — devraj-lathi-forensics",
+      "expected": "drop-evidence",
+      "expectedEvidenceId": "devraj-lathi-forensics",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv",
+        "lathi-postmortem"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Can the lab test Devraj’s issued service lathi for Vikram’s blood and compare that specific weapon with the injury?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "devraj-bridge: ignore unrelated question — devraj-lathi-forensics",
+      "expected": "do-nothing",
+      "unlockedEvidence": [
+        "devraj-jeep-cctv",
+        "lathi-postmortem"
+      ],
+      "transcripts": [
+        {
+          "suspectId": "devraj",
+          "suspectName": "Inspector Devraj Khanna",
+          "hasOpenedUp": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": "What is your rank, Inspector?"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
