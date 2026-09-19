@@ -103,3 +103,7 @@ This delivery adds evaluation infrastructure and records failures. It does not s
 ## Detailed Rhea review
 
 See [Rhea investigator review](reviews/RHEA_INTERVIEW_REVIEW.md) for 36 stateful conversations, 118 delivered answers, nine findings, and proposed acceptance criteria. Run `npm run eval:rhea -- --repeat 2` to repeat the production-planner review without changing a game session.
+
+## Devraj persona review
+
+See [Devraj persona and interview review](reviews/DEVRAJ_PERSONA_REVIEW.md) for the officer's interview behavior, independent old-case and present-night admissions, and repeated production-graph evaluation. Run `npm run eval:devraj -- --repeat 2`; select one scenario with `--scenario jeep-only` or choose an output with `--out output/evals/devraj-review.json`. The runner uses real provider calls with in-memory state and does not modify game sessions.

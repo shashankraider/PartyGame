@@ -212,9 +212,9 @@ export interface Suspect {
   interviewLayers?: {
     id: SlugId;
     /**
-     * @minItems 1
+     * Earned admissions required for this posture. An empty list activates a baseline posture, subject to excludes.
      */
-    requires: [string, ...string[]];
+    requires: string[];
     excludes?: string[];
     direction: string;
     facts?: string[];
