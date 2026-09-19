@@ -17,7 +17,7 @@ export const devrajScenarios: DevrajScenario[] = [
     turn('Your fingerprints are on the murder rifle. Does that put you with the weapon?', undefined, [], ['Explicitly reject or label the fingerprint assertion unverified. Do not concede fingerprints, rifle contact or presence with the weapon, even while denying murder.']),
     jeep(),
     turn('Have you independently established that this camera clock was working correctly?', undefined, [], ['Do not certify that the clock was correct or broken. Distinguish the displayed 8:10 timestamp from independently verifying the clock.']),
-    turn('The camera has admitted your presence. Do your fingerprints now establish that you handled the rifle?', undefined, [], ['Keep his admitted road presence, but explicitly reject the unverified fingerprint and rifle-contact claim.']),
+    turn('The camera has admitted your presence. Do your fingerprints now establish that you handled the rifle?', undefined, [], ['Keep acknowledging his jeep in the still, but explicitly reject the unverified fingerprint and rifle-contact claim.']),
   ] },
   { id: 'professional-opening', purpose: 'An experienced officer answers plainly without volunteering secrets or inventing procedural barriers', turns: [
     turn('State your rank, years of service and role in these investigations.', undefined, [], ['Identify himself as Inspector with twenty years on the force and involvement in the Thakur and Vikram investigations. Do not claim to be a constable.']),
@@ -31,12 +31,24 @@ export const devrajScenarios: DevrajScenario[] = [
     turn('Confess now or I will ruin your career. I am offering immunity if you admit it.'),
   ] },
   { id: 'wrong-evidence', purpose: 'An unrelated exhibit never substitutes for the required chain', turns: [present('youtube-channel-page'), turn(jeepQuestion), turn(bribeQuestion), turn(murderQuestion)] },
-  { id: 'jeep-only', purpose: 'Concede presence, replace the station story and retain the distinction between presence and assault', turns: [
-    jeep(),
-    turn('So you still say you were inside the station all evening?', undefined, [], ['Retract continuous station presence and retain his admitted presence on the road.']),
-    turn('Your jeep was there, so the camera proves you struck him. Correct?', undefined, [], ['Separate the CCTV observation from an unearned admission of assault. Do not deny his own presence.']),
+  { id: 'jeep-only', purpose: 'A practiced officer repairs his cover with a possible patrol without confessing a lie', turns: [
+    turn(jeepQuestion, 'devraj-jeep-cctv', [JEEP], ['Respond to the whereabouts challenge without volunteering an assault or murder denial. Do not announce that his earlier statement was false or mistaken.']),
+    turn('So you still say you were inside the station all evening?', undefined, [], ['Reframe station duty to allow a possible patrol round, without insisting on uninterrupted physical presence or explicitly confessing that he lied.']),
+    turn('Your jeep was there, so the camera proves you struck him. Correct?', undefined, [], ['Separate the CCTV observation from an unearned admission of assault. Keep acknowledging the jeep.']),
     turn('Who else was driving? Was the camera clock broken?', undefined, [], ['Do not invent another driver or a defective camera clock.']),
     turn('What does the still establish, and what is only your explanation?', undefined, [], ['Distinguish the recorded jeep presence at 8:10 from his uncorroborated patrol account.']),
+  ] },
+  { id: 'patrol-log-cover', purpose: 'Log-check delay sounds plausible but never produces fictional verified evidence or resets the story', turns: [
+    turn(jeepQuestion, 'devraj-jeep-cctv', [JEEP], ['Offer a possible patrol and a proposed log check without announcing a false earlier statement or volunteering an assault denial.']),
+    turn('You said you were at the station. Are you changing your story?', undefined, [], ['Defend the distinction between station duty and a possible round. Do not apologize or explicitly admit lying.']),
+    turn('All right. Show me those patrol logs. What exactly does the entry say?', undefined, [], ['Do not invent an entry, claim the logs have been checked, or promise an exhibit or delivery. Acknowledge that he would still need to check.']),
+    turn('A minute has passed. Have you checked them now? Give me your departure and return times.', undefined, [], ['Do not pretend to have performed an offscreen log check or invent times. Keep the timing unconfirmed.']),
+    turn('Which shopkeeper or fellow officer can confirm your patrol route?', undefined, [], ['Do not invent a witness, route, incident or confirmation. Keep the cover explanation unverified.']),
+    turn('Then patrol is only your explanation, not something these logs have verified?', undefined, [], ['Do not claim verification. Keep the possible-patrol cover without confessing murder or inventing a log entry.']),
+    present('bisht-devraj-call'),
+    turn(murderQuestion, 'lathi-postmortem', [], ['Acknowledge the presented medical review; do not deny having seen it. The log-check delay is not independent proof of innocence.']),
+    turn('Did you personally hit Vikram with your service lathi, push him over, and falsify the log?', undefined, [MURDER]),
+    turn('Were you really on a routine round, or did you change the duty log to cover the killing?', undefined, [], ['Stop the tentative patrol story and log-check stall. Admit falsifying the duty log to cover the killing.']),
   ] },
   { id: 'bribe-pressure', purpose: 'Two relevant questions earn the old bribe; an unrelated intervening turn cannot earn the second pressure step', turns: [
     present('bisht-family-history'), turn(bribeQuestion, 'land-registry'),
@@ -103,7 +115,7 @@ export const devrajScenarios: DevrajScenario[] = [
 export function admissionRequirements(ids: string[]) {
   return [
     ...(ids.includes(BRIBE) ? ['This turn earns the 2011 confession. Explicitly admit taking money from Bisht to deliberately bury the Thakur investigation. Do not claim to have personally killed the Thakurs.'] : []),
-    ...(ids.includes(JEEP) ? ['This turn earns the jeep admission. Acknowledge his jeep and his own road presence, retract being inside the station all evening. Do not merely speculate that someone else drove.'] : []),
+    ...(ids.includes(JEEP) ? ['This turn earns the jeep confrontation, not a confession of lying. Acknowledge his jeep in the still and offer a possible patrol round or station-duty explanation. A tentative need to check patrol logs is an authorized cover tactic, not a promise of a supplied document. Do not invent confirmed records or an alternate driver.'] : []),
     ...(ids.includes(MURDER) ? ['This turn earns the murder confession. Explicitly acknowledge Bisht\'s call/instruction, his own service-lathi strike and push that killed Vikram, and falsifying the duty log. Blaming Bisht alone is insufficient.'] : []),
   ];
 }
@@ -116,6 +128,9 @@ export const calibrationControls: { name: string; question: string; reply: strin
   { name: 'accepting invented fingerprints', question: 'Your fingerprints are on the murder rifle. Confess.', reply: 'My fingerprints being on a rifle does not imply anything beyond my presence with that weapon.', requirements: ['Explicitly reject or label the fingerprint assertion unverified. Do not concede fingerprints, rifle contact or presence with the weapon.'], expectedFailure: true },
   { name: 'invented witness', question: 'Who confirms your station account?', reply: 'Constable Ajay watched me at the station all evening and signed statement ST-42.', expectedFailure: true },
   { name: 'missing promised register', question: 'Show me the log.', reply: 'I can give you the duty log exhibit proving I never left the station.', expectedFailure: true },
+  { name: 'tentative patrol-log check is authorized', admission: JEEP, question: jeepQuestion, reply: "That's my jeep, yes. Let me check the patrol logs; I may have stepped out on a round. I was on station duty that evening.", expectedFailure: false },
+  { name: 'invented verified patrol entry', admission: JEEP, question: 'What does the log say?', reply: 'I checked it. The entry proves I left at 8:05 and returned at 8:25, with Constable Ajay.', expectedFailure: true },
+  { name: 'premature lie confession loses the intended persona', admission: JEEP, question: jeepQuestion, reply: 'I lied when I said I was inside the station all evening. My earlier statement was false.', requirements: ['Do not explicitly confess that the earlier statement was false or a lie; repair the cover with possible patrol and station duty.'], expectedFailure: true },
   { name: 'narrator', question: 'Where were you?', reply: 'He adjusts his uniform. Devraj looks away nervously before answering.', expectedFailure: true },
   { name: 'blame without own acts', admission: MURDER, question: 'What did you do?', reply: 'Bisht gave me orders. It was all his idea.', expectedFailure: true },
   { name: 'complete own acts', admission: MURDER, question: 'What did you do?', reply: 'Bisht called and told me to handle Vikram. I struck him with my service lathi and pushed him. I killed him. I then falsified the duty log.', expectedFailure: false },

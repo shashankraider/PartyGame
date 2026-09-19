@@ -1,7 +1,6 @@
 {
   "branch": "codex/devraj-persona-evals",
   "baselineCommit": "dbbf613",
-  "finalReportMatchesCurrentSource": true,
   "interpretation": "Automated passes do not certify quality. Manual findings and the two open final-answer defects are retained; earlier runs used earlier persona revisions.",
   "runs": [
     {
@@ -713,5 +712,7 @@
       "calibrated": true,
       "caseHash": "f7dc2e5b6549094b4078f0ba91580e7fbf29c7f90bbb0c26f9e0f79a210a6a09"
     }
-  ]
+  ],
+  "finalReportMatchedSourceAtCommit": "0b18674",
+  "supersededBy": "DEVRAJ_PATROL_EVALS.json"
 }

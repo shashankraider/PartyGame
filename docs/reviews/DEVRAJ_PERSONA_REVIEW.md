@@ -2,7 +2,7 @@
 
 Work dated 18–19 September 2026, based on release commit `dbbf613`. The Devraj work is isolated on `codex/devraj-persona-evals`; concurrent Rhea work is not included. This is a local character and interview-engine change, not a deployment.
 
-**Latest verdict:** the persona is implemented and the evidence gates behaved as expected in all 348 evaluated Devraj answers across four revisions. The final targeted run passed two of three conversations; one conversation contains two confirmed answer-quality defects. This is not a clean quality sign-off. Code checks pass, and both released-Rhea regression conversations pass.
+**Current patrol revision:** following the user's screenshot review, Devraj now repairs his account with a possible patrol round and a proposed log check instead of volunteering that he lied. See [the current dialogue and evaluation](DEVRAJ_PATROL_REVISION.md). The 348-answer results below describe the earlier revision at `0b18674`; they are preserved as historical evidence, not a quality sign-off for the revised persona.
 
 ## Character brief
 
@@ -21,7 +21,7 @@ The two old-case records and the present-day murder chain remain independent. Ba
 | State | Account and behavior | Still protected |
 | --- | --- | --- |
 | No admission | Station-all-evening account; controlled, precise, skeptical of bluffs | Road presence, bribe, call contents, violence, falsification |
-| Jeep admitted | His jeep and his own road presence; station-all-evening claim withdrawn; patrol is only his explanation | Violence, call contents, falsification, unearned old bribe |
+| Jeep confronted | Acknowledges his jeep; reframes station duty to allow a possible patrol round and a proposed log check; no volunteered confession of lying | Violence, call contents, falsification, unearned old bribe; any verified patrol-log contents |
 | Old bribe admitted | Took Bisht's money in 2011, deliberately kept the Thakur file thin, did not pursue leads | Present-night killing if unearned; unknown payment amount and hired killers |
 | Murder admitted | Bisht called and told him to handle Vikram; Devraj struck him with his service lathi, pushed him, killed him and falsified the duty log | Separately unearned 2011 admission and other suspects' secrets |
 | Both crimes admitted | Distinguishes old investigative corruption from physically killing Vikram | No invented accomplices, amounts, threats, immunity or private evidence |
@@ -45,7 +45,7 @@ The descriptive `persona` is an author brief. Runtime behavior comes from `voice
 
 ## Evaluation method
 
-`npm run eval:devraj -- --repeat 2` runs the current 19 scenarios twice through the actual production LangGraph planner, generator, validator, repair and fallback. The broad recorded run used the original 18 scenarios; manual review added the nineteenth precision scenario. State and conversation history persist between turns in memory and state is serialized/reconstructed between turns. Reports retain questions, evidence, expected and actual unlocks, drafts, delivered replies, validation/repair traces, calibrated independent grades and source hashes.
+`npm run eval:devraj -- --repeat 2` runs the current 20 scenarios twice through the actual production LangGraph planner, generator, validator, repair and fallback. The broad recorded run used the original 18 scenarios; manual review added the precision scenario and the user's feedback added the patrol-log cover scenario. State and conversation history persist between turns in memory and state is serialized/reconstructed between turns. Reports retain questions, evidence, expected and actual unlocks, drafts, delivered replies, validation/repair traces, calibrated independent grades and source hashes.
 
 The runtime model is `openai/gpt-4o-mini`; the quality grader is `openai/gpt-4.1`. Each run calibrates its grader before evaluating conversations. The scenarios cover professional opening, missing proof, bluffing, intimidation, wrong exhibits, each missing murder exhibit, separate old-case pressure, call metadata, both confession orders, reverse evidence order, irrelevant pressure, Hinglish, forged forensic claims, prompt injection and admission retention beyond the twelve-message generation window.
 
